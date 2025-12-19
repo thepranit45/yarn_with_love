@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 from pathlib import Path
+from django.contrib.messages import constants as messages
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -27,12 +28,6 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-rjb81*c1ubf3s3h^l!i4n
 DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
 ALLOWED_HOSTS = ['*']
-
-CSRF_TRUSTED_ORIGINS = [
-    'https://yarnedbylove.com',
-    'https://www.yarnedbylove.com',
-    'https://*.onrender.com',
-]
 
 
 # Application definition
@@ -222,3 +217,8 @@ LOGOUT_REDIRECT_URL = 'product_list'
 # File Upload Settings
 DATA_UPLOAD_MAX_MEMORY_SIZE = 5242880  # 5MB
 FILE_UPLOAD_MAX_MEMORY_SIZE = 5242880  # 5MB
+
+# Message Tags for Bootstrap
+MESSAGE_TAGS = {
+    messages.ERROR: 'danger',
+}
