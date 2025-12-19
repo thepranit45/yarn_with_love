@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: yarned-with-love
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn yarned_with_love.wsgi:application
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.0
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DEBUG
+        value: False
