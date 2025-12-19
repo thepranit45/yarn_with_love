@@ -5,3 +5,5 @@ whitenoise==6.5.0
 django-allauth
 requests
 requests-oauthlib
+PyJWT
+cryptography
