@@ -2,11 +2,11 @@ services:
   - type: web
     name: yarned-with-love
     env: python
-    buildCommand: pip install -r requirements.txt
-    startCommand: gunicorn yarned_with_love.wsgi:application
+    buildCommand: pip install --upgrade pip && pip install -r requirements.txt && python manage.py collectstatic --noinput
+    startCommand: gunicorn yarned_with_love.wsgi:application --bind 0.0.0.0:$PORT
     envVars:
       - key: PYTHON_VERSION
-        value: 3.11.0
+        value: 3.11.7
       - key: SECRET_KEY
         generateValue: true
       - key: DEBUG
