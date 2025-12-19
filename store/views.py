@@ -8,7 +8,7 @@ from .forms import OrderUpdateForm, OrderStatusForm, ProductForm, ReviewForm
 from django.contrib import messages
 import uuid
 
-@cache_page(60 * 5)  # Cache for 5 minutes
+@require_http_methods(["GET"])
 def product_list(request):
     query = request.GET.get('q', '')
     category = request.GET.get('category', '')
