@@ -3,7 +3,7 @@ services:
     name: yarned-with-love
     env: python
     buildCommand: pip install -r requirements.txt && python manage.py collectstatic --noinput
-    startCommand: gunicorn yarned_with_love.wsgi:application
+    startCommand: python manage.py migrate && gunicorn yarned_with_love.wsgi:application --timeout 60 --log-file -
     envVars:
       - key: PYTHON_VERSION
         value: 3.10.0
