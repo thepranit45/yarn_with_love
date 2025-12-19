@@ -221,3 +221,7 @@ FILE_UPLOAD_MAX_MEMORY_SIZE = 5242880  # 5MB
 MESSAGE_TAGS = {
     messages.ERROR: 'danger',
 }
+
+# Razorpay Settings
+RAZORPAY_KEY_ID = os.environ.get('RAZORPAY_KEY_ID', 'rzp_live_RtRXWrloT09ORP')
+RAZORPAY_KEY_SECRET = os.environ.get('RAZORPAY_KEY_SECRET', 'rkRlTloI74ZjkNbsF4IBq1Xv')

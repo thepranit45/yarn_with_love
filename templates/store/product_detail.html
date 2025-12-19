@@ -3,51 +3,185 @@
 {% block title %}{{ product.name }} - Yarned with Love{% endblock %}
 
 {% block content %}
-<div class="container product-detail-container">
-    <div class="row align-items-center">
-        <div class="col-md-6 mb-4">
+<div class="container py-5">
+    <!-- Breadcrumbs -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'product_list' %}"
+                    class="text-decoration-none text-muted">Home</a></li>
+            {% if product.category %}
+            <li class="breadcrumb-item"><a href="{% url 'product_list' %}?category={{ product.category.slug }}"
+                    class="text-decoration-none text-muted">{{ product.category.name }}</a></li>
+            {% endif %}
+            <li class="breadcrumb-item active" aria-current="page" style="color: var(--primary-color);">{{ product.name
+                }}</li>
+        </ol>
+    </nav>
+
+    <div class="row gx-5">
+        <!-- Left Column: Image -->
+        <div class="col-lg-6 mb-5 mb-lg-0">
             {% if product.image %}
-            <img src="{{ product.image.url }}" class="img-fluid rounded-4 shadow" alt="{{ product.name }}">
+            <div class="position-relative stitched-border">
+                <img src="{{ product.image.url }}" class="img-fluid rounded-4 shadow-lg w-100" alt="{{ product.name }}">
+                {% if product.mrp and product.price < product.mrp %} <span
+                    class="position-absolute top-0 start-0 m-3 badge bg-danger fs-5 shadow-sm" style="z-index: 20;">
+                    SAVE {{ product.mrp|add:product.price|floatformat:0 }}%
+                    </span>
+                    {% endif %}
+            </div>
             {% else %}
-            <div class="d-flex align-items-center justify-content-center rounded-4 shadow-sm product-detail-img">
+            <div class="d-flex align-items-center justify-content-center rounded-4 shadow-sm bg-light"
+                style="height: 500px;">
                 <span class="text-muted display-6">🧶 Image Coming Soon</span>
             </div>
             {% endif %}
+
+            <!-- Specifications (Desktop) -->
+            <div class="d-none d-lg-block mt-5">
+                <h5 class="fw-bold mb-3" style="color: var(--text-dark);">Specifications</h5>
+                <div class="d-flex flex-wrap gap-2">
+                    {% if product.specifications %}
+                    {% for spec in product.specifications.splitlines %}
+                    <span class="badge bg-light text-dark border">{{ spec }}</span>
+                    {% endfor %}
+                    {% else %}
+                    <p class="text-muted">No specific specs.</p>
+                    {% endif %}
+                </div>
+            </div>
         </div>
-        <div class="col-md-6 ps-md-5">
-            <span class="badge badge-artisan mb-3">✨ {{ product.category.name|default:"General" }}</span>
-            <h1 class="mb-3 display-4 fw-bold" style="background: linear-gradient(135deg, #d47fa6, #ff9eb7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">{{ product.name }}</h1>
-            <div class="d-flex align-items-center mb-4">
-                <h2 class="h1 mb-0 me-3 text-bronze">₹{{ product.price }}</h2>
-                <small style="color: #7a5c6f; font-weight: 600;">💝 Made by <strong style="color: var(--deep-rose);">{{ product.artisan.username }}</strong></small>
-            </div>
 
-            <div class="mb-4">
-                <h5 class="text-uppercase small ls-1" style="color: var(--deep-rose); font-weight: 700; letter-spacing: 2px;">✨ Description</h5>
-                <p class="lead" style="color: #5a4a54; font-weight: 500; line-height: 1.8;">{{ product.description }}</p>
-            </div>
+        <!-- Right Column: Details -->
+        <div class="col-lg-6">
+            <span class="badge mb-2" style="background-color: #ffe4ec; color: var(--primary-color);">{{
+                product.category.name|default:"General" }}</span>
+            <h1 class="display-4 fw-bold mb-2">{{ product.name }}</h1>
 
-            <div class="mb-4 p-4 rounded shadow-sm" style="background: linear-gradient(135deg, #fff5f9, #ffe4ec); border: 3px solid var(--soft-pink);">
-                <div class="d-flex align-items-center">
-                    <div class="me-3" style="font-size: 2rem;">⏱️</div>
-                    <div>
-                        <h6 class="mb-0" style="color: var(--deep-rose); font-weight: 700;">✨ Estimated Creation Time</h6>
-                        <p class="mb-0 small" style="color: #7a5c6f; font-weight: 600;">{{ product.estimated_days_to_complete }} days to craft with love 💕</p>
-                    </div>
+            <!-- Quality Promise -->
+            <div class="quality-promise-card my-4">
+                <div class="quality-icon">🧶</div>
+                <div>
+                    <h6 class="fw-bold mb-1" style="color: var(--text-dark);">Premium Quality Yarn</h6>
+                    <p class="small text-muted mb-0">Handcrafted with high-grade, skin-friendly threads only.</p>
                 </div>
             </div>
 
-            <div class="d-grid gap-2">
-                {% if user.is_authenticated %}
-                <a href="{% url 'create_order' product.pk %}" class="btn btn-main btn-lg shadow-sm">🎁 Start My Custom
-                    Order</a>
-                {% else %}
-                <a href="{% url 'login' %}?next={{ request.path }}"
-                    class="btn btn-outline-dark btn-lg rounded-pill py-3">💝 Login to Order</a>
-                <small class="text-center mt-2" style="color: #7a5c6f; font-weight: 600;">✨ Join our family to request this custom piece.</small>
+            <div class="d-flex align-items-baseline gap-3 mb-4">
+                <h2 class="h1 fw-bold" style="color: var(--primary-color);">₹{{ product.price }}</h2>
+                {% if product.mrp %}
+                <span class="text-decoration-line-through text-muted fs-5">MRP ₹{{ product.mrp }}</span>
+                <span class="text-success fw-bold small">Inclusive of all taxes</span>
                 {% endif %}
+            </div>
+
+            {% if product.short_description %}
+            <p class="lead text-muted mb-4">{{ product.short_description }}</p>
+            {% endif %}
+
+            <!-- Action Buttons -->
+            <div class="mb-5">
+                {% if user.is_authenticated %}
+                <form action="{% url 'add_to_cart' product.pk %}" method="POST"
+                    class="d-grid gap-2 d-md-flex align-items-end">
+                    {% csrf_token %}
+                    <div style="max-width: 100px;">
+                        <label class="form-label small fw-bold">Quantity</label>
+                        <input type="number" name="quantity" value="1" min="1"
+                            class="form-control rounded-3 border-secondary">
+                    </div>
+                    <button type="submit" class="btn btn-main btn-lg px-5 flex-grow-1">🛒 Add to Cart</button>
+                    <!-- Optional: Keep Custom Order as secondary option if needed, but usually Cart replaces it or sits alongside -->
+                    <!-- <a href="{% url 'create_order' product.pk %}" class="btn btn-outline-dark btn-lg">Custom Request</a> -->
+                </form>
+                {% else %}
+                <div class="d-grid gap-2 d-md-flex">
+                    <a href="{% url 'login' %}?next={{ request.path }}"
+                        class="btn btn-outline-dark btn-lg rounded-pill px-5 flex-grow-1">Login to Shop</a>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Key Features -->
+            {% if product.key_features %}
+            <div class="mb-5">
+                <h5 class="fw-bold mb-3" style="color: var(--text-dark);">Key Features:</h5>
+                <ul class="list-unstyled">
+                    {% for feature in product.key_features.splitlines %}
+                    <li class="mb-2 d-flex align-items-start">
+                        <span class="me-2" style="color: var(--primary-color);">✔</span>
+                        {{ feature }}
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+
+            <!-- Care Instructions -->
+            {% if product.care_instructions %}
+            <div class="mb-5">
+                <h5 class="fw-bold mb-3" style="color: var(--text-dark);">Care Instructions:</h5>
+                <ul class="list-unstyled">
+                    {% for instruction in product.care_instructions.splitlines %}
+                    <li class="mb-2 d-flex align-items-start">
+                        <span class="me-2" style="color: var(--primary-color);">🧵</span>
+                        {{ instruction }}
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+
+            <!-- Why Choose Us -->
+            <div class="bg-light p-4 rounded-3 border">
+                <h5 class="fw-bold mb-2">Why Choose Us?</h5>
+                <p class="text-muted small mb-0">
+                    At Yarned with Love, we prioritize quality and craftsmanship in every item we create.
+                    Our creations are a testament to our dedication to providing handmade products that inspire
+                    happiness. 💝
+                </p>
+            </div>
+
+            <!-- Metadata -->
+            <div class="mt-4 pt-3 border-top d-flex justify-content-between text-muted small">
+                <span>SKU: YWL-{{ product.id }}</span>
+                <span>Creation Time: {{ product.estimated_days_to_complete }} Days</span>
+                <span>Returns: {% if product.is_returnable %}Accepted{% else %}Not Returnable{% endif %}</span>
             </div>
         </div>
     </div>
+
+    <!-- Related Products -->
+    {% if related_products %}
+    <div class="mt-5 pt-5 border-top">
+        <h3 class="fw-bold mb-4" style="color: var(--text-dark);">You Might Also Like 💖</h3>
+        <div class="row g-4">
+            {% for related in related_products %}
+            <div class="col-6 col-md-3">
+                <a href="{% url 'product_detail' related.pk %}" class="text-decoration-none">
+                    <div class="card h-100 border-0 shadow-sm feature-card">
+                        <div class="position-relative"
+                            style="padding-top: 100%; background: #f8f8f8; border-radius: 15px; overflow: hidden;">
+                            {% if related.image %}
+                            <img src="{{ related.image.url }}" class="position-absolute top-0 start-0 w-100 h-100"
+                                style="object-fit: cover;" alt="{{ related.name }}">
+                            {% else %}
+                            <div
+                                class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center text-muted">
+                                🧶
+                            </div>
+                            {% endif %}
+                        </div>
+                        <div class="card-body px-0 text-center">
+                            <h6 class="fw-bold mb-1 text-dark">{{ related.name }}</h6>
+                            <p class="text-muted small mb-0">₹{{ related.price }}</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
 </div>
 {% endblock %}

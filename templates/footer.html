@@ -1,5 +1,19 @@
-<footer class="text-center py-4 mt-auto">
+<footer class="text-center py-4 mt-auto border-top bg-white">
     <div class="container">
-        <p class="mb-0 text-muted">💝 &copy; {% now "Y" %} Yarned with Love. Every stitch tells a story. Made with 💕</p>
+        <div class="mb-3">
+            <a href="{% url 'product_list' %}" class="text-decoration-none text-muted mx-2">Home</a>
+            <span class="text-muted">|</span>
+            <a href="{% url 'privacy_policy' %}" class="text-decoration-none text-muted mx-2">Privacy Policy</a>
+            <span class="text-muted">|</span>
+            <a href="{% url 'terms_of_service' %}" class="text-decoration-none text-muted mx-2">Terms of Service</a>
+            <span class="text-muted">|</span>
+            <a href="{% url 'refund_policy' %}" class="text-decoration-none text-muted mx-2">Refund Policy</a>
+            <span class="text-muted">|</span>
+            <a href="{% url 'shipping_policy' %}" class="text-decoration-none text-muted mx-2">Shipping Policy</a>
+            <span class="text-muted">|</span>
+            <a href="{% url 'contact_us' %}" class="text-decoration-none text-muted mx-2">Contact Us</a>
+        </div>
+        <p class="mb-0 text-muted small">💝 &copy; {% now "Y" %} Yarned with Love. Every stitch tells a story. Made with
+            💕</p>
     </div>
 </footer>

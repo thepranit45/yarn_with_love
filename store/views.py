@@ -3,10 +3,15 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.views.decorators.http import require_http_methods
 from django.views.decorators.cache import cache_page
 from django.db.models import Q, Prefetch
-from .models import Product, Order, OrderItem, OrderUpdate, Review, Category, Subscriber
+from .models import Product, Order, OrderItem, OrderUpdate, Review, Category, Subscriber, Cart, CartItem
 from .forms import OrderUpdateForm, OrderStatusForm, ProductForm, ReviewForm
 from django.contrib import messages
 import uuid
+import razorpay
+from django.conf import settings
+from django.db import transaction
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
 
 @require_http_methods(["GET"])
 def product_list(request):
@@ -33,10 +38,13 @@ def product_detail(request, pk):
     reviews = product.reviews.select_related('customer')
     avg_rating = sum(r.rating for r in reviews) / len(reviews) if reviews else 0
     
+    related_products = Product.objects.filter(is_active=True, category=product.category).exclude(pk=pk)[:4]
+
     return render(request, 'store/product_detail.html', {
         'product': product,
         'reviews': reviews,
-        'avg_rating': avg_rating
+        'avg_rating': avg_rating,
+        'related_products': related_products
     })
 
 @login_required
@@ -233,6 +241,123 @@ def subscribe(request):
     else:
         messages.error(request, 'Please provide a valid email address.')
     return redirect('product_list')
+
+@login_required
+@require_http_methods(["POST"])
+def add_to_cart(request, pk):
+    product = get_object_or_404(Product, pk=pk)
+    quantity = int(request.POST.get('quantity', 1))
+    notes = request.POST.get('customization_notes', '').strip()
+
+    cart, created = Cart.objects.get_or_create(user=request.user)
+    
+    # Check if item already exists with same customization (optional, for now just simplistic)
+    # We will simply add or update quantity if same product in cart.
+    cart_item, created = CartItem.objects.get_or_create(cart=cart, product=product)
+    
+    if not created:
+        cart_item.quantity += quantity
+    else:
+        cart_item.quantity = quantity
+    
+    # Update notes if provided (overwrites previous if existing item)
+    if notes:
+        cart_item.customization_notes = notes
+        
+    cart_item.save()
+    messages.success(request, f"{product.name} added to cart! 🛒")
+    return redirect('product_detail', pk=pk)
+
+@login_required
+def view_cart(request):
+    cart, created = Cart.objects.get_or_create(user=request.user)
+    return render(request, 'store/cart.html', {'cart': cart})
+
+@login_required
+def remove_from_cart(request, pk):
+    cart_item = get_object_or_404(CartItem, pk=pk, cart__user=request.user)
+    cart_item.delete()
+    messages.success(request, "Item removed from cart.")
+    return redirect('view_cart')
+
+@login_required
+def checkout(request):
+    cart, created = Cart.objects.get_or_create(user=request.user)
+    if not cart.items.exists():
+        messages.warning(request, "Your cart is empty.")
+        return redirect('product_list')
+    
+    # Simple check to avoid errors if prices are large
+    total_amount = float(cart.get_total_price())
+    
+    # Razorpay Order Creation
+    currency = 'INR'
+    amount = int(total_amount * 100) # Amount in paise
+    
+    client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
+    
+    razorpay_order = client.order.create({
+        'amount': amount,
+        'currency': currency,
+        'payment_capture': '1'
+    })
+    
+    return render(request, 'store/checkout.html', {
+        'cart': cart,
+        'razorpay_order': razorpay_order,
+        'razorpay_key_id': settings.RAZORPAY_KEY_ID,
+        'total_amount': total_amount
+    })
+
+@csrf_exempt
+def payment_success(request):
+    if request.method == "POST":
+        try:
+            # In a real scenario, VERIFY signature here using client.utility.verify_payment_signature()
+            
+            cart = Cart.objects.get(user=request.user)
+            
+            with transaction.atomic():
+                order = Order.objects.create(
+                    customer=request.user,
+                    status='PENDING',
+                    customization_notes="Paid via Razorpay"
+                )
+                
+                for item in cart.items.all():
+                    OrderItem.objects.create(
+                        order=order,
+                        product=item.product,
+                        quantity=item.quantity,
+                        price_at_purchase=item.product.price
+                    )
+                
+                # Clear Cart
+                cart.items.all().delete()
+                
+            messages.success(request, "Payment Successful! Order placed. 🎉")
+            return redirect('order_tracking', tracking_id=order.tracking_id)
+            
+        except Exception as e:
+            messages.error(request, "Payment Failed or Error processing order.")
+            return redirect('view_cart')
+    return redirect('view_cart')
+
+# Policy Views
+def privacy_policy(request):
+    return render(request, 'store/policies/privacy_policy.html')
+
+def terms_of_service(request):
+    return render(request, 'store/policies/terms_and_conditions.html')
+
+def refund_policy(request):
+    return render(request, 'store/policies/refund_policy.html')
+
+def shipping_policy(request):
+    return render(request, 'store/policies/shipping_policy.html')
+
+def contact_us(request):
+    return render(request, 'store/policies/contact_us.html')
 
 
 

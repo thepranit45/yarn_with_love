@@ -5,14 +5,20 @@ from django.core.exceptions import ValidationError
 class ProductForm(forms.ModelForm):
     class Meta:
         model = Product
-        fields = ['category', 'name', 'description', 'price', 'image', 'estimated_days_to_complete']
+        fields = ['category', 'name', 'short_description', 'price', 'mrp', 'image', 'key_features', 'care_instructions', 'specifications', 'estimated_days_to_complete', 'is_returnable']
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Product name'}),
-            'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 4, 'placeholder': 'Product description'}),
+            'short_description': forms.Textarea(attrs={'class': 'form-control', 'rows': 2, 'placeholder': 'Short intro (appears on product page)'}),
+            'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 4, 'placeholder': 'Full product description'}),
             'price': forms.NumberInput(attrs={'class': 'form-control', 'min': '0.01', 'step': '0.01'}),
+            'mrp': forms.NumberInput(attrs={'class': 'form-control', 'min': '0.01', 'step': '0.01', 'placeholder': 'MRP (optional)'}),
             'estimated_days_to_complete': forms.NumberInput(attrs={'class': 'form-control', 'min': '1'}),
             'category': forms.Select(attrs={'class': 'form-control'}),
             'image': forms.FileInput(attrs={'class': 'form-control'}),
+            'key_features': forms.Textarea(attrs={'class': 'form-control', 'rows': 4, 'placeholder': 'Enter each feature on a new line'}),
+            'care_instructions': forms.Textarea(attrs={'class': 'form-control', 'rows': 4, 'placeholder': 'Enter each instruction on a new line'}),
+            'specifications': forms.Textarea(attrs={'class': 'form-control', 'rows': 2, 'placeholder': 'e.g. Size: Small, Material: Cotton'}),
+            'is_returnable': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
         }
 
     def clean_price(self):
