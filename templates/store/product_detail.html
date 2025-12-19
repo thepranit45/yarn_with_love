@@ -18,7 +18,7 @@
             <span class="badge badge-artisan mb-3">✨ {{ product.category.name|default:"General" }}</span>
             <h1 class="mb-3 display-4 fw-bold" style="background: linear-gradient(135deg, #d47fa6, #ff9eb7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">{{ product.name }}</h1>
             <div class="d-flex align-items-center mb-4">
-                <h2 class="h1 mb-0 me-3 text-bronze">${{ product.price }}</h2>
+                <h2 class="h1 mb-0 me-3 text-bronze">₹{{ product.price }}</h2>
                 <small style="color: #7a5c6f; font-weight: 600;">💝 Made by <strong style="color: var(--deep-rose);">{{ product.artisan.username }}</strong></small>
             </div>
 
