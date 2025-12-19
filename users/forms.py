@@ -7,3 +7,8 @@ class CustomUserCreationForm(UserCreationForm):
     class Meta(UserCreationForm.Meta):
         model = User
         fields = UserCreationForm.Meta.fields + ('email', 'is_artisan', 'bio')
+
+class CustomerRegistrationForm(UserCreationForm):
+    class Meta(UserCreationForm.Meta):
+        model = User
+        fields = ('username', 'email')

@@ -3,13 +3,13 @@ from django.contrib.auth import login, authenticate
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib import messages
-from .forms import CustomUserCreationForm
+from .forms import CustomUserCreationForm, CustomerRegistrationForm
 from .models import CustomUser
 
 def register(request):
     """Register as a customer"""
     if request.method == 'POST':
-        form = CustomUserCreationForm(request.POST)
+        form = CustomerRegistrationForm(request.POST)
         if form.is_valid():
             user = form.save(commit=False)
             user.is_artisan = False
@@ -18,7 +18,7 @@ def register(request):
             messages.success(request, f'Welcome {user.username}! Your account has been created.')
             return redirect('product_list')
     else:
-        form = CustomUserCreationForm()
+        form = CustomerRegistrationForm()
     return render(request, 'users/register.html', {'form': form})
 
 def register_artist(request):
