@@ -8,6 +8,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('store.urls')),
     path('users/', include('users.urls')),
+    path('accounts/', include('allauth.urls')),
     
     # Quick artist login routes
     path('mansi/', user_views.quick_artist_login, {'username': 'mansi', 'password': 'yarnbymansi'}, name='mansi_login'),

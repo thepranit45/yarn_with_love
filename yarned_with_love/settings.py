@@ -38,6 +38,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',  # Required by allauth
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
     'users',
     'store',
 ]
@@ -51,6 +56,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'allauth.account.middleware.AccountMiddleware',
 ]
 
 ROOT_URLCONF = 'yarned_with_love.urls'
@@ -176,6 +182,36 @@ SECURE_CONTENT_SECURITY_POLICY = {
 SESSION_COOKIE_SECURE = False  # Set to True in production with HTTPS
 SESSION_COOKIE_HTTPONLY = True
 CSRF_COOKIE_HTTPONLY = True
+
+# Authentication Backends
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
+]
+
+SITE_ID = 1
+
+# Google OAuth Settings
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'SCOPE': [
+            'profile',
+            'email',
+        ],
+        'AUTH_PARAMS': {
+            'access_type': 'online',
+        }
+    }
+}
+
+# Allauth Settings
+ACCOUNT_USER_MODEL_USERNAME_FIELD = 'username'
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_USERNAME_REQUIRED = True
+ACCOUNT_AUTHENTICATION_METHOD = 'username_email'
+LOGIN_REDIRECT_URL = 'product_list'
+LOGOUT_REDIRECT_URL = 'product_list'
+
 
 # File Upload Settings
 DATA_UPLOAD_MAX_MEMORY_SIZE = 5242880  # 5MB
