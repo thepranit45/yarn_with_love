@@ -82,18 +82,17 @@ def login_admin(request):
         form = AuthenticationForm()
     return render(request, 'users/login_admin.html', {'form': form})
 
-def quick_artist_login(request, username, password):
-    """Quick login for artists with pre-set credentials - shows confirmation form"""
-    # Show a confirmation page for the artist
+def quick_artist_login(request, username):
+    """Specific login page for artists (mansi/pranit)"""
     context = {
         'artist_username': username,
         'artist_display': username.capitalize(),
-        'quick_login': True
     }
     
     if request.method == 'POST':
-        # User confirmed - authenticate and login
+        password = request.POST.get('password')
         user = authenticate(username=username, password=password)
+        
         if user is not None:
             if user.is_artisan:
                 login(request, user)
@@ -101,10 +100,7 @@ def quick_artist_login(request, username, password):
                 return redirect('artisan_dashboard')
             else:
                 messages.error(request, 'This account is not an artisan account.')
-                return redirect('login_artist')
         else:
-            messages.error(request, 'Authentication failed. Please try again.')
-            return redirect('login_artist')
+            messages.error(request, 'Invalid password. Please try again.')
     
-    # Show confirmation page
     return render(request, 'users/artist_quick_login.html', context)

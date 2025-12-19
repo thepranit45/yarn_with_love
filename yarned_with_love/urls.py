@@ -11,8 +11,8 @@ urlpatterns = [
     path('accounts/', include('allauth.urls')),
     
     # Quick artist login routes
-    path('mansi/', user_views.quick_artist_login, {'username': 'mansi', 'password': 'yarnbymansi'}, name='mansi_login'),
-    path('pranit/', user_views.quick_artist_login, {'username': 'pranit', 'password': 'thepranit'}, name='pranit_login'),
+    path('mansi/', user_views.quick_artist_login, {'username': 'mansi'}, name='mansi_login'),
+    path('pranit/', user_views.quick_artist_login, {'username': 'pranit'}, name='pranit_login'),
 ]
 
 if settings.DEBUG:
