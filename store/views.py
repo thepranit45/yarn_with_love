@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.views.decorators.http import require_http_methods
 from django.views.decorators.cache import cache_page
 from django.db.models import Q, Prefetch
-from .models import Product, Order, OrderItem, OrderUpdate, Review
+from .models import Product, Order, OrderItem, OrderUpdate, Review, Category, Subscriber
 from .forms import OrderUpdateForm, OrderStatusForm, ProductForm, ReviewForm
 from django.contrib import messages
 import uuid
@@ -20,7 +20,13 @@ def product_list(request):
     if category:
         products = products.filter(category__slug=category)
     
-    return render(request, 'store/product_list.html', {'products': products, 'query': query})
+    categories = Category.objects.all()
+    
+    return render(request, 'store/product_list.html', {
+        'products': products, 
+        'query': query,
+        'categories': categories
+    })
 
 def product_detail(request, pk):
     product = get_object_or_404(Product.objects.select_related('artisan').prefetch_related('reviews'), pk=pk)
@@ -214,6 +220,19 @@ def add_review(request, pk):
         messages.error(request, "Error posting review. Please try again.")
     
     return redirect('product_detail', pk=pk)
+
+@require_http_methods(["POST"])
+def subscribe(request):
+    email = request.POST.get('email')
+    if email:
+        if Subscriber.objects.filter(email=email).exists():
+            messages.warning(request, 'You are already subscribed to our newsletter.')
+        else:
+            Subscriber.objects.create(email=email)
+            messages.success(request, 'Thank you for subscribing! 💌')
+    else:
+        messages.error(request, 'Please provide a valid email address.')
+    return redirect('product_list')
 
 
 

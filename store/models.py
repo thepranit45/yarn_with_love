@@ -135,3 +135,11 @@ class Review(models.Model):
 
     def __str__(self):
         return f"{self.customer.username} - {self.product.name} ({self.rating}★)"
+
+class Subscriber(models.Model):
+    """Newsletter subscriber email list"""
+    email = models.EmailField(unique=True)
+    subscribed_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.email

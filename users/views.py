@@ -14,27 +14,12 @@ def register(request):
             user = form.save(commit=False)
             user.is_artisan = False
             user.save()
-            login(request, user)
+            login(request, user, backend='django.contrib.auth.backends.ModelBackend')
             messages.success(request, f'Welcome {user.username}! Your account has been created.')
             return redirect('product_list')
     else:
         form = CustomerRegistrationForm()
     return render(request, 'users/register.html', {'form': form})
-
-def register_artist(request):
-    """Register as an artisan"""
-    if request.method == 'POST':
-        form = CustomUserCreationForm(request.POST, request.FILES)
-        if form.is_valid():
-            user = form.save(commit=False)
-            user.is_artisan = True
-            user.save()
-            login(request, user)
-            messages.success(request, f'Welcome {user.username}! Your artisan account has been created.')
-            return redirect('artisan_dashboard')
-    else:
-        form = CustomUserCreationForm()
-    return render(request, 'users/register_artist.html', {'form': form})
 
 def login_choice(request):
     """Choose login type: Customer, Artist, or Admin"""
