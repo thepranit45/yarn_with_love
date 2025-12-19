@@ -28,6 +28,12 @@ DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
 ALLOWED_HOSTS = ['*']
 
+CSRF_TRUSTED_ORIGINS = [
+    'https://yarnedbylove.com',
+    'https://www.yarnedbylove.com',
+    'https://*.onrender.com',
+]
+
 
 # Application definition
 
