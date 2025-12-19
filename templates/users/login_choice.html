@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% block title %}Login - Yarned with Love{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="text-center mb-5">
+                <h1 class="display-5 fw-bold mb-2" style="background: linear-gradient(135deg, #d47fa6, #ff9eb7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+                    Welcome to Yarned with Love
+                </h1>
+                <p style="color: #7a5c6f; font-size: 1.1rem;">Please select your login type 💝</p>
+            </div>
+
+            <!-- Customer Login Only -->
+            <div class="row g-4">
+                <div class="col-lg-8 mx-auto">
+                    <div class="card h-100" style="border: 3px solid var(--soft-pink); box-shadow: 0 8px 30px rgba(255, 158, 183, 0.2); border-radius: 25px;">
+                        <div class="card-body text-center p-5">
+                            <div style="font-size: 80px; margin-bottom: 25px;">🎀</div>
+                            <h2 class="card-title" style="color: var(--deep-rose); font-weight: 900; font-size: 2rem; margin-bottom: 15px;">Welcome Back</h2>
+                            <p class="card-text text-muted mb-5" style="font-size: 1.1rem;">Login to browse and purchase handmade items</p>
+                            <a href="{% url 'login_customer' %}" class="btn btn-main btn-lg w-100 mb-3">✨ Login</a>
+                            <div class="mt-4">
+                                <small class="text-muted">Don't have an account? <a href="{% url 'register' %}" style="color: var(--primary-color); font-weight: 600;">Register here</a></small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Artisan Portal Link at Bottom -->
+            <div class="row mt-5">
+                <div class="col-lg-8 mx-auto text-center">
+                    <p style="color: #7a5c6f; font-size: 1.15rem; line-height: 2;">
+                        <strong style="font-size: 1.2rem;">Are you an artisan?</strong><br>
+                        <a href="{% url 'mansi_login' %}" style="color: var(--primary-color); text-decoration: none; font-weight: 700; font-size: 1.1rem;">🧶 Access Artisan Portal →</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

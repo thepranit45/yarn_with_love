@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% block title %}Shop - Yarned with Love{% endblock %}
+
+{% block preloader %}
+<div id="loader">
+    <div class="stitch-container">
+        <h1 class="brand-text">Yarned with Love</h1>
+        <div class="needle"></div>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<section class="hero-section-new">
+    <div class="hero-content-wrapper">
+        <div class="hero-flower-top">💐</div>
+        <div class="text-center">
+            <span class="hero-badge">🎀 The Art of Crochet 🎀</span>
+            <h1 class="hero-title-new">Purely <br><em>Handmade.</em></h1>
+            <p class="hero-subtitle">✨ Bespoke yarn creations crafted with intention and delivered with love.<br>Each piece is a gift from the heart! 💝</p>
+            <a href="#collection" class="btn-main text-decoration-none btn-lg">🎁 View Shop</a>
+        </div>
+        <div class="hero-decoration-left">🎀</div>
+        <div class="hero-decoration-right">💝</div>
+    </div>
+</section>
+
+<section id="collection" style="padding: 80px 5%;">
+    <div class="text-center mb-5">
+        <h2 class="display-5 fw-bold" style="background: linear-gradient(135deg, #d47fa6, #ff9eb7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">💝 Our Lovely Collection 🎀</h2>
+        <div style="width: 100px; height: 4px; background: linear-gradient(90deg, var(--primary-color), var(--accent-pink)); margin: 20px auto; border-radius: 10px;"></div>
+        <p style="color: #7a5c6f; font-size: 1.1rem; max-width: 600px; margin: 20px auto;">Discover handcrafted treasures made with love! Each piece is unique and perfect for gifting 🎁</p>
+    </div>
+
+    <div class="product-grid">
+        {% for product in products %}
+        <a href="{% url 'product_detail' product.pk %}" class="product-card">
+            <div class="product-img-wrapper">
+                {% if product.image %}
+                <img src="{{ product.image.url }}" class="product-img" alt="{{ product.name }}">
+                {% else %}
+                <div class="product-img d-flex align-items-center justify-content-center text-muted">
+                    No Image
+                </div>
+                {% endif %}
+            </div>
+            <div class="product-info">
+                <h3 class="product-title">{{ product.name }}</h3>
+                <div class="product-price">${{ product.price }}</div>
+            </div>
+        </a>
+        {% empty %}
+        <div class="col-12 text-center py-5">
+            <h3>No products found.</h3>
+            <p>Our artisans are busy crafting new items!</p>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}

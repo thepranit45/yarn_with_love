@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+{% block title %}Customer Registration - Yarned with Love{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-7">
+            <div class="card shadow-sm" style="border: 3px solid var(--soft-pink); border-radius: 25px;">
+                <div class="card-body p-5">
+                    <div class="text-center mb-5">
+                        <div style="font-size: 60px; margin-bottom: 15px;">👥</div>
+                        <h2 class="fw-bold" style="color: var(--deep-rose);">Join Our Family</h2>
+                        <p class="text-muted">Create your account to shop our handmade treasures 💝</p>
+                    </div>
+
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+
+                    <form method="post">
+                        {% csrf_token %}
+                        {% for field in form %}
+                        <div class="mb-3">
+                            <label class="form-label" style="color: var(--deep-rose); font-weight: 600;">{{ field.label }}</label>
+                            {{ field }}
+                            {% if field.help_text %}
+                            <div class="form-text text-muted small">{{ field.help_text|safe }}</div>
+                            {% endif %}
+                            {% for error in field.errors %}
+                            <div class="text-danger small mt-1">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                        {% endfor %}
+                        <div class="d-grid mt-5">
+                            <button type="submit" class="btn btn-main btn-lg">✨ Create Account</button>
+                        </div>
+                    </form>
+
+                    <div class="text-center mt-4">
+                        <p class="text-muted">Already have an account? <a href="{% url 'login_customer' %}" style="color: var(--deep-rose); font-weight: 600;">Login here</a></p>
+                        <p class="text-muted">Are you an artisan? <a href="{% url 'register_artist' %}" style="color: var(--primary-color); font-weight: 600;">Register as Artist</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    input, textarea, select {
+        border: 2px solid var(--soft-pink) !important;
+        border-radius: 15px !important;
+        padding: 10px 15px !important;
+    }
+    
+    input:focus, textarea:focus, select:focus {
+        border-color: var(--primary-color) !important;
+        box-shadow: 0 0 0 0.2rem rgba(255, 158, 183, 0.25) !important;
+    }
+</style>
+
+<script>
+    // Add bootstrap class to form fields
+    var inputs = document.querySelectorAll('input, select, textarea');
+    inputs.forEach(function (input) {
+        if (input.type !== 'checkbox' && input.type !== 'radio') {
+            input.classList.add('form-control');
+        } else {
+            input.classList.add('form-check-input');
+        }
+    });
+</script>
+{% endblock %}

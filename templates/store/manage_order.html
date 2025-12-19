@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+{% block title %}Manage Order #{{ order.id }} - Yarned with Love{% endblock %}
+{% block content %}
+<div class="container py-5">
+    <div class="row mt-4">
+        <div class="col-12 mb-4">
+            <a href="{% url 'artisan_dashboard' %}" class="btn btn-outline-secondary">&larr; Back to Dashboard</a>
+        </div>
+
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Order Details</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>Customer:</strong> {{ order.customer.username }}</p>
+                    <p><strong>Item:</strong> {{ order.items.first.product.name }}</p>
+                    <p><strong>Date Ordered:</strong> {{ order.created_at|date:"M d, Y" }}</p>
+                    <p><strong>Notes:</strong> {{ order.customization_notes|default:"None" }}</p>
+                </div>
+            </div>
+
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Update Status</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            {{ status_form.status.label_tag }}
+                            {{ status_form.status }}
+                        </div>
+                        <button type="submit" name="update_status" class="btn btn-primary w-100">Update Status</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-8">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-secondary text-white">
+                    <h5 class="mb-0">Yarn a Story (Post Update)</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label class="form-label">{{ update_form.description.label }}</label>
+                            {{ update_form.description }}
+                            <div class="form-text">Tell the customer how it's going!</div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">{{ update_form.image.label }}</label>
+                            {{ update_form.image }}
+                        </div>
+                        <button type="submit" name="post_update" class="btn btn-success">Post Update</button>
+                    </form>
+                </div>
+            </div>
+
+            <h4 class="mb-3">Update History</h4>
+            {% if order.updates.exists %}
+            <div class="list-group">
+                {% for update in order.updates.all %}
+                <div class="list-group-item">
+                    <div class="d-flex w-100 justify-content-between">
+                        <h5 class="mb-1">Update</h5>
+                        <small>{{ update.created_at|date:"M d, H:i" }}</small>
+                    </div>
+                    <p class="mb-1">{{ update.description }}</p>
+                    {% if update.image %}
+                    <img src="{{ update.image.url }}" class="img-thumbnail mt-2" style="max-height: 150px;">
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p class="text-muted">No updates posted yet.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+    // Simple styling for select box if needed, or bootstrap defaults
+    document.querySelector('select[name="status"]').classList.add('form-select');
+    document.querySelector('textarea[name="description"]').classList.add('form-control');
+    document.querySelector('input[name="image"]').classList.add('form-control');
+</script>
+{% endblock %}

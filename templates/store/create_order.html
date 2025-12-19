@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% block title %}Complete Your Order - Yarned with Love{% endblock %}
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center mt-5">
+        <div class="col-md-8">
+            <div class="card shadow border-0">
+                <div class="card-header bg-white border-bottom-0 pt-4 px-4">
+                    <h4 class="mb-0 display-text">Confirm Your Order</h4>
+                </div>
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center mb-4 p-3 bg-light rounded">
+                        {% if product.image %}
+                        <img src="{{ product.image.url }}" alt="{{ product.name }}" class="rounded me-3"
+                            style="width: 80px; height: 80px; object-fit: cover;">
+                        {% endif %}
+                        <div>
+                            <h5 class="mb-1">{{ product.name }}</h5>
+                            <p class="text-primary-custom fw-bold mb-0">${{ product.price }}</p>
+                        </div>
+                    </div>
+
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="mb-4">
+                            <label for="customization_notes" class="form-label">Customization Notes (Optional)</label>
+                            <textarea class="form-control" id="customization_notes" name="customization_notes" rows="4"
+                                placeholder="e.g. Please make the petals a bit lighter yellow..."></textarea>
+                            <div class="form-text">Share any specific requests for the artisan!</div>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-main btn-lg">Place Order</button>
+                            <a href="{% url 'product_detail' product.pk %}" class="btn btn-link text-muted">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

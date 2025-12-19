@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block title %}Track Your Order - Yarned with Love{% endblock %}
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center mt-5">
+        <div class="col-md-6 text-center">
+            <h2 class="mb-4">Track Your Order</h2>
+            <p class="mb-4">Enter your tracking ID below to see the latest updates on your handmade item.</p>
+            <div class="card shadow-sm p-4">
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="input-group mb-3">
+                        <input type="text" name="tracking_id" class="form-control form-control-lg"
+                            placeholder="e.g. 550e8400-e29b..." required>
+                        <button class="btn btn-primary" type="submit">Track</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block title %}Logged Out - Yarned with Love{% endblock %}
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center text-center mt-5">
+        <div class="col-md-6">
+            <h2 class="mb-3 display-text">You have been logged out.</h2>
+            <p class="mb-4">We hope to see you again soon!</p>
+            <a href="{% url 'login' %}" class="btn btn-main">Login Again</a>
+            <a href="{% url 'product_list' %}" class="btn btn-link text-muted">Go to Shop</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
