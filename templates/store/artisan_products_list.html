@@ -1,0 +1,132 @@
+{% extends 'base.html' %}
+{% block title %}My Collection - Yarned with Love{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="display-text text-primary">My Collection 🧶</h1>
+            <p class="text-muted">Manage your beautiful creations.</p>
+        </div>
+        <div class="d-flex gap-2">
+            <!-- Client-side Search Input -->
+            <div class="position-relative">
+                <input type="text" id="productSearchInput" class="form-control rounded-pill border-0 shadow-sm px-4"
+                    placeholder="Type to search..." style="width: 250px;">
+                <span class="position-absolute top-50 end-0 translate-middle-y me-3 text-muted">🔍</span>
+            </div>
+            <a href="{% url 'add_product' %}" class="btn btn-main btn-lg rounded-pill px-4">
+                + Add New Product
+            </a>
+        </div>
+    </div>
+
+    {% if products %}
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0" id="productsTable">
+                <thead class="table-light">
+                    <tr>
+                        <th class="ps-4 py-3">Image</th>
+                        <th class="py-3">Product Name</th>
+                        <th class="py-3">Price</th>
+                        <th class="py-3">Status</th>
+                        <th class="py-3 text-end pe-4">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for product in products %}
+                    <tr class="product-row">
+                        <td class="ps-4" style="width: 100px;">
+                            {% if product.image %}
+                            <img src="{{ product.image.url }}" alt="{{ product.name }}"
+                                class="rounded-3 object-fit-cover shadow-sm" style="width: 60px; height: 60px;">
+                            {% else %}
+                            <div class="bg-light rounded-3 d-flex align-items-center justify-content-center text-muted border"
+                                style="width: 60px; height: 60px;">
+                                📷
+                            </div>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <h6 class="fw-bold mb-0 text-dark product-name">{{ product.name }}</h6>
+                            <small class="text-muted">{{ product.category.name|default:"Uncategorized" }}</small>
+                        </td>
+                        <td class="fw-bold">₹{{ product.price }}</td>
+                        <td>
+                            {% if product.is_active %}
+                            <span class="badge bg-success-subtle text-success rounded-pill px-3">Active</span>
+                            {% else %}
+                            <span class="badge bg-secondary-subtle text-secondary rounded-pill px-3">Hidden</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-end pe-4">
+                            <div class="d-flex justify-content-end gap-2">
+                                <a href="{% url 'product_detail' product.pk %}"
+                                    class="btn btn-sm btn-outline-dark rounded-pill" title="View Public Page">
+                                    👁️
+                                </a>
+                                <a href="{% url 'edit_product' product.pk %}"
+                                    class="btn btn-sm btn-primary rounded-pill px-3">
+                                    Edit ✏️
+                                </a>
+                                <form action="{% url 'delete_product' product.pk %}" method="POST" class="d-inline"
+                                    onsubmit="return confirm('Are you sure you want to delete {{ product.name }}? This cannot be undone.');">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-sm btn-danger rounded-pill px-3">
+                                        Delete 🗑️
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <!-- No Results Message (Hidden by default) -->
+    <div id="noResultsMsg" class="text-center py-5 d-none">
+        <h5 class="text-muted">No products found matching your search.</h5>
+    </div>
+    {% else %}
+    <div class="text-center py-5 bg-light rounded-4">
+        <div class="display-1 mb-3">🎨</div>
+        <h3 class="fw-bold">Your collection is empty</h3>
+        <p class="text-muted mb-4">Start by adding your first masterpiece!</p>
+        <a href="{% url 'add_product' %}" class="btn btn-main btn-lg rounded-pill px-5">Add Product</a>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const searchInput = document.getElementById('productSearchInput');
+        const tableRows = document.querySelectorAll('.product-row');
+        const noResultsMsg = document.getElementById('noResultsMsg');
+
+        searchInput.addEventListener('input', function (e) {
+            const query = e.target.value.toLowerCase().trim();
+            let visibleCount = 0;
+
+            tableRows.forEach(row => {
+                const productName = row.querySelector('.product-name').textContent.toLowerCase();
+                // You can expand this to search category or price too if needed
+                if (productName.includes(query)) {
+                    row.style.display = '';
+                    visibleCount++;
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+
+            // Show/Hide "No Results" message
+            if (visibleCount === 0 && tableRows.length > 0) {
+                noResultsMsg.classList.remove('d-none');
+            } else {
+                noResultsMsg.classList.add('d-none');
+            }
+        });
+    });
+</script>
+{% endblock %}

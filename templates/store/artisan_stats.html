@@ -1,0 +1,164 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Business Analytics - Yarned with Love{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %}
+
+{% block content %}
+<style>
+    .dashboard-card {
+        border: none;
+        border-radius: 16px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    }
+
+    .chart-container {
+        position: relative;
+        height: 350px;
+        width: 100%;
+    }
+</style>
+
+<div class="container-fluid bg-light min-vh-100 py-4">
+    <div class="container">
+        <!-- Header -->
+        <div class="d-flex justify-content-between align-items-center mb-5">
+            <div>
+                <a href="{% url 'artisan_dashboard' %}" class="text-decoration-none text-muted mb-2 d-block">&larr; Back
+                    to Dashboard</a>
+                <h2 class="fw-bold mb-0">Business Analytics 📈</h2>
+                <p class="text-muted">Detailed breakdown of your store's performance.</p>
+            </div>
+            <div class="d-flex gap-2">
+                <button class="btn btn-white bg-white shadow-sm rounded-pill px-4">Export Report 📥</button>
+            </div>
+        </div>
+
+        <!-- Summary Cards Row (Optional context) -->
+        <div class="row g-4 mb-5">
+            <div class="col-md-4">
+                <div class="card dashboard-card bg-white p-3 text-center">
+                    <small class="text-muted text-uppercase fw-bold">Revenue</small>
+                    <h3 class="fw-bold text-primary mb-0">₹{{ total_revenue }}</h3>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card dashboard-card bg-white p-3 text-center">
+                    <small class="text-muted text-uppercase fw-bold">Orders</small>
+                    <h3 class="fw-bold text-dark mb-0">{{ total_orders }}</h3>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card dashboard-card bg-white p-3 text-center">
+                    <small class="text-muted text-uppercase fw-bold">Customers</small>
+                    <h3 class="fw-bold text-success mb-0">{{ total_customers }}</h3>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Row -->
+        <div class="row g-4 mb-5">
+            <!-- Revenue Chart -->
+            <div class="col-lg-7">
+                <div class="card dashboard-card bg-white p-4 h-100">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h5 class="fw-bold mb-0">Monthly Revenue</h5>
+                        <select class="form-select form-select-sm w-auto rounded-pill border-0 bg-light">
+                            <option>This Year</option>
+                            <option>Last Year</option>
+                        </select>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="revenueChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Order Status Chart -->
+            <div class="col-lg-5">
+                <div class="card dashboard-card bg-white p-4 h-100">
+                    <h5 class="fw-bold mb-4">Order Status Distribution</h5>
+                    <div class="chart-container" style="height: 300px;">
+                        <canvas id="statusChart"></canvas>
+                    </div>
+                    <div class="mt-4 text-center">
+                        <div class="d-flex justify-content-center gap-3">
+                            <span class="badge rounded-pill bg-danger-subtle text-danger">● Pending</span>
+                            <span class="badge rounded-pill bg-primary-subtle text-primary">● Active</span>
+                            <span class="badge rounded-pill bg-success-subtle text-success">● Completed</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Status Chart
+        const ctxStatus = document.getElementById('statusChart').getContext('2d');
+        new Chart(ctxStatus, {
+            type: 'doughnut',
+            data: {
+                labels: ['Pending', 'Active', 'Completed'],
+                datasets: [{
+                    data: [{{ pending_count }}, {{ active_count }}, {{ completed_count }}],
+        backgroundColor: ['#dc3545', '#0d6efd', '#198754'],
+        borderWidth: 0,
+        hoverOffset: 10
+                }]
+            },
+        options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: { display: false }
+        },
+        cutout: '70%'
+    }
+        });
+
+    // Revenue Chart
+    const ctxRevenue = document.getElementById('revenueChart').getContext('2d');
+    var gradient = ctxRevenue.createLinearGradient(0, 0, 0, 400);
+    gradient.addColorStop(0, 'rgba(13, 110, 253, 0.2)');
+    gradient.addColorStop(1, 'rgba(13, 110, 253, 0)');
+
+    new Chart(ctxRevenue, {
+        type: 'line',
+        data: {
+            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+            datasets: [{
+                label: 'Revenue',
+                data: [12000, 19000, 15000, 25000, 22000, 30000],
+                borderColor: '#0d6efd',
+                backgroundColor: gradient,
+                fill: true,
+                tension: 0.4,
+                pointRadius: 4,
+                pointHoverRadius: 6
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: { borderDash: [5, 5] }
+                },
+                x: {
+                    grid: { display: false }
+                }
+            }
+        }
+    });
+    });
+</script>
+{% endblock %}

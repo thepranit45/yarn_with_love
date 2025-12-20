@@ -132,12 +132,48 @@ def artisan_dashboard(request):
     pending_orders = Order.objects.filter(status='PENDING').prefetch_related('items__product')
     # All other active orders
     active_orders = Order.objects.exclude(status__in=['PENDING', 'COMPLETED', 'CANCELLED']).prefetch_related('items__product')
-    completed_orders = Order.objects.filter(status__in=['COMPLETED', 'CANCELLED']).prefetch_related('items__product')[:5]
+    completed_orders = Order.objects.filter(status__in=['COMPLETED', 'CANCELLED']).order_by('-updated_at')[:5]
     
+    # Dashboard Stats
+    total_orders = Order.objects.count()
+    total_customers = Order.objects.values('customer').distinct().count()
+    
+    # Calculate Total Revenue (only from Completed/Shipped orders for accuracy, or all non-cancelled)
+    revenue_orders = Order.objects.exclude(status='CANCELLED').prefetch_related('items')
+    total_revenue = int(sum(order.get_total_price() for order in revenue_orders))
+
     return render(request, 'store/artisan_dashboard.html', {
         'pending_orders': pending_orders,
         'active_orders': active_orders,
-        'completed_orders': completed_orders
+        'completed_orders': completed_orders,
+        'total_orders': total_orders,
+        'total_customers': total_customers,
+        'total_revenue': total_revenue,
+    })
+
+@login_required
+@user_passes_test(lambda u: u.is_artisan)
+def artisan_stats(request):
+    """Dedicated statistics page for artisans"""
+    # Totals for Cards (re-calculated for context if needed, or just charts)
+    total_orders = Order.objects.count()
+    total_customers = Order.objects.values('customer').distinct().count()
+    
+    revenue_orders = Order.objects.exclude(status='CANCELLED').prefetch_related('items')
+    total_revenue = int(sum(order.get_total_price() for order in revenue_orders))
+
+    # Chart Data
+    pending_count = Order.objects.filter(status='PENDING').count()
+    active_count = Order.objects.exclude(status__in=['PENDING', 'COMPLETED', 'CANCELLED']).count()
+    completed_count = Order.objects.filter(status__in=['COMPLETED', 'CANCELLED']).count()
+
+    return render(request, 'store/artisan_stats.html', {
+        'total_orders': total_orders,
+        'total_customers': total_customers,
+        'total_revenue': total_revenue,
+        'pending_count': pending_count,
+        'active_count': active_count,
+        'completed_count': completed_count,
     })
 
 @login_required
@@ -368,3 +404,50 @@ def contact_us(request):
 
 
 
+
+@login_required
+@user_passes_test(lambda u: u.is_artisan)
+def artisan_products_list(request):
+    """List all products for the artisan with management options"""
+    # Show ALL products to any artisan (since they are a team)
+    products = Product.objects.all().order_by('-created_at')
+    
+    # Search functionality
+    query = request.GET.get('q', '')
+    if query:
+        products = products.filter(name__icontains=query)
+        
+    return render(request, 'store/artisan_products_list.html', {'products': products, 'query': query})
+
+@login_required
+@user_passes_test(lambda u: u.is_artisan)
+def edit_product(request, pk):
+    """Edit an existing product"""
+    # Allow any artisan to edit any product
+    product = get_object_or_404(Product, pk=pk)
+    
+    if request.method == 'POST':
+        form = ProductForm(request.POST, request.FILES, instance=product)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Product updated successfully!")
+            return redirect('artisan_products_list')
+    else:
+        form = ProductForm(instance=product)
+    
+    return render(request, 'store/add_product.html', {
+        'form': form, 
+        'title': 'Edit Product',
+        'is_edit': True
+    })
+
+@login_required
+@user_passes_test(lambda u: u.is_artisan)
+@require_http_methods(["POST"])
+def delete_product(request, pk):
+    """Delete a product"""
+    # Allow any artisan to delete any product
+    product = get_object_or_404(Product, pk=pk)
+    product.delete()
+    messages.success(request, "Product deleted successfully.")
+    return redirect('artisan_products_list')

@@ -7,6 +7,24 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ms-auto nav-links align-items-center">
+                {% if user.is_authenticated %}
+                {% if user.is_artisan %}
+                <!-- Artisan Menu -->
+                <li class="nav-item">
+                    <a class="nav-link fw-bold text-primary" href="{% url 'artisan_dashboard' %}">🎨 Dashboard</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'artisan_products_list' %}">Collection</a>
+                </li>
+                <li class="nav-item">
+                    <form action="{% url 'account_logout' %}" method="post" class="d-inline">
+                        {% csrf_token %}
+                        <button type="submit" class="nav-link btn-logout"
+                            style="background: none; border: none; cursor: pointer;">Logout</button>
+                    </form>
+                </li>
+                {% else %}
+                <!-- Customer Menu -->
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'product_list' %}#collection">Collection</a>
                 </li>
@@ -16,7 +34,6 @@
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'view_cart' %}">Cart 🛒</a>
                 </li>
-                {% if user.is_authenticated %}
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'my_orders' %}">My Orders</a>
                 </li>
@@ -27,7 +44,18 @@
                             style="background: none; border: none; cursor: pointer;">Logout</button>
                     </form>
                 </li>
+                {% endif %}
                 {% else %}
+                <!-- Guest Menu -->
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'product_list' %}#collection">Collection</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'track_order_search' %}">Track Order</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'view_cart' %}">Cart 🛒</a>
+                </li>
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'register' %}">Register</a>
                 </li>

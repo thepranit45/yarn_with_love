@@ -25,6 +25,10 @@ urlpatterns = [
     path('order/track/<uuid:tracking_id>/', views.order_tracking, name='order_tracking'),
     path('my-orders/', views.my_orders, name='my_orders'),
     path('artisan/mobile/dashboard/', views.artisan_dashboard, name='artisan_dashboard'),
-    path('artisan/order/<int:pk>/manage/', views.manage_order, name='manage_order'),
+    path('artisan/stats/', views.artisan_stats, name='artisan_stats'),
+    path('artisan/products/', views.artisan_products_list, name='artisan_products_list'),
     path('artisan/product/add/', views.add_product, name='add_product'),
+    path('artisan/product/edit/<int:pk>/', views.edit_product, name='edit_product'),
+    path('artisan/product/delete/<int:pk>/', views.delete_product, name='delete_product'),
+    path('artisan/order/<int:pk>/manage/', views.manage_order, name='manage_order'),
 ]

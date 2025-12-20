@@ -7,7 +7,7 @@
             <a href="{% url 'artisan_dashboard' %}" class="btn btn-outline-secondary mb-3">&larr; Back to Dashboard</a>
             <div class="card shadow">
                 <div class="card-header bg-primary text-white">
-                    <h4 class="mb-0">Add New Creation</h4>
+                    <h4 class="mb-0">{{ title|default:"Add New Creation" }}</h4>
                 </div>
                 <div class="card-body">
                     <form method="post" enctype="multipart/form-data">
@@ -25,7 +25,9 @@
                         </div>
                         {% endfor %}
                         <div class="d-grid">
-                            <button type="submit" class="btn btn-success btn-lg">Publish Product</button>
+                            <button type="submit" class="btn btn-success btn-lg">
+                                {% if is_edit %}Update Product{% else %}Publish Product{% endif %}
+                            </button>
                         </div>
                     </form>
                 </div>
