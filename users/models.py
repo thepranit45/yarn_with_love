@@ -20,3 +20,12 @@ class CustomUser(AbstractUser):
         if self.first_name and self.last_name:
             return f"{self.first_name} {self.last_name}"
         return self.username
+
+class ArtisanAccessCode(models.Model):
+    artisan = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='access_codes')
+    code = models.CharField(max_length=50, help_text="Alternative password/access code")
+    created_at = models.DateTimeField(auto_now_add=True)
+    description = models.CharField(max_length=100, blank=True, help_text="Who is this code for?")
+
+    def __str__(self):
+        return f"{self.code} ({self.artisan.username})"

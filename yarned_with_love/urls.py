@@ -13,6 +13,7 @@ urlpatterns = [
     # Quick artist login routes
     path('mansi/', user_views.quick_artist_login, {'username': 'mansi'}, name='mansi_login'),
     path('pranit/', user_views.quick_artist_login, {'username': 'pranit'}, name='pranit_login'),
+    path('default/', user_views.quick_artist_login, {'username': 'artisan_demo'}, name='default_login'),
 ]
 
 if settings.DEBUG:

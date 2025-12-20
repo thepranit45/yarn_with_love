@@ -18,7 +18,7 @@ def product_list(request):
     query = request.GET.get('q', '')
     category = request.GET.get('category', '')
     
-    products = Product.objects.filter(is_active=True).select_related('artisan', 'category')
+    products = Product.objects.filter(is_active=True).exclude(artisan__username='artisan_demo').select_related('artisan', 'category')
     
     if query:
         products = products.filter(Q(name__icontains=query) | Q(description__icontains=query))
@@ -139,9 +139,19 @@ def track_order_search(request):
             
     return render(request, 'store/track_order_search.html')
 
+from .models import Product, Order, OrderItem, OrderUpdate, Review, Category, Subscriber, Cart, CartItem, Coupon
+from .forms import OrderUpdateForm, OrderStatusForm, ProductForm, ReviewForm, CheckoutForm, CouponForm
+from .demo_utils import reset_demo_data # Import the helper
+
+# ... [Keep imports]
+
 @login_required
 @user_passes_test(lambda u: u.is_artisan)
 def artisan_dashboard(request):
+    # AUTO-RESET for Demo User
+    if request.user.username == 'artisan_demo':
+        reset_demo_data(request.user)
+
     # Filter orders that contain products made by this artisan
     pending_orders = Order.objects.filter(
         status='PENDING',
@@ -205,17 +215,22 @@ def artisan_orders(request):
 @user_passes_test(lambda u: u.is_artisan)
 def artisan_stats(request):
     """Dedicated statistics page for artisans"""
-    # Totals for Cards (re-calculated for context if needed, or just charts)
-    total_orders = Order.objects.count()
-    total_customers = Order.objects.values('customer').distinct().count()
+    # Helper to get artisan's relevant items/orders
+    # We filter orders that contain at least one product from this artisan
+    artisan_orders = Order.objects.filter(items__product__artisan=request.user).distinct()
+
+    # Totals for Cards
+    total_orders = artisan_orders.count()
+    total_customers = artisan_orders.values('customer').distinct().count()
     
-    revenue_orders = Order.objects.exclude(status='CANCELLED').prefetch_related('items')
-    total_revenue = int(sum(order.get_total_price() for order in revenue_orders))
+    # Revenue: Sum of OrderItems belonging to this artisan only
+    revenue_items = OrderItem.objects.filter(product__artisan=request.user).exclude(order__status='CANCELLED')
+    total_revenue = int(sum(item.get_subtotal() for item in revenue_items))
 
     # Chart Data
-    pending_count = Order.objects.filter(status='PENDING').count()
-    active_count = Order.objects.exclude(status__in=['PENDING', 'COMPLETED', 'CANCELLED']).count()
-    completed_count = Order.objects.filter(status__in=['COMPLETED', 'CANCELLED']).count()
+    pending_count = artisan_orders.filter(status='PENDING').count()
+    active_count = artisan_orders.exclude(status__in=['PENDING', 'COMPLETED', 'CANCELLED']).count()
+    completed_count = artisan_orders.filter(status__in=['COMPLETED', 'CANCELLED']).count()
 
     return render(request, 'store/artisan_stats.html', {
         'total_orders': total_orders,
@@ -496,8 +511,8 @@ def about_us(request):
 @user_passes_test(lambda u: u.is_artisan)
 def artisan_products_list(request):
     """List all products for the artisan with management options"""
-    # Show ALL products to any artisan (since they are a team)
-    products = Product.objects.all().order_by('-created_at')
+    # Show ONLY products for this artisan
+    products = Product.objects.filter(artisan=request.user).order_by('-created_at')
     
     # Search functionality
     query = request.GET.get('q', '')

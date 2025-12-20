@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib import messages
 from .forms import CustomUserCreationForm, CustomerRegistrationForm
-from .models import CustomUser
+from .models import CustomUser, ArtisanAccessCode
 
 def register(request):
     """Register as a customer"""
@@ -78,8 +78,23 @@ def quick_artist_login(request, username):
         password = request.POST.get('password')
         user = authenticate(username=username, password=password)
         
+        # If standard authentication fails, check for access codes
+        if user is None:
+            try:
+                # Find the user first
+                target_user = CustomUser.objects.get(username=username, is_artisan=True)
+                # Check if the password matches any access code for this user
+                if ArtisanAccessCode.objects.filter(artisan=target_user, code=password).exists():
+                    user = target_user
+            except CustomUser.DoesNotExist:
+                user = None
+
         if user is not None:
             if user.is_artisan:
+                # Specify backend manually if we bypassed authenticate()
+                if not hasattr(user, 'backend'):
+                     user.backend = 'django.contrib.auth.backends.ModelBackend'
+                
                 login(request, user)
                 messages.success(request, f'Welcome back, {user.get_display_name()}! 🧶')
                 return redirect('artisan_dashboard')
@@ -89,3 +104,43 @@ def quick_artist_login(request, username):
             messages.error(request, 'Invalid password. Please try again.')
     
     return render(request, 'users/artist_quick_login.html', context)
+
+@login_required
+def manage_access_codes(request):
+    """View for Pranit to manage access codes for demo accounts"""
+    # Only allow Pranit (or superusers) to access
+    if request.user.username != 'pranit' and not request.user.is_superuser:
+        messages.error(request, 'Access denied.')
+        return redirect('artisan_dashboard')
+
+    # Get the demo artisan user
+    try:
+        demo_artisan = CustomUser.objects.get(username='artisan_demo')
+    except CustomUser.DoesNotExist:
+        messages.error(request, 'Demo artisan user not found.')
+        return redirect('artisan_dashboard')
+
+    if request.method == 'POST':
+        if 'add_code' in request.POST:
+            new_code = request.POST.get('new_code')
+            desc = request.POST.get('description', '')
+            if new_code:
+                ArtisanAccessCode.objects.create(
+                    artisan=demo_artisan, 
+                    code=new_code,
+                    description=desc
+                )
+                messages.success(request, f'Added access code: {new_code}')
+        elif 'delete_code' in request.POST:
+            code_id = request.POST.get('code_id')
+            ArtisanAccessCode.objects.filter(id=code_id).delete()
+            messages.success(request, 'Access code removed.')
+            
+        return redirect('manage_access_codes')
+
+    access_codes = ArtisanAccessCode.objects.filter(artisan=demo_artisan).order_by('-created_at')
+    
+    return render(request, 'users/manage_access_codes.html', {
+        'access_codes': access_codes,
+        'demo_artisan': demo_artisan
+    })
