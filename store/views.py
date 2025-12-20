@@ -265,6 +265,11 @@ def add_to_cart(request, pk):
         cart_item.customization_notes = notes
         
     cart_item.save()
+    
+    action = request.POST.get('action', 'add_to_cart')
+    if action == 'buy_now':
+        return redirect('checkout')
+        
     messages.success(request, f"{product.name} added to cart! 🛒")
     return redirect('product_detail', pk=pk)
 

@@ -13,6 +13,9 @@
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'track_order_search' %}">Track Order</a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'view_cart' %}">Cart 🛒</a>
+                </li>
                 {% if user.is_authenticated %}
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'my_orders' %}">My Orders</a>

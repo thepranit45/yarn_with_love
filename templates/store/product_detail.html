@@ -90,7 +90,10 @@
                         <input type="number" name="quantity" value="1" min="1"
                             class="form-control rounded-3 border-secondary">
                     </div>
-                    <button type="submit" class="btn btn-main btn-lg px-5 flex-grow-1">🛒 Add to Cart</button>
+                    <button type="submit" name="action" value="add_to_cart"
+                        class="btn btn-main btn-lg px-4 flex-grow-1">🛒 Add to Cart</button>
+                    <button type="submit" name="action" value="buy_now" class="btn btn-dark btn-lg px-4 flex-grow-1">⚡
+                        Buy Now</button>
                     <!-- Optional: Keep Custom Order as secondary option if needed, but usually Cart replaces it or sits alongside -->
                     <!-- <a href="{% url 'create_order' product.pk %}" class="btn btn-outline-dark btn-lg">Custom Request</a> -->
                 </form>
