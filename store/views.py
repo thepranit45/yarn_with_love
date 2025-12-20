@@ -27,10 +27,24 @@ def product_list(request):
     
     categories = Category.objects.all()
     
+    recommended_products = []
+    if request.user.is_authenticated:
+        # Get categories of products the user has bought
+        purchased_categories = OrderItem.objects.filter(
+            order__customer=request.user
+        ).values_list('product__category', flat=True).distinct()
+        
+        if purchased_categories:
+            recommended_products = Product.objects.filter(
+                is_active=True,
+                category__in=purchased_categories
+            ).select_related('artisan', 'category').order_by('?')[:4]
+
     return render(request, 'store/product_list.html', {
         'products': products, 
         'query': query,
-        'categories': categories
+        'categories': categories,
+        'recommended_products': recommended_products
     })
 
 def product_detail(request, pk):
@@ -128,28 +142,64 @@ def track_order_search(request):
 @login_required
 @user_passes_test(lambda u: u.is_artisan)
 def artisan_dashboard(request):
-    # Pending Order Stack
-    pending_orders = Order.objects.filter(status='PENDING').prefetch_related('items__product')
-    # All other active orders
-    active_orders = Order.objects.exclude(status__in=['PENDING', 'COMPLETED', 'CANCELLED']).prefetch_related('items__product')
-    completed_orders = Order.objects.filter(status__in=['COMPLETED', 'CANCELLED']).order_by('-updated_at')[:5]
+    # Filter orders that contain products made by this artisan
+    pending_orders = Order.objects.filter(
+        status='PENDING',
+        items__product__artisan=request.user
+    ).distinct().prefetch_related('items__product').order_by('created_at') # Sort Oldest First
+
+    active_orders = Order.objects.filter(
+        items__product__artisan=request.user
+    ).exclude(
+        status__in=['PENDING', 'COMPLETED', 'CANCELLED']
+    ).distinct().prefetch_related('items__product')
+
+    completed_orders = Order.objects.filter(
+        status__in=['COMPLETED', 'CANCELLED'],
+        items__product__artisan=request.user
+    ).distinct().order_by('-updated_at')[:5]
     
     # Dashboard Stats
-    total_orders = Order.objects.count()
-    total_customers = Order.objects.values('customer').distinct().count()
+    total_orders = Order.objects.filter(items__product__artisan=request.user).distinct().count()
+    total_customers = Order.objects.filter(items__product__artisan=request.user).values('customer').distinct().count()
     
-    # Calculate Total Revenue (only from Completed/Shipped orders for accuracy, or all non-cancelled)
-    revenue_orders = Order.objects.exclude(status='CANCELLED').prefetch_related('items')
-    total_revenue = int(sum(order.get_total_price() for order in revenue_orders))
+    # Calculate Total Revenue (only from items belonging to this artisan)
+    revenue_items = OrderItem.objects.filter(
+        product__artisan=request.user
+    ).exclude(order__status='CANCELLED')
+    
+    total_revenue = int(sum(item.get_subtotal() for item in revenue_items))
 
     return render(request, 'store/artisan_dashboard.html', {
         'pending_orders': pending_orders,
         'active_orders': active_orders,
         'completed_orders': completed_orders,
+        'total_revenue': total_revenue,
         'total_orders': total_orders,
         'total_customers': total_customers,
-        'total_revenue': total_revenue,
     })
+
+@login_required
+@user_passes_test(lambda u: u.is_artisan)
+@require_http_methods(["POST"])
+def start_preparing(request, pk):
+    order = get_object_or_404(Order, pk=pk, items__product__artisan=request.user)
+    if order.status == 'PENDING':
+        order.status = 'IN_PROGRESS'
+        OrderUpdate.objects.create(order=order, description="Started preparing your order! 🧶")
+        order.save()
+        messages.success(request, f"Order #{order.id} moved to In Progress.")
+    return redirect('artisan_dashboard')
+
+@login_required
+@user_passes_test(lambda u: u.is_artisan)
+def artisan_orders(request):
+    """View all orders for the artisan"""
+    orders = Order.objects.filter(
+        items__product__artisan=request.user
+    ).distinct().order_by('-created_at')
+    
+    return render(request, 'store/artisan_orders_list.html', {'orders': orders})
 
 @login_required
 @user_passes_test(lambda u: u.is_artisan)
@@ -175,6 +225,22 @@ def artisan_stats(request):
         'active_count': active_count,
         'completed_count': completed_count,
     })
+
+@login_required
+@user_passes_test(lambda u: u.is_artisan)
+def artisan_settings(request):
+    from users.forms import ArtisanProfileForm
+    
+    if request.method == 'POST':
+        form = ArtisanProfileForm(request.POST, request.FILES, instance=request.user)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Settings updated successfully! ✨')
+            return redirect('artisan_settings')
+    else:
+        form = ArtisanProfileForm(instance=request.user)
+    
+    return render(request, 'store/artisan_settings.html', {'form': form})
 
 @login_required
 @user_passes_test(lambda u: u.is_artisan)
@@ -331,22 +397,12 @@ def checkout(request):
     # Simple check to avoid errors if prices are large
     total_amount = float(cart.get_total_price())
     
-    # Razorpay Order Creation
-    currency = 'INR'
-    amount = int(total_amount * 100) # Amount in paise
-    
-    client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
-    
-    razorpay_order = client.order.create({
-        'amount': amount,
-        'currency': currency,
-        'payment_capture': '1'
-    })
+    # Razorpay bypassed - Direct Checkout
     
     return render(request, 'store/checkout.html', {
         'cart': cart,
-        'razorpay_order': razorpay_order,
-        'razorpay_key_id': settings.RAZORPAY_KEY_ID,
+        'razorpay_order': None, # explicitly None
+        'razorpay_key_id': None,
         'total_amount': total_amount
     })
 
@@ -399,6 +455,13 @@ def shipping_policy(request):
 
 def contact_us(request):
     return render(request, 'store/policies/contact_us.html')
+
+def about_us(request):
+    from django.contrib.auth import get_user_model
+    User = get_user_model()
+    # Fetch the main artisan 'mansi'
+    artisan = User.objects.filter(username='mansi').first()
+    return render(request, 'store/about_us.html', {'artisan': artisan})
 
 
 

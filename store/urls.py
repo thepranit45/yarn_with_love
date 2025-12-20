@@ -18,6 +18,8 @@ urlpatterns = [
     path('policies/terms/', views.terms_of_service, name='terms_of_service'),
     path('policies/refund/', views.refund_policy, name='refund_policy'),
     path('policies/shipping/', views.shipping_policy, name='shipping_policy'),
+
+    path('about/', views.about_us, name='about_us'),
     path('contact/', views.contact_us, name='contact_us'),
     path('product/<int:pk>/review/', views.add_review, name='add_review'),
     path('order/create/<int:pk>/', views.create_order, name='create_order'),
@@ -26,9 +28,12 @@ urlpatterns = [
     path('my-orders/', views.my_orders, name='my_orders'),
     path('artisan/mobile/dashboard/', views.artisan_dashboard, name='artisan_dashboard'),
     path('artisan/stats/', views.artisan_stats, name='artisan_stats'),
+    path('artisan/settings/', views.artisan_settings, name='artisan_settings'),
+    path('artisan/orders/', views.artisan_orders, name='artisan_orders'),
     path('artisan/products/', views.artisan_products_list, name='artisan_products_list'),
     path('artisan/product/add/', views.add_product, name='add_product'),
     path('artisan/product/edit/<int:pk>/', views.edit_product, name='edit_product'),
     path('artisan/product/delete/<int:pk>/', views.delete_product, name='delete_product'),
     path('artisan/order/<int:pk>/manage/', views.manage_order, name='manage_order'),
+    path('artisan/order/<int:pk>/start/', views.start_preparing, name='start_preparing'),
 ]

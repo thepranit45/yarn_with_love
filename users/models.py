@@ -5,6 +5,7 @@ class CustomUser(AbstractUser):
     is_artisan = models.BooleanField(default=False, help_text="Designates whether this user is an artisan/maker.")
     bio = models.TextField(blank=True, help_text="Short bio for the artisan.")
     profile_image = models.ImageField(upload_to='profiles/', blank=True, null=True)
+    vacation_mode = models.BooleanField(default=False, help_text="Temporarily disable products from showing in the marketplace.")
 
     class Meta:
         indexes = [

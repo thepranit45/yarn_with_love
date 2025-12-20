@@ -49,6 +49,21 @@
                             <label class="form-label">{{ update_form.description.label }}</label>
                             {{ update_form.description }}
                             <div class="form-text">Tell the customer how it's going!</div>
+                            <!-- Quick Suggestions -->
+                            <div class="mt-2 d-flex gap-2 flex-wrap" id="suggestions">
+                                <span class="badge bg-light text-primary border cursor-pointer suggestion-chip"
+                                    data-text="🧵 Just started working on your order! Selected the perfect yarn.">Started
+                                    🧵</span>
+                                <span class="badge bg-light text-info border cursor-pointer suggestion-chip"
+                                    data-text="⏳ Making good progress! About halfway done showing some love.">Halfway
+                                    ⏳</span>
+                                <span class="badge bg-light text-warning border cursor-pointer suggestion-chip"
+                                    data-text="✨ Adding the final touches and details now. Almost ready!">Finishing
+                                    ✨</span>
+                                <span class="badge bg-light text-success border cursor-pointer suggestion-chip"
+                                    data-text="📦 Your order is packed with love and ready to be shipped!">Ready
+                                    📦</span>
+                            </div>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">{{ update_form.image.label }}</label>
@@ -85,7 +100,17 @@
 <script>
     // Simple styling for select box if needed, or bootstrap defaults
     document.querySelector('select[name="status"]').classList.add('form-select');
-    document.querySelector('textarea[name="description"]').classList.add('form-control');
+    const descField = document.querySelector('textarea[name="description"]');
+    descField.classList.add('form-control');
+    descField.setAttribute('rows', '4');
     document.querySelector('input[name="image"]').classList.add('form-control');
+
+    // Handle suggestions
+    document.querySelectorAll('.suggestion-chip').forEach(chip => {
+        chip.style.cursor = 'pointer';
+        chip.addEventListener('click', function () {
+            descField.value = this.getAttribute('data-text');
+        });
+    });
 </script>
 {% endblock %}

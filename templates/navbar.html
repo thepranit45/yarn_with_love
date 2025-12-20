@@ -17,6 +17,9 @@
                     <a class="nav-link" href="{% url 'artisan_products_list' %}">Collection</a>
                 </li>
                 <li class="nav-item">
+                    <a class="nav-link" href="{% url 'about_us' %}">About Us</a>
+                </li>
+                <li class="nav-item">
                     <form action="{% url 'account_logout' %}" method="post" class="d-inline">
                         {% csrf_token %}
                         <button type="submit" class="nav-link btn-logout"
@@ -27,6 +30,9 @@
                 <!-- Customer Menu -->
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'product_list' %}#collection">Collection</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'about_us' %}">About Us</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'track_order_search' %}">Track Order</a>
@@ -49,6 +55,9 @@
                 <!-- Guest Menu -->
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'product_list' %}#collection">Collection</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'about_us' %}">About Us</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'track_order_search' %}">Track Order</a>

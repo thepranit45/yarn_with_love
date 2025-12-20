@@ -1,19 +1,23 @@
-{% extends 'base.html' %}
+{% extends 'store/artisan_base.html' %}
 {% block title %}My Collection - Yarned with Love{% endblock %}
 
-{% block content %}
-<div class="container py-5">
-    <div class="d-flex justify-content-between align-items-center mb-4">
+{% block artisan_content %}
+<div class="container-fluid py-4">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-5">
         <div>
-            <h1 class="display-text text-primary">My Collection 🧶</h1>
+            <h1 class="display-6 fw-bold text-primary">My Collection 🧶</h1>
             <p class="text-muted">Manage your beautiful creations.</p>
         </div>
         <div class="d-flex gap-2">
             <!-- Client-side Search Input -->
             <div class="position-relative">
-                <input type="text" id="productSearchInput" class="form-control rounded-pill border-0 shadow-sm px-4"
-                    placeholder="Type to search..." style="width: 250px;">
-                <span class="position-absolute top-50 end-0 translate-middle-y me-3 text-muted">🔍</span>
+                <input type="text" id="productSearchInput"
+                    class="form-control rounded-pill border-0 shadow-sm ps-4 pe-5" placeholder="Type to search..."
+                    style="width: 250px; height: 48px;">
+                <span
+                    class="position-absolute top-50 end-0 translate-middle-y me-3 text-muted d-flex align-items-center"
+                    style="height: 100%; line-height: 1;">🔍</span>
             </div>
             <a href="{% url 'add_product' %}" class="btn btn-main btn-lg rounded-pill px-4">
                 + Add New Product
@@ -110,9 +114,10 @@
             let visibleCount = 0;
 
             tableRows.forEach(row => {
-                const productName = row.querySelector('.product-name').textContent.toLowerCase();
-                // You can expand this to search category or price too if needed
-                if (productName.includes(query)) {
+                // Search the entire row text content (name, category, price, status)
+                const rowText = row.textContent.toLowerCase();
+
+                if (rowText.includes(query)) {
                     row.style.display = '';
                     visibleCount++;
                 } else {

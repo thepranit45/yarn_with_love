@@ -1,0 +1,122 @@
+{% extends 'store/artisan_base.html' %}
+{% load static %}
+{% block title %}Settings - Yarned with Love{% endblock %}
+
+{% block artisan_content %}
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <!-- Header -->
+        <div class="d-flex justify-content-between align-items-center mb-5">
+            <div>
+                <h2 class="fw-bold mb-0">Settings ⚙️</h2>
+                <p class="text-muted">Manage your profile and shop preferences.</p>
+            </div>
+            <div>
+                <button type="submit" form="settingsForm" class="btn btn-primary rounded-pill px-4 shadow-sm">
+                    Save Changes 💾
+                </button>
+            </div>
+        </div>
+
+        <form id="settingsForm" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <div class="row g-4">
+                <!-- Profile Section -->
+                <div class="col-md-8">
+                    <div class="card border-0 shadow-sm rounded-4 p-4 mb-4">
+                        <h5 class="fw-bold mb-4">Profile & Branding 🎨</h5>
+
+                        <div class="d-flex align-items-start gap-4 mb-4">
+                            <div class="position-relative">
+                                {% if user.profile_image %}
+                                <img src="{{ user.profile_image.url }}"
+                                    class="rounded-circle object-fit-cover shadow-sm" width="100" height="100"
+                                    alt="Profile">
+                                {% else %}
+                                <div class="bg-light rounded-circle d-flex align-items-center justify-content-center text-muted border shadow-sm"
+                                    style="width: 100px; height: 100px; font-size: 2rem;">
+                                    👤
+                                </div>
+                                {% endif %}
+                            </div>
+                            <div class="flex-grow-1">
+                                <label class="form-label fw-bold small text-uppercase text-muted">Profile Image</label>
+                                {{ form.profile_image }}
+                                <div class="form-text">Recommended: 400x400px JPG or PNG.</div>
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">First Name</label>
+                                {{ form.first_name }}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Last Name</label>
+                                {{ form.last_name }}
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Email Address</label>
+                            {{ form.email }}
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Bio</label>
+                            {{ form.bio }}
+                            <div class="form-text">Tell your customers a little bit about yourself and your craft.</div>
+                        </div>
+                    </div>
+
+                    <!-- Notification Stub -->
+                    <div class="card border-0 shadow-sm rounded-4 p-4">
+                        <h5 class="fw-bold mb-4">Notifications 🔔</h5>
+                        <div class="form-check form-switch mb-3">
+                            <input class="form-check-input" type="checkbox" id="emailOrders" checked>
+                            <label class="form-check-label" for="emailOrders">Email me about new orders</label>
+                        </div>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="emailReviews" checked>
+                            <label class="form-check-label" for="emailReviews">Email me about new reviews</label>
+                        </div>
+                        <div class="alert alert-info border-0 bg-info-subtle text-info mt-3 mb-0 rounded-3">
+                            <small>ℹ️ Notification settings are currently managed by the platform admin.</small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Side Panel (Shop Prefs & Account) -->
+                <div class="col-md-4">
+                    <!-- Shop Preferences -->
+                    <div class="card border-0 shadow-sm rounded-4 p-4 mb-4">
+                        <h5 class="fw-bold mb-4">Shop Status 🏪</h5>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold d-block">Vacation Mode</label>
+                            <div class="form-check form-switch">
+                                {{ form.vacation_mode }}
+                                <label class="form-check-label" for="{{ form.vacation_mode.id_for_label }}">
+                                    Enable Vacation Mode
+                                </label>
+                            </div>
+                            <div class="form-text mt-2">
+                                When enabled, your products will be hidden from the catalog, but you can still access
+                                your dashboard.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Security -->
+                    <div class="card border-0 shadow-sm rounded-4 p-4 bg-light">
+                        <h5 class="fw-bold mb-4 text-muted">Security 🔒</h5>
+                        <button type="button" class="btn btn-outline-dark w-100 rounded-pill mb-2">Change
+                            Password</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

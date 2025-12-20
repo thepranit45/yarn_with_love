@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends 'store/artisan_base.html' %}
 {% load static %}
 {% block title %}Business Analytics - Yarned with Love{% endblock %}
 
@@ -6,7 +6,7 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 {% endblock %}
 
-{% block content %}
+{% block artisan_content %}
 <style>
     .dashboard-card {
         border: none;
@@ -21,8 +21,8 @@
     }
 </style>
 
-<div class="container-fluid bg-light min-vh-100 py-4">
-    <div class="container">
+<div class="row">
+    <div class="col-12">
         <!-- Header -->
         <div class="d-flex justify-content-between align-items-center mb-5">
             <div>
@@ -35,61 +35,61 @@
                 <button class="btn btn-white bg-white shadow-sm rounded-pill px-4">Export Report 📥</button>
             </div>
         </div>
+    </div>
+</div>
 
-        <!-- Summary Cards Row (Optional context) -->
-        <div class="row g-4 mb-5">
-            <div class="col-md-4">
-                <div class="card dashboard-card bg-white p-3 text-center">
-                    <small class="text-muted text-uppercase fw-bold">Revenue</small>
-                    <h3 class="fw-bold text-primary mb-0">₹{{ total_revenue }}</h3>
-                </div>
+<!-- Summary Cards Row (Optional context) -->
+<div class="row g-4 mb-5">
+    <div class="col-md-4">
+        <div class="card dashboard-card bg-white p-3 text-center">
+            <small class="text-muted text-uppercase fw-bold">Revenue</small>
+            <h3 class="fw-bold text-primary mb-0">₹{{ total_revenue }}</h3>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card dashboard-card bg-white p-3 text-center">
+            <small class="text-muted text-uppercase fw-bold">Orders</small>
+            <h3 class="fw-bold text-dark mb-0">{{ total_orders }}</h3>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card dashboard-card bg-white p-3 text-center">
+            <small class="text-muted text-uppercase fw-bold">Customers</small>
+            <h3 class="fw-bold text-success mb-0">{{ total_customers }}</h3>
+        </div>
+    </div>
+</div>
+
+<!-- Charts Row -->
+<div class="row g-4 mb-5">
+    <!-- Revenue Chart -->
+    <div class="col-lg-7">
+        <div class="card dashboard-card bg-white p-4 h-100">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h5 class="fw-bold mb-0">Monthly Revenue</h5>
+                <select class="form-select form-select-sm w-auto rounded-pill border-0 bg-light">
+                    <option>This Year</option>
+                    <option>Last Year</option>
+                </select>
             </div>
-            <div class="col-md-4">
-                <div class="card dashboard-card bg-white p-3 text-center">
-                    <small class="text-muted text-uppercase fw-bold">Orders</small>
-                    <h3 class="fw-bold text-dark mb-0">{{ total_orders }}</h3>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card dashboard-card bg-white p-3 text-center">
-                    <small class="text-muted text-uppercase fw-bold">Customers</small>
-                    <h3 class="fw-bold text-success mb-0">{{ total_customers }}</h3>
-                </div>
+            <div class="chart-container">
+                <canvas id="revenueChart"></canvas>
             </div>
         </div>
+    </div>
 
-        <!-- Charts Row -->
-        <div class="row g-4 mb-5">
-            <!-- Revenue Chart -->
-            <div class="col-lg-7">
-                <div class="card dashboard-card bg-white p-4 h-100">
-                    <div class="d-flex justify-content-between align-items-center mb-4">
-                        <h5 class="fw-bold mb-0">Monthly Revenue</h5>
-                        <select class="form-select form-select-sm w-auto rounded-pill border-0 bg-light">
-                            <option>This Year</option>
-                            <option>Last Year</option>
-                        </select>
-                    </div>
-                    <div class="chart-container">
-                        <canvas id="revenueChart"></canvas>
-                    </div>
-                </div>
+    <!-- Order Status Chart -->
+    <div class="col-lg-5">
+        <div class="card dashboard-card bg-white p-4 h-100">
+            <h5 class="fw-bold mb-4">Order Status Distribution</h5>
+            <div class="chart-container" style="height: 300px;">
+                <canvas id="statusChart"></canvas>
             </div>
-
-            <!-- Order Status Chart -->
-            <div class="col-lg-5">
-                <div class="card dashboard-card bg-white p-4 h-100">
-                    <h5 class="fw-bold mb-4">Order Status Distribution</h5>
-                    <div class="chart-container" style="height: 300px;">
-                        <canvas id="statusChart"></canvas>
-                    </div>
-                    <div class="mt-4 text-center">
-                        <div class="d-flex justify-content-center gap-3">
-                            <span class="badge rounded-pill bg-danger-subtle text-danger">● Pending</span>
-                            <span class="badge rounded-pill bg-primary-subtle text-primary">● Active</span>
-                            <span class="badge rounded-pill bg-success-subtle text-success">● Completed</span>
-                        </div>
-                    </div>
+            <div class="mt-4 text-center">
+                <div class="d-flex justify-content-center gap-3">
+                    <span class="badge rounded-pill bg-danger-subtle text-danger">● Pending</span>
+                    <span class="badge rounded-pill bg-primary-subtle text-primary">● Active</span>
+                    <span class="badge rounded-pill bg-success-subtle text-success">● Completed</span>
                 </div>
             </div>
         </div>

@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends 'store/artisan_base.html' %}
 {% load static %}
 {% block title %}Artisan Dashboard - Yarned with Love{% endblock %}
 
@@ -6,7 +6,7 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 {% endblock %}
 
-{% block content %}
+{% block artisan_content %}
 <style>
     .dashboard-card {
         border: none;
@@ -20,8 +20,8 @@
     }
 
     .icon-box {
-        width: 50px;
-        height: 50px;
+        width: 48px;
+        height: 48px;
         border-radius: 12px;
         display: flex;
         align-items: center;
@@ -36,8 +36,8 @@
     }
 </style>
 
-<div class="container-fluid bg-light min-vh-100 py-4">
-    <div class="container">
+<div class="row mb-5">
+    <div class="col-12">
         <!-- Header -->
         <div class="d-flex justify-content-between align-items-center mb-5">
             <div>
@@ -54,151 +54,127 @@
                 </a>
             </div>
         </div>
-
-        <!-- Stats Cards -->
-        <div class="row g-4 mb-5">
-            <!-- Total Customers -->
-            <div class="col-md-4">
-                <div class="card dashboard-card bg-white h-100 p-4">
-                    <div class="d-flex justify-content-between align-items-start mb-3">
-                        <div class="icon-box bg-primary bg-opacity-10 text-primary">
-                            👥
-                        </div>
-                        <span class="badge bg-success-subtle text-success rounded-pill">↗ 12%</span>
-                    </div>
-                    <div class="mt-auto">
-                        <h6 class="text-muted text-uppercase small fw-bold">Total Customers</h6>
-                        <h2 class="fw-bold mb-0">{{ total_customers }}</h2>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Total Revenue -->
-            <div class="col-md-4">
-                <div class="card dashboard-card bg-primary text-white h-100 p-4"
-                    style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
-                    <div class="d-flex justify-content-between align-items-start mb-3">
-                        <div class="icon-box bg-white bg-opacity-25 text-white">
-                            💰
-                        </div>
-                        <span class="badge bg-white text-primary rounded-pill">↗ 25%</span>
-                    </div>
-                    <div class="mt-auto">
-                        <h6 class="text-white-50 text-uppercase small fw-bold">Total Revenue</h6>
-                        <h2 class="fw-bold mb-0">₹{{ total_revenue }}</h2>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Total Orders -->
-            <div class="col-md-4">
-                <div class="card dashboard-card bg-white h-100 p-4">
-                    <div class="d-flex justify-content-between align-items-start mb-3">
-                        <div class="icon-box bg-danger bg-opacity-10 text-danger">
-                            🛍️
-                        </div>
-                        <span class="badge bg-warning-subtle text-warning rounded-pill">Active: {{ active_orders.count
-                            }}</span>
-                    </div>
-                    <div class="mt-auto">
-                        <h6 class="text-muted text-uppercase small fw-bold">Total Orders</h6>
-                        <h2 class="fw-bold mb-0">{{ total_orders }}</h2>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Recent Orders Table -->
-        <h3 class="fw-bold mb-4">Recent Orders 📦</h3>
-        <div class="card dashboard-card bg-white overflow-hidden p-0 mb-5 shadow-sm">
-            <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
-                    <thead class="bg-light">
-                        <tr>
-                            <th class="ps-4 py-4 text-uppercase text-muted small fw-bold">Order ID</th>
-                            <th class="py-4 text-uppercase text-muted small fw-bold">Customer</th>
-                            <th class="py-4 text-uppercase text-muted small fw-bold">Product</th>
-                            <th class="py-4 text-uppercase text-muted small fw-bold">Status</th>
-                            <th class="py-4 text-uppercase text-muted small fw-bold">Amount</th>
-                            <th class="py-4 text-end pe-4 text-uppercase text-muted small fw-bold">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for order in pending_orders %}
-                        <tr class="fs-5"> <!-- Larger Font -->
-                            <td class="ps-4 fw-bold py-4">#{{ order.id }}</td>
-                            <td class="py-4">
-                                <div class="d-flex align-items-center">
-                                    <div class="bg-danger text-white rounded-circle d-flex align-items-center justify-content-center me-3 shadow-sm"
-                                        style="width: 40px; height: 40px; font-size: 1rem;">
-                                        {{ order.customer.username|slice:":1"|upper }}
-                                    </div>
-                                    <span class="fw-bold text-dark">{{ order.customer.get_display_name }}</span>
-                                </div>
-                            </td>
-                            <td class="py-4">
-                                <div class="d-flex align-items-center">
-                                    {% if order.items.first.product.image %}
-                                    <img src="{{ order.items.first.product.image.url }}"
-                                        class="rounded-3 me-3 object-fit-cover shadow-sm" width="60" height="60"
-                                        alt="Product">
-                                    {% else %}
-                                    <div class="bg-light rounded-3 me-3 d-flex align-items-center justify-content-center border"
-                                        style="width: 60px; height: 60px;">📷</div>
-                                    {% endif %}
-                                    <span class="text-muted">{{ order.items.first.product.name }}</span>
-                                </div>
-                            </td>
-                            <td class="py-4"><span
-                                    class="badge bg-danger-subtle text-danger rounded-pill px-3 py-2">Pending</span>
-                            </td>
-                            <td class="fw-bold py-4 text-primary">₹{{ order.get_total_price }}</td>
-                            <td class="text-end pe-4 py-4">
-                                <a href="{% url 'manage_order' order.id %}"
-                                    class="btn btn-danger btn-lg rounded-pill px-4 shadow-sm">Accept Order</a>
-                            </td>
-                        </tr>
-                        {% endfor %}
-
-                        {% for order in active_orders %}
-                        <tr class="fs-5">
-                            <td class="ps-4 fw-bold py-4">#{{ order.id }}</td>
-                            <td class="py-4">
-                                <div class="d-flex align-items-center">
-                                    <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3 shadow-sm"
-                                        style="width: 40px; height: 40px; font-size: 1rem;">
-                                        {{ order.customer.username|slice:":1"|upper }}
-                                    </div>
-                                    <span class="fw-bold text-dark">{{ order.customer.get_display_name }}</span>
-                                </div>
-                            </td>
-                            <td class="py-4">
-                                <div class="d-flex align-items-center">
-                                    {% if order.items.first.product.image %}
-                                    <img src="{{ order.items.first.product.image.url }}"
-                                        class="rounded-3 me-3 object-fit-cover shadow-sm" width="60" height="60"
-                                        alt="Product">
-                                    {% else %}
-                                    <div class="bg-light rounded-3 me-3 d-flex align-items-center justify-content-center border"
-                                        style="width: 60px; height: 60px;">📷</div>
-                                    {% endif %}
-                                    <span class="text-muted">{{ order.items.first.product.name }}</span>
-                                </div>
-                            </td>
-                            <td class="py-4"><span class="badge bg-info-subtle text-info rounded-pill px-3 py-2">{{
-                                    order.get_status_display }}</span></td>
-                            <td class="fw-bold py-4">₹{{ order.get_total_price }}</td>
-                            <td class="text-end pe-4 py-4">
-                                <a href="{% url 'manage_order' order.id %}"
-                                    class="btn btn-outline-dark btn-lg rounded-pill px-4">Manage</a>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
     </div>
-</div>
-{% endblock %}
+
+    <!-- Summary Cards -->
+    <div class="row g-4 mb-5">
+        <div class="col-md-4">
+            <div class="card dashboard-card p-4 bg-primary text-white h-100">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <p class="mb-1 opacity-75">Total Revenue</p>
+                        <h3 class="fw-bold mb-0">₹{{ total_revenue }}</h3>
+                    </div>
+                    <div class="icon-box bg-white bg-opacity-25 text-white">
+                        💰
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card dashboard-card p-4 h-100">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <p class="text-muted mb-1">Total Orders</p>
+                        <h3 class="fw-bold mb-0">{{ total_orders }}</h3>
+                    </div>
+                    <div class="icon-box bg-light text-primary">
+                        📦
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card dashboard-card p-4 h-100">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <p class="text-muted mb-1">Total Customers</p>
+                        <h3 class="fw-bold mb-0">{{ total_customers }}</h3>
+                    </div>
+                    <div class="icon-box bg-light text-success">
+                        👥
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Currently Preparing Section (Highest Priority) -->
+    {% if active_orders %}
+    <h5 class="fw-bold mb-3 text-primary-custom" style="color: var(--primary-color);">Currently Preparing 🧵</h5>
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-5 bg-primary bg-opacity-10">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th class="ps-4 py-3">Order ID</th>
+                        <th class="py-3">Customer</th>
+                        <th class="py-3">Status</th>
+                        <th class="py-3 text-end pe-4">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for order in active_orders|slice:":5" %}
+                    <tr>
+                        <td class="ps-4 fw-bold">#{{ order.id }}</td>
+                        <td>{{ order.customer.get_display_name }}</td>
+                        <td><span class="badge bg-info-subtle text-info rounded-pill px-3">{{ order.get_status_display
+                                }}</span></td>
+                        <td class="text-end pe-4">
+                            <a href="{% url 'manage_order' order.pk %}"
+                                class="btn btn-sm btn-primary rounded-pill px-3">Post Update 📸</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Pending Queue (Oldest First) -->
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-5">
+        <div class="card-header bg-white border-0 py-3 px-4 d-flex justify-content-between align-items-center">
+            <h5 class="fw-bold mb-0">New Orders (Queue)</h5>
+            <a href="{% url 'artisan_orders' %}" class="btn btn-sm btn-light rounded-pill">View All</a>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th class="ps-4 py-3">Order ID</th>
+                        <th class="py-3">Customer</th>
+                        <th class="py-3">Items</th>
+                        <th class="py-3">Total</th>
+                        <th class="py-3">Status</th>
+                        <th class="py-3 text-end pe-4">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for order in pending_orders|slice:":5" %}
+                    <tr>
+                        <td class="ps-4 fw-bold">#{{ order.id }}</td>
+                        <td>{{ order.customer.get_display_name }}</td>
+                        <td>{{ order.items.count }} Items</td>
+                        <td class="fw-bold">₹{{ order.get_total_price }}</td>
+                        <td><span class="badge bg-warning-subtle text-warning rounded-pill px-3">Pending</span></td>
+                        <td class="text-end pe-4 d-flex justify-content-end gap-2">
+                            <form action="{% url 'start_preparing' order.pk %}" method="POST" style="display:inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-sm btn-success rounded-pill px-3">Start Preparing
+                                    ▶</button>
+                            </form>
+                            <a href="{% url 'manage_order' order.pk %}"
+                                class="btn btn-sm btn-outline-secondary rounded-pill px-3">Details</a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center py-5 text-muted">No pending orders.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endblock %}
