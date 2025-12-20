@@ -26,6 +26,14 @@ class ArtisanAccessCode(models.Model):
     code = models.CharField(max_length=50, help_text="Alternative password/access code")
     created_at = models.DateTimeField(auto_now_add=True)
     description = models.CharField(max_length=100, blank=True, help_text="Who is this code for?")
+    
+    STATUS_CHOICES = [
+        ('NEW', 'New'),
+        ('MSG', 'Msg Sent'),
+        ('INTERESTED', 'Interested'),
+        ('DONE', 'Done'),
+    ]
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='NEW')
 
     def __str__(self):
         return f"{self.code} ({self.artisan.username})"

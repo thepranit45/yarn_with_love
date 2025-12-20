@@ -4,7 +4,7 @@
 {% block artisan_content %}
 <div class="container py-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2>🔐 Manage Demo Passwords</h2>
+        <h2>Manage Demo Passwords</h2>
         <a href="{% url 'artisan_dashboard' %}" class="btn btn-outline-secondary rounded-pill">Back to Dashboard</a>
     </div>
 
@@ -27,7 +27,7 @@
                             <input type="text" name="description" class="form-control" placeholder="e.g. For Client A">
                         </div>
                         <div class="d-grid">
-                            <button type="submit" class="btn btn-primary rounded-pill">Add Code ➕</button>
+                            <button type="submit" class="btn btn-primary rounded-pill">Add Code</button>
                         </div>
                     </form>
                 </div>
@@ -45,6 +45,7 @@
                         <thead class="table-light">
                             <tr>
                                 <th class="ps-4">Code</th>
+                                <th>Status</th>
                                 <th>Description</th>
                                 <th>Created</th>
                                 <th class="text-end pe-4">Action</th>
@@ -56,6 +57,25 @@
                                 <td class="ps-4">
                                     <code class="fs-5 text-primary">{{ code.code }}</code>
                                 </td>
+                                <td>
+                                    <form method="post" class="d-flex align-items-center gap-2">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="update_status" value="true">
+                                        <input type="hidden" name="code_id" value="{{ code.id }}">
+                                        <select name="new_status" class="form-select form-select-sm rounded-pill"
+                                            onchange="this.form.submit()"
+                                            style="width: 140px; 
+                                            {% if code.status == 'NEW' %}border-color: #0dcaf0; color: #0dcaf0; font-weight: bold;
+                                            {% elif code.status == 'MSG' %}border-color: #ffc107; color: #ffc107; font-weight: bold;
+                                            {% elif code.status == 'INTERESTED' %}border-color: #0d6efd; color: #0d6efd; font-weight: bold;
+                                            {% elif code.status == 'DONE' %}border-color: #198754; color: #198754; font-weight: bold;{% endif %}">
+                                            <option value="NEW" {% if code.status == 'NEW' %}selected{% endif %}>New</option>
+                                            <option value="MSG" {% if code.status == 'MSG' %}selected{% endif %}>Msg Sent</option>
+                                            <option value="INTERESTED" {% if code.status == 'INTERESTED' %}selected{% endif %}>Interested</option>
+                                            <option value="DONE" {% if code.status == 'DONE' %}selected{% endif %}>Done</option>
+                                        </select>
+                                    </form>
+                                </td>
                                 <td>{{ code.description|default:"-" }}</td>
                                 <td class="text-muted small">{{ code.created_at|date:"M d, Y" }}</td>
                                 <td class="text-end pe-4">
@@ -65,7 +85,7 @@
                                         <input type="hidden" name="code_id" value="{{ code.id }}">
                                         <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill"
                                             onclick="return confirm('Remove access code?');">
-                                            Remove 🗑️
+                                            Remove
                                         </button>
                                     </form>
                                 </td>

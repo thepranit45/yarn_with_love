@@ -135,6 +135,16 @@ def manage_access_codes(request):
             code_id = request.POST.get('code_id')
             ArtisanAccessCode.objects.filter(id=code_id).delete()
             messages.success(request, 'Access code removed.')
+        elif 'update_status' in request.POST:
+            code_id = request.POST.get('code_id')
+            new_status = request.POST.get('new_status')
+            try:
+                code_obj = ArtisanAccessCode.objects.get(id=code_id)
+                code_obj.status = new_status
+                code_obj.save()
+                messages.success(request, 'Status updated.')
+            except ArtisanAccessCode.DoesNotExist:
+                messages.error(request, 'Code not found.')
             
         return redirect('manage_access_codes')
 
