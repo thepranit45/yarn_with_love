@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Category, Product, Order, OrderItem, OrderUpdate
+from .models import Category, Product, Order, OrderItem, OrderUpdate, Coupon
 
 class OrderItemInline(admin.TabularInline):
     model = OrderItem
@@ -22,3 +22,4 @@ class ProductAdmin(admin.ModelAdmin):
 
 admin.site.register(Category)
 admin.site.register(OrderUpdate) # Optional, can be managed via Order inline
+admin.site.register(Coupon)

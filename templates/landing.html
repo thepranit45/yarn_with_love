@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yarned with Love - Crest</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600&family=Jost:wght@300;400&display=swap');
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            /* Very clean, soft aesthetic */
+            background-color: #fdfcf8;
+            margin: 0;
+            overflow: hidden;
+            font-family: 'Jost', sans-serif;
+        }
+
+        .logo-container {
+            position: relative;
+            width: 400px;
+            height: auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        svg {
+            width: 300px;
+            height: 300px;
+            overflow: visible;
+        }
+
+        /* --- COLORS --- */
+        :root {
+            --tool-color: #2f3e46;
+            /* Dark Slate for tools */
+            --yarn-color: #e07a5f;
+            /* Terracotta/Rust */
+            --yarn-highlight: #f2cc8f;
+            /* Soft Gold */
+            --text-main: #3d405b;
+            /* Navy/Charcoal */
+        }
+
+        /* --- ANIMATIONS --- */
+
+        /* 1. The Tools Sliding In */
+        .tool-left {
+            transform-origin: center;
+            transform: translateX(-100px) rotate(0);
+            opacity: 0;
+            animation: assemble-left 1.2s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+        }
+
+        .tool-right {
+            transform-origin: center;
+            transform: translateX(100px) rotate(0);
+            opacity: 0;
+            animation: assemble-right 1.2s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+        }
+
+        /* 2. The Yarn Ball Dropping */
+        .yarn-center {
+            transform: translateY(-200px);
+            opacity: 0;
+            animation: drop-yarn 1s cubic-bezier(0.5, 0, 0.5, 1.5) 0.8s forwards;
+        }
+
+        /* 3. The Thread Forming the Heart */
+        .connecting-thread {
+            fill: none;
+            stroke: var(--yarn-color);
+            stroke-width: 4;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            stroke-dasharray: 500;
+            stroke-dashoffset: 500;
+            /* Hidden start */
+            animation: weave-heart 1.8s ease-in-out 1.5s forwards;
+            filter: drop-shadow(0px 4px 6px rgba(224, 122, 95, 0.3));
+        }
+
+        /* 4. Text Reveal */
+        .brand-name {
+            font-family: 'Cinzel', serif;
+            /* Classic, expensive look */
+            font-size: 2rem;
+            color: var(--text-main);
+            margin-top: 10px;
+            letter-spacing: 2px;
+            opacity: 0;
+            transform: translateY(10px);
+            animation: fade-up 1s ease-out 2.5s forwards;
+        }
+
+        .tagline {
+            font-family: 'Jost', sans-serif;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            color: #81b29a;
+            /* Sage Green */
+            margin-top: 5px;
+            opacity: 0;
+            animation: fade-up 1s ease-out 2.8s forwards;
+        }
+
+        /* 5. Enter Link */
+        .enter-shop {
+            margin-top: 40px;
+            text-decoration: none;
+            color: var(--yarn-color);
+            border: 1px solid var(--yarn-color);
+            padding: 10px 30px;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+            opacity: 0;
+            animation: fade-up 1s ease-out 3.2s forwards;
+        }
+
+        .enter-shop:hover {
+            background-color: var(--yarn-color);
+            color: white;
+            box-shadow: 0 5px 15px rgba(224, 122, 95, 0.3);
+            transform: translateY(-2px);
+        }
+
+        /* --- KEYFRAMES --- */
+
+        @keyframes assemble-left {
+            to {
+                transform: translateX(0) rotate(-25deg);
+                opacity: 1;
+            }
+        }
+
+        @keyframes assemble-right {
+            to {
+                transform: translateX(0) rotate(25deg);
+                opacity: 1;
+            }
+        }
+
+        @keyframes drop-yarn {
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes weave-heart {
+            to {
+                stroke-dashoffset: 0;
+            }
+        }
+
+        @keyframes fade-up {
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        /* Interactive Hover: Gentle sway */
+        .logo-container:hover svg {
+            animation: sway 3s infinite ease-in-out;
+            cursor: pointer;
+        }
+
+        @keyframes sway {
+
+            0%,
+            100% {
+                transform: rotate(0deg);
+            }
+
+            25% {
+                transform: rotate(2deg);
+            }
+
+            75% {
+                transform: rotate(-2deg);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="logo-container" onclick="location.href='{% url 'collection' %}';">
+        <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+
+            <g class="tool-left" transform-origin="100 100">
+                <rect x="95" y="20" width="6" height="160" rx="3" fill="#8d99ae" />
+                <circle cx="98" cy="20" r="6" fill="#2b2d42" />
+                <path d="M 95 180 L 98 190 L 101 180 Z" fill="#8d99ae" />
+            </g>
+
+            <g class="tool-right" transform-origin="100 100">
+                <rect x="98" y="20" width="8" height="100" rx="2" fill="#d4a373" />
+                <rect x="100" y="120" width="4" height="60" fill="#a8dadc" />
+                <path d="M 100 180 L 100 185 C 100 190, 108 190, 108 185 L 108 182 L 104 180 Z" fill="#a8dadc" />
+            </g>
+
+            <g class="yarn-center">
+                <circle cx="100" cy="100" r="22" fill="#e07a5f" />
+                <path d="M 85 90 Q 100 110 115 90" fill="none" stroke="#f2cc8f" stroke-width="2" opacity="0.6" />
+                <path d="M 85 100 Q 100 120 115 100" fill="none" stroke="#f2cc8f" stroke-width="2" opacity="0.6" />
+                <path d="M 90 110 Q 100 125 110 110" fill="none" stroke="#f2cc8f" stroke-width="2" opacity="0.6" />
+            </g>
+
+            <path class="connecting-thread" d="M 100 115 
+                     C 100 115, 60 130, 60 90 
+                     C 60 60, 90 50, 100 80 
+                     C 110 50, 140 60, 140 90 
+                     C 140 130, 100 115, 100 115 
+                     L 100 140" />
+        </svg>
+
+        <div class="brand-name">Yarned with Love</div>
+        <div class="tagline">Knits • Crochet • Crafts</div>
+
+        <a href="{% url 'collection' %}" class="enter-shop">Enter Shop</a>
+    </div>
+
+</body>
+
+</html>

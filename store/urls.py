@@ -3,6 +3,7 @@ from . import views
 
 urlpatterns = [
     path('', views.product_list, name='product_list'),
+    path('collection/', views.product_list, name='collection'), # Keep alias for now
     path('product/<int:pk>/', views.product_detail, name='product_detail'),
     path('subscribe/', views.subscribe, name='subscribe'),
     
@@ -10,6 +11,8 @@ urlpatterns = [
     path('cart/add/<int:pk>/', views.add_to_cart, name='add_to_cart'),
     path('cart/', views.view_cart, name='view_cart'),
     path('cart/remove/<int:pk>/', views.remove_from_cart, name='remove_from_cart'),
+    path('cart/coupon/apply/', views.apply_coupon, name='apply_coupon'),
+    path('cart/coupon/remove/', views.remove_coupon, name='remove_coupon'),
     path('checkout/', views.checkout, name='checkout'),
     path('payment/success/', views.payment_success, name='payment_success'),
 
@@ -38,4 +41,7 @@ urlpatterns = [
     path('artisan/order/<int:pk>/manage/', views.manage_order, name='manage_order'),
     path('artisan/order/<int:pk>/start/', views.start_preparing, name='start_preparing'),
     path('artisan/order/<int:pk>/invoice/', views.download_invoice, name='download_invoice'),
+    path('artisan/coupons/', views.artisan_coupons, name='artisan_coupons'),
+    path('artisan/coupons/add/', views.add_coupon, name='add_coupon'),
+    path('artisan/coupons/delete/<int:pk>/', views.delete_coupon, name='delete_coupon'),
 ]

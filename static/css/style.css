@@ -5,8 +5,12 @@
     /* Deep Rose */
     --secondary-color: #ff9eb7;
     /* Soft Pink */
+    --accent-color: #eebbce;
+    /* Blush */
     --bg-light: #fff5f9;
+    /* Soft Pink White */
     --text-dark: #2c1810;
+    /* Dark Brown */
     --white: #ffffff;
     --shadow: 0 10px 30px rgba(212, 127, 166, 0.15);
 }
@@ -40,7 +44,7 @@ a {
     /* Elegant handwritten font */
     font-weight: 400;
     font-size: 2.5rem !important;
-    background: linear-gradient(to right, #d47fa6, #eebbce, #d47fa6);
+    background: linear-gradient(to right, #e07a5f, #f2cc8f, #e07a5f);
     background-size: 200% auto;
     -webkit-background-clip: text;
     background-clip: text;
@@ -52,17 +56,7 @@ a {
     padding-right: 15px;
 }
 
-.logo::after {
-    content: '💝';
-    font-size: 1.5rem;
-    position: absolute;
-    right: -10px;
-    top: 50%;
-    transform: translateY(-50%);
-    animation: bounce 2s infinite;
-    color: initial;
-    -webkit-text-fill-color: initial;
-}
+/* .logo::after removed to delete the heart emoji */
 
 @keyframes shine {
     to {
@@ -399,5 +393,89 @@ a {
 
     .marquee-content {
         animation-duration: 15s;
+    }
+}
+
+/* --- NAVBAR LOGO ANIMATION --- */
+.navbar-logo-anim {
+    height: 50px;
+    width: 50px;
+    overflow: visible;
+}
+
+.anim-tool-left {
+    transform-origin: 50% 50%;
+    opacity: 0;
+    animation: nav-assemble-left 1.2s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+.anim-tool-right {
+    transform-origin: 50% 50%;
+    opacity: 0;
+    animation: nav-assemble-right 1.2s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+.anim-yarn {
+    transform: translateY(-50px);
+    opacity: 0;
+    animation: nav-drop-yarn 1s cubic-bezier(0.5, 0, 0.5, 1.5) 0.8s forwards;
+}
+
+.anim-thread {
+    fill: none;
+    stroke: #d47fa6;
+    stroke-width: 4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-dasharray: 500;
+    stroke-dashoffset: 500;
+    animation: nav-weave-heart 1.8s ease-in-out 1.5s forwards;
+    filter: drop-shadow(0px 2px 3px rgba(212, 127, 166, 0.3));
+}
+
+@keyframes nav-assemble-left {
+    to {
+        transform: translateX(0) rotate(-25deg);
+        opacity: 1;
+    }
+}
+
+@keyframes nav-assemble-right {
+    to {
+        transform: translateX(0) rotate(25deg);
+        opacity: 1;
+    }
+}
+
+@keyframes nav-drop-yarn {
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes nav-weave-heart {
+    to {
+        stroke-dashoffset: 0;
+    }
+}
+
+.navbar-brand:hover .navbar-logo-anim {
+    animation: nav-sway 3s infinite ease-in-out;
+}
+
+@keyframes nav-sway {
+
+    0%,
+    100% {
+        transform: rotate(0deg);
+    }
+
+    25% {
+        transform: rotate(2deg);
+    }
+
+    75% {
+        transform: rotate(-2deg);
     }
 }

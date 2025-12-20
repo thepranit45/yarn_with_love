@@ -1,6 +1,6 @@
 from django.db import models
 from django.conf import settings
-from django.core.validators import MinValueValidator
+from django.core.validators import MinValueValidator, MaxValueValidator
 import uuid
 
 class Category(models.Model):
@@ -71,6 +71,8 @@ class Order(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     tracking_id = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
+    coupon = models.ForeignKey('Coupon', on_delete=models.SET_NULL, null=True, blank=True)
+    discount_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     
     class Meta:
         ordering = ['-created_at']
@@ -85,7 +87,8 @@ class Order(models.Model):
 
     def get_total_price(self):
         """Calculate total order price"""
-        return sum(item.price_at_purchase * item.quantity for item in self.items.all())
+        total = sum(item.price_at_purchase * item.quantity for item in self.items.all())
+        return total - self.discount_amount
 
     def get_progress_percentage(self):
         """Get progress as percentage"""
@@ -161,13 +164,35 @@ class Subscriber(models.Model):
     def __str__(self):
         return self.email
 
+class Coupon(models.Model):
+    code = models.CharField(max_length=50, unique=True)
+    discount_percentage = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(100)])
+    active = models.BooleanField(default=True)
+
+    def __str__(self):
+        return f"{self.code} ({self.discount_percentage}%)"
+
 class Cart(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='cart')
+    coupon = models.ForeignKey(Coupon, on_delete=models.SET_NULL, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-    def get_total_price(self):
+    def get_subtotal(self):
         return sum(item.get_subtotal() for item in self.items.all())
+
+    def get_total_price(self):
+        total = self.get_subtotal()
+        if self.coupon and self.coupon.active:
+            discount = (total * self.coupon.discount_percentage) / 100
+            return int(total - discount)
+        return total
+    
+    def get_discount_amount(self):
+        if self.coupon and self.coupon.active:
+            total = self.get_subtotal()
+            return int((total * self.coupon.discount_percentage) / 100)
+        return 0
     
     def __str__(self):
         return f"Cart for {self.user.username}"

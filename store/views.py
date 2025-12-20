@@ -3,8 +3,8 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.views.decorators.http import require_http_methods
 from django.views.decorators.cache import cache_page
 from django.db.models import Q, Prefetch
-from .models import Product, Order, OrderItem, OrderUpdate, Review, Category, Subscriber, Cart, CartItem
-from .forms import OrderUpdateForm, OrderStatusForm, ProductForm, ReviewForm, CheckoutForm
+from .models import Product, Order, OrderItem, OrderUpdate, Review, Category, Subscriber, Cart, CartItem, Coupon
+from .forms import OrderUpdateForm, OrderStatusForm, ProductForm, ReviewForm, CheckoutForm, CouponForm
 from django.contrib import messages
 import uuid
 import razorpay
@@ -432,6 +432,12 @@ def payment_success(request):
                     order = form.save(commit=False)
                     order.customer = request.user
                     order.status = 'PENDING'
+                    
+                    # Apply Coupon if present
+                    if cart.coupon and cart.coupon.active:
+                        order.coupon = cart.coupon
+                        order.discount_amount = cart.get_discount_amount()
+                        
                     order.save()
                     
                     for item in cart.items.all():
@@ -532,3 +538,59 @@ def delete_product(request, pk):
     product.delete()
     messages.success(request, "Product deleted successfully.")
     return redirect('artisan_products_list')
+
+@login_required
+@user_passes_test(lambda u: u.is_artisan)
+def artisan_coupons(request):
+    """List and manage coupons"""
+    coupons = Coupon.objects.all().order_by('-id')
+    return render(request, 'store/artisan_coupons.html', {'coupons': coupons, 'form': CouponForm()})
+
+@login_required
+@user_passes_test(lambda u: u.is_artisan)
+@require_http_methods(["POST"])
+def add_coupon(request):
+    """Add a new coupon"""
+    form = CouponForm(request.POST)
+    if form.is_valid():
+        form.save()
+        messages.success(request, "New promo code created! 🎫")
+    else:
+        messages.error(request, "Error creating coupon. Code might be duplicate.")
+    return redirect('artisan_coupons')
+
+@login_required
+@user_passes_test(lambda u: u.is_artisan)
+@require_http_methods(["POST"])
+def delete_coupon(request, pk):
+    """Delete a coupon"""
+    coupon = get_object_or_404(Coupon, pk=pk)
+    coupon.delete()
+    messages.success(request, "Coupon deleted.")
+    return redirect('artisan_coupons')
+@login_required
+@require_http_methods(["POST"])
+def apply_coupon(request):
+    raw_code = request.POST.get('code', '')
+    code = raw_code.strip()
+    try:
+        coupon = Coupon.objects.get(code__iexact=code, active=True)
+        cart = request.user.cart
+        cart.coupon = coupon
+        cart.save()
+        messages.success(request, f"Coupon '{code}' applied! 🏷️")
+    except Coupon.DoesNotExist:
+        messages.error(request, "Invalid or expired coupon code.")
+    
+    next_url = request.POST.get('next', 'view_cart')
+    return redirect(next_url)
+
+@login_required
+def remove_coupon(request):
+    cart = request.user.cart
+    cart.coupon = None
+    cart.save()
+    messages.info(request, "Coupon removed.")
+    
+    next_url = request.GET.get('next', 'view_cart')
+    return redirect(next_url)

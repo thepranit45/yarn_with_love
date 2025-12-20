@@ -1,5 +1,5 @@
 from django import forms
-from .models import Product, Order, OrderUpdate, Review
+from .models import Product, Order, OrderUpdate, Review, Coupon
 from django.core.exceptions import ValidationError
 
 class ProductForm(forms.ModelForm):
@@ -102,3 +102,13 @@ class CheckoutForm(forms.ModelForm):
         # Explicitly make these optional
         self.fields['landmark'].required = False
         self.fields['customization_notes'].required = False
+
+class CouponForm(forms.ModelForm):
+    class Meta:
+        model = Coupon
+        fields = ['code', 'discount_percentage', 'active']
+        widgets = {
+            'code': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'PROMOCODE'}),
+            'discount_percentage': forms.NumberInput(attrs={'class': 'form-control', 'min': '1', 'max': '100'}),
+            'active': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+        }
