@@ -30,10 +30,12 @@ urlpatterns = [
     path('artisan/stats/', views.artisan_stats, name='artisan_stats'),
     path('artisan/settings/', views.artisan_settings, name='artisan_settings'),
     path('artisan/orders/', views.artisan_orders, name='artisan_orders'),
+    path('artisan/invoices/', views.artisan_invoices, name='artisan_invoices'),
     path('artisan/products/', views.artisan_products_list, name='artisan_products_list'),
     path('artisan/product/add/', views.add_product, name='add_product'),
     path('artisan/product/edit/<int:pk>/', views.edit_product, name='edit_product'),
     path('artisan/product/delete/<int:pk>/', views.delete_product, name='delete_product'),
     path('artisan/order/<int:pk>/manage/', views.manage_order, name='manage_order'),
     path('artisan/order/<int:pk>/start/', views.start_preparing, name='start_preparing'),
+    path('artisan/order/<int:pk>/invoice/', views.download_invoice, name='download_invoice'),
 ]

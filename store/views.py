@@ -4,7 +4,7 @@ from django.views.decorators.http import require_http_methods
 from django.views.decorators.cache import cache_page
 from django.db.models import Q, Prefetch
 from .models import Product, Order, OrderItem, OrderUpdate, Review, Category, Subscriber, Cart, CartItem
-from .forms import OrderUpdateForm, OrderStatusForm, ProductForm, ReviewForm
+from .forms import OrderUpdateForm, OrderStatusForm, ProductForm, ReviewForm, CheckoutForm
 from django.contrib import messages
 import uuid
 import razorpay
@@ -244,6 +244,18 @@ def artisan_settings(request):
 
 @login_required
 @user_passes_test(lambda u: u.is_artisan)
+def download_invoice(request, pk):
+    order = get_object_or_404(Order, pk=pk, items__product__artisan=request.user)
+    return render(request, 'store/invoice.html', {'order': order})
+
+@login_required
+@user_passes_test(lambda u: u.is_artisan)
+def artisan_invoices(request):
+    orders = Order.objects.filter(items__product__artisan=request.user).distinct().order_by('-created_at')
+    return render(request, 'store/artisan_invoices.html', {'orders': orders})
+
+@login_required
+@user_passes_test(lambda u: u.is_artisan)
 @require_http_methods(["GET", "POST"])
 def manage_order(request, pk):
     order = get_object_or_404(Order.objects.prefetch_related('items__product', 'updates'), pk=pk)
@@ -403,41 +415,47 @@ def checkout(request):
         'cart': cart,
         'razorpay_order': None, # explicitly None
         'razorpay_key_id': None,
-        'total_amount': total_amount
+        'total_amount': total_amount,
+        'form': CheckoutForm() # Add empty form
     })
 
 @csrf_exempt
 def payment_success(request):
     if request.method == "POST":
-        try:
-            # In a real scenario, VERIFY signature here using client.utility.verify_payment_signature()
-            
-            cart = Cart.objects.get(user=request.user)
-            
-            with transaction.atomic():
-                order = Order.objects.create(
-                    customer=request.user,
-                    status='PENDING',
-                    customization_notes="Paid via Razorpay"
-                )
+        form = CheckoutForm(request.POST)
+        if form.is_valid():
+            try:
+                cart = Cart.objects.get(user=request.user)
                 
-                for item in cart.items.all():
-                    OrderItem.objects.create(
-                        order=order,
-                        product=item.product,
-                        quantity=item.quantity,
-                        price_at_purchase=item.product.price
-                    )
+                with transaction.atomic():
+                    # Create Order with form data
+                    order = form.save(commit=False)
+                    order.customer = request.user
+                    order.status = 'PENDING'
+                    order.save()
+                    
+                    for item in cart.items.all():
+                        OrderItem.objects.create(
+                            order=order,
+                            product=item.product,
+                            quantity=item.quantity,
+                            price_at_purchase=item.product.price
+                        )
+                    
+                    # Clear Cart
+                    cart.items.all().delete()
+                    
+                messages.success(request, "Payment Successful! Order placed. 🎉")
+                return redirect('order_tracking', tracking_id=order.tracking_id)
                 
-                # Clear Cart
-                cart.items.all().delete()
-                
-            messages.success(request, "Payment Successful! Order placed. 🎉")
-            return redirect('order_tracking', tracking_id=order.tracking_id)
+            except Exception as e:
+                messages.error(request, f"Error processing order: {e}")
+                return redirect('checkout')
+        else:
+            messages.error(request, "Please fill in all required shipping details correctly.")
+            # In a real app, we'd re-render checkout with errors, but here we redirect for simplicity
+            return redirect('checkout')
             
-        except Exception as e:
-            messages.error(request, "Payment Failed or Error processing order.")
-            return redirect('view_cart')
     return redirect('view_cart')
 
 # Policy Views

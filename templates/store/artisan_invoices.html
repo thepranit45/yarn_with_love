@@ -1,0 +1,60 @@
+{% extends 'store/artisan_base.html' %}
+{% load static %}
+{% block title %}Invoices - Yarned with Love{% endblock %}
+
+{% block artisan_content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="fw-bold mb-0">Invoices 🧾</h2>
+        <p class="text-muted">Download past invoices for your records.</p>
+    </div>
+</div>
+
+<div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th class="ps-4 py-3">Invoice #</th>
+                    <th class="py-3">Date</th>
+                    <th class="py-3">Customer</th>
+                    <th class="py-3">Amount</th>
+                    <th class="py-3 text-end pe-4">Download</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in orders %}
+                <tr>
+                    <td class="ps-4">
+                        <div class="fw-bold text-dark">INV-{{ order.id|add:1000 }}</div>
+                        <small class="text-muted">Order #{{ order.id }}</small>
+                    </td>
+                    <td>{{ order.created_at|date:"M d, Y" }}<br><small class="text-muted">{{ order.created_at|date:"H:i"
+                            }}</small></td>
+                    <td>
+                        <div class="fw-bold">{{ order.full_name|default:order.customer.get_display_name }}</div>
+                        {% if order.city %}<small class="text-muted">{{ order.city }}</small>{% endif %}
+                    </td>
+                    <td class="fw-bold">₹{{ order.get_total_price }}</td>
+                    <td class="text-end pe-4">
+                        <a href="{% url 'download_invoice' order.pk %}" target="_blank"
+                            class="btn btn-sm btn-outline-danger rounded-pill px-4">
+                            <i class="bi bi-file-earmark-pdf me-1"></i> Invoice
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="text-center py-5">
+                        <div class="text-muted">
+                            <h4 class="mb-3">🕐</h4>
+                            <p>No invoices generated yet.</p>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

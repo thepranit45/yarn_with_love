@@ -55,6 +55,17 @@ class Order(models.Model):
     ]
 
     customer = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='orders')
+    
+    # Shipping Details
+    full_name = models.CharField(max_length=100, blank=True)
+    email = models.EmailField(blank=True)
+    phone_number = models.CharField(max_length=15, blank=True)
+    shipping_address = models.TextField(blank=True)
+    landmark = models.CharField(max_length=200, blank=True, help_text="Nearby landmark (Optional)")
+    city = models.CharField(max_length=100, blank=True)
+    state = models.CharField(max_length=100, blank=True)
+    zip_code = models.CharField(max_length=20, blank=True)
+    
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='PENDING')
     customization_notes = models.TextField(blank=True, help_text="Special requests from the customer")
     created_at = models.DateTimeField(auto_now_add=True)

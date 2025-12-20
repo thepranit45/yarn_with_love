@@ -39,6 +39,47 @@
 
                     <form action="{% url 'payment_success' %}" method="POST" id="payment-form">
                         {% csrf_token %}
+                        <div class="mb-4">
+                            <h5 class="fw-bold mb-3">Shipping Details 🚚</h5>
+                            <div class="row g-3">
+                                <div class="col-12">
+                                    <label class="form-label text-muted small">Full Name</label>
+                                    {{ form.full_name }}
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label text-muted small">Email Address</label>
+                                    {{ form.email }}
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label text-muted small">Phone Number</label>
+                                    {{ form.phone_number }}
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label text-muted small">Shipping Address</label>
+                                    {{ form.shipping_address }}
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label text-muted small">Landmark (Optional)</label>
+                                    {{ form.landmark }}
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label text-muted small">City</label>
+                                    {{ form.city }}
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label text-muted small">State</label>
+                                    {{ form.state }}
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label text-muted small">ZIP Code</label>
+                                    {{ form.zip_code }}
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label text-muted small">Special Requests (Optional)</label>
+                                    {{ form.customization_notes }}
+                                </div>
+                            </div>
+                        </div>
                     </form>
                 </div>
                 <div class="card-footer bg-light text-center py-3">

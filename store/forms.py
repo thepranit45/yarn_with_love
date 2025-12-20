@@ -74,3 +74,31 @@ class ReviewForm(forms.ModelForm):
                 'placeholder': 'Share your feedback...'
             }),
         }
+
+
+class CheckoutForm(forms.ModelForm):
+    class Meta:
+        model = Order
+        fields = ['full_name', 'email', 'phone_number', 'shipping_address', 'landmark', 'city', 'state', 'zip_code', 'customization_notes']
+        widgets = {
+            'full_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Full Name'}),
+            'email': forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Email Address'}),
+            'phone_number': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Phone Number'}),
+            'shipping_address': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Full Address (Street, Apt, etc.)'}),
+            'landmark': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Landmark (Optional)'}),
+            'city': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'City'}),
+            'state': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'State'}),
+            'zip_code': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'ZIP Code'}),
+            'customization_notes': forms.Textarea(attrs={'class': 'form-control', 'rows': 2, 'placeholder': 'Any special requests?'}),
+        }
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Make fields required
+        required_fields = ['full_name', 'email', 'phone_number', 'shipping_address', 'city', 'state', 'zip_code']
+        for field in required_fields:
+            self.fields[field].required = True
+        
+        # Explicitly make these optional
+        self.fields['landmark'].required = False
+        self.fields['customization_notes'].required = False

@@ -16,11 +16,9 @@
         <table class="table table-hover align-middle mb-0">
             <thead class="table-light">
                 <tr>
-                    <th class="ps-4 py-3">Order ID</th>
-                    <th class="py-3">Date</th>
+                    <th class="ps-4 py-3">Order / Date</th>
                     <th class="py-3">Customer</th>
-                    <th class="py-3">Items</th>
-                    <th class="py-3">Total</th>
+                    <th class="py-3">Product Details</th>
                     <th class="py-3">Status</th>
                     <th class="py-3 text-end pe-4">Action</th>
                 </tr>
@@ -28,18 +26,32 @@
             <tbody>
                 {% for order in orders %}
                 <tr>
-                    <td class="ps-4 fw-bold">#{{ order.id }}</td>
-                    <td class="text-muted small">{{ order.created_at|date:"M d, Y" }}</td>
+                    <td class="ps-4">
+                        <div class="fw-bold">#{{ order.id }}</div>
+                        <small class="text-muted">{{ order.created_at|date:"M d, Y H:i" }}</small>
+                    </td>
                     <td>
-                        <div class="d-flex align-items-center">
-                            <span class="avatar-circle bg-light text-primary me-2 small">
-                                {{ order.customer.first_name|first|default:"U" }}
-                            </span>
-                            {{ order.customer.get_display_name }}
+                        <div class="fw-bold">{{ order.full_name|default:order.customer.get_display_name }}</div>
+                        <div class="small text-muted">
+                            <i class="bi bi-telephone"></i> {{ order.phone_number }}<br>
+                            <i class="bi bi-geo-alt"></i> {{ order.city }}
                         </div>
                     </td>
-                    <td>{{ order.items.count }} Items</td>
-                    <td class="fw-bold">₹{{ order.get_total_price }}</td>
+                    <td>
+                        {% for item in order.items.all %}
+                        <div class="d-flex align-items-center mb-1">
+                            {% if item.product.image %}
+                            <img src="{{ item.product.image.url }}" class="rounded me-2"
+                                style="width: 40px; height: 40px; object-fit: cover;">
+                            {% endif %}
+                            <div>
+                                <div class="fw-bold">{{ item.product.name }}</div>
+                                <small class="text-muted">Qty: {{ item.quantity }} • ₹{{ item.price_at_purchase
+                                    }}</small>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </td>
                     <td>
                         {% if order.status == 'PENDING' %}
                         <span class="badge bg-warning-subtle text-warning rounded-pill px-3">Pending</span>
@@ -53,8 +65,16 @@
                         {% endif %}
                     </td>
                     <td class="text-end pe-4">
-                        <a href="{% url 'manage_order' order.pk %}"
-                            class="btn btn-sm btn-outline-primary rounded-pill px-3">View Details ↗</a>
+                        <div class="d-flex justify-content-end gap-2">
+                            {% if order.status == 'PENDING' %}
+                            <form action="{% url 'start_preparing' order.pk %}" method="POST" style="display:inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-sm btn-success rounded-pill px-3">Start ▶</button>
+                            </form>
+                            {% endif %}
+                            <a href="{% url 'manage_order' order.pk %}"
+                                class="btn btn-sm btn-outline-primary rounded-pill px-3">Manage ↗</a>
+                        </div>
                     </td>
                 </tr>
                 {% empty %}

@@ -46,6 +46,10 @@
                 </p>
             </div>
             <div class="d-flex gap-2">
+                <a href="{% url 'artisan_orders' %}"
+                    class="btn btn-warning text-dark fw-bold rounded-pill px-4 shadow-sm">
+                    📋 Recent Orders
+                </a>
                 <a href="{% url 'artisan_stats' %}" class="btn btn-outline-primary rounded-pill px-4 shadow-sm">
                     📊 View Stats
                 </a>
@@ -57,7 +61,7 @@
     </div>
 
     <!-- Summary Cards -->
-    <div class="row g-4 mb-5">
+    <div class="row g-4 mb-4">
         <div class="col-md-4">
             <div class="card dashboard-card p-4 bg-primary text-white h-100">
                 <div class="d-flex justify-content-between align-items-start">
@@ -99,6 +103,46 @@
         </div>
     </div>
 
+    <!-- Quick Actions -->
+    <h5 class="fw-bold mb-3 text-muted">Quick Actions ⚡</h5>
+    <div class="row g-3 mb-5">
+        <div class="col-md-3">
+            <a href="{% url 'artisan_orders' %}" class="btn btn-warning w-100 p-3 rounded-4 shadow-sm text-start">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="fw-bold text-dark">Recent Orders</div>
+                        <small class="text-dark text-opacity-75">View History</small>
+                    </div>
+                    <span class="fs-4">📋</span>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-3">
+            <a href="{% url 'add_product' %}"
+                class="btn btn-white border w-100 p-3 rounded-4 shadow-sm text-start bg-white">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="fw-bold text-dark">Add Product</div>
+                        <small class="text-muted">New Creation</small>
+                    </div>
+                    <span class="fs-4">🧶</span>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-3">
+            <a href="{% url 'artisan_stats' %}"
+                class="btn btn-white border w-100 p-3 rounded-4 shadow-sm text-start bg-white">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="fw-bold text-dark">Analytics</div>
+                        <small class="text-muted">Check Stats</small>
+                    </div>
+                    <span class="fs-4">📊</span>
+                </div>
+            </a>
+        </div>
+    </div>
+
     <!-- Currently Preparing Section (Highest Priority) -->
     {% if active_orders %}
     <h5 class="fw-bold mb-3 text-primary-custom" style="color: var(--primary-color);">Currently Preparing 🧵</h5>
@@ -115,13 +159,18 @@
                 </thead>
                 <tbody>
                     {% for order in active_orders|slice:":5" %}
-                    <tr>
+                    <tr onclick="window.location='{% url 'manage_order' order.pk %}'" style="cursor: pointer;">
                         <td class="ps-4 fw-bold">#{{ order.id }}</td>
                         <td>{{ order.customer.get_display_name }}</td>
                         <td><span class="badge bg-info-subtle text-info rounded-pill px-3">{{ order.get_status_display
                                 }}</span></td>
                         <td class="text-end pe-4">
-                            <a href="{% url 'manage_order' order.pk %}"
+                            <a href="{% url 'download_invoice' order.pk %}" target="_blank"
+                                onclick="event.stopPropagation();"
+                                class="btn btn-sm btn-outline-danger rounded-pill px-3 me-2">
+                                Invoice 📄
+                            </a>
+                            <a href="{% url 'manage_order' order.pk %}" onclick="event.stopPropagation();"
                                 class="btn btn-sm btn-primary rounded-pill px-3">Post Update 📸</a>
                         </td>
                     </tr>
@@ -142,10 +191,9 @@
             <table class="table table-hover align-middle mb-0">
                 <thead class="table-light">
                     <tr>
-                        <th class="ps-4 py-3">Order ID</th>
+                        <th class="ps-4 py-3">Order / Date</th>
                         <th class="py-3">Customer</th>
-                        <th class="py-3">Items</th>
-                        <th class="py-3">Total</th>
+                        <th class="py-3">Product Details</th>
                         <th class="py-3">Status</th>
                         <th class="py-3 text-end pe-4">Action</th>
                     </tr>
@@ -153,24 +201,51 @@
                 <tbody>
                     {% for order in pending_orders|slice:":5" %}
                     <tr>
-                        <td class="ps-4 fw-bold">#{{ order.id }}</td>
-                        <td>{{ order.customer.get_display_name }}</td>
-                        <td>{{ order.items.count }} Items</td>
-                        <td class="fw-bold">₹{{ order.get_total_price }}</td>
+                        <td class="ps-4">
+                            <div class="fw-bold">#{{ order.id }}</div>
+                            <small class="text-muted">{{ order.created_at|date:"M d, H:i" }}</small>
+                        </td>
+                        <td>
+                            <div class="fw-bold">{{ order.full_name|default:order.customer.get_display_name }}</div>
+                            <div class="small text-muted">
+                                <i class="bi bi-telephone"></i> {{ order.phone_number }}<br>
+                                <i class="bi bi-geo-alt"></i> {{ order.city }}
+                            </div>
+                        </td>
+                        <td>
+                            {% for item in order.items.all %}
+                            <div class="d-flex align-items-center mb-1">
+                                {% if item.product.image %}
+                                <img src="{{ item.product.image.url }}" class="rounded me-2"
+                                    style="width: 40px; height: 40px; object-fit: cover;">
+                                {% endif %}
+                                <div>
+                                    <div class="fw-bold">{{ item.product.name }}</div>
+                                    <small class="text-muted">Qty: {{ item.quantity }} • ₹{{ item.price_at_purchase
+                                        }}</small>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </td>
                         <td><span class="badge bg-warning-subtle text-warning rounded-pill px-3">Pending</span></td>
-                        <td class="text-end pe-4 d-flex justify-content-end gap-2">
-                            <form action="{% url 'start_preparing' order.pk %}" method="POST" style="display:inline;">
-                                {% csrf_token %}
-                                <button type="submit" class="btn btn-sm btn-success rounded-pill px-3">Start Preparing
-                                    ▶</button>
-                            </form>
-                            <a href="{% url 'manage_order' order.pk %}"
-                                class="btn btn-sm btn-outline-secondary rounded-pill px-3">Details</a>
+                        <td class="text-end pe-4">
+                            <div class="d-flex justify-content-end gap-2">
+                                <form action="{% url 'start_preparing' order.pk %}" method="POST"
+                                    style="display:inline;">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-sm btn-success rounded-pill px-3"
+                                        title="Start Working">
+                                        Start ▶
+                                    </button>
+                                </form>
+                                <a href="{% url 'manage_order' order.pk %}"
+                                    class="btn btn-sm btn-outline-secondary rounded-pill px-3">View Full</a>
+                            </div>
                         </td>
                     </tr>
                     {% empty %}
                     <tr>
-                        <td colspan="6" class="text-center py-5 text-muted">No pending orders.</td>
+                        <td colspan="5" class="text-center py-5 text-muted">No pending orders.</td>
                     </tr>
                     {% endfor %}
                 </tbody>

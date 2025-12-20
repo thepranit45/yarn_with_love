@@ -1,0 +1,269 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice - #{{ order.id }}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Outfit:wght@300;400;600&display=swap"
+        rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Great+Vibes&family=Outfit:wght@300;400;600&display=swap');
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: #f8f9fa;
+        }
+
+        .invoice-container {
+            max-width: 800px;
+            margin: 40px auto;
+            background: white;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            min-height: 1100px;
+            /* A4 height approx */
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Pink Header */
+        .invoice-header {
+            background-color: #d47fa6;
+            height: 150px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            margin-bottom: 50px;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        /* White wave at bottom of header */
+        .invoice-header::after {
+            content: "";
+            position: absolute;
+            bottom: -1px;
+            /* overlapping slightly to avoid potential gap line */
+            left: 0;
+            width: 100%;
+            height: 40px;
+            background: white;
+            border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+            transform: scaleX(1.5);
+        }
+
+        .invoice-title {
+            font-family: 'Great Vibes', cursive;
+            color: white;
+            font-size: 4rem;
+            z-index: 1;
+        }
+
+        .invoice-body {
+            padding: 0 60px;
+            flex: 1;
+            /* Pushes footer down */
+        }
+
+        .bill-to-section {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 40px;
+        }
+
+        .invoice-table {
+            width: 100%;
+            margin-bottom: 30px;
+            border-collapse: collapse;
+        }
+
+        .invoice-table th {
+            color: #d47fa6;
+            font-weight: 600;
+            border-bottom: 2px solid #ffebf2;
+            padding-bottom: 10px;
+            text-align: left;
+        }
+
+        .invoice-table td {
+            padding: 15px 0;
+            border-bottom: 1px solid #f0f0f0;
+            color: #444;
+        }
+
+        .invoice-table .amount {
+            text-align: right;
+        }
+
+        .totals-section {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+
+        .totals-table {
+            width: 300px;
+        }
+
+        .totals-table td {
+            text-align: right;
+            padding: 5px 0;
+        }
+
+        .totals-table .total-row {
+            font-size: 1.2rem;
+            color: #d47fa6;
+            font-weight: 700;
+            border-top: 2px solid #ffebf2;
+            padding-top: 10px;
+        }
+
+        .invoice-footer {
+            text-align: center;
+            padding: 30px 20px;
+            margin-top: auto;
+            /* Push to bottom */
+            background: white;
+            position: relative;
+        }
+
+        @media print {
+            body {
+                margin: 0;
+                padding: 0;
+                background: white;
+            }
+
+            .no-print {
+                display: none !important;
+            }
+
+            .invoice-container {
+                box-shadow: none;
+                margin: 0;
+                width: 100%;
+                max-width: 100%;
+                min-height: 100vh;
+                border: none;
+            }
+
+            /* FORCE COLORS */
+            * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+
+            .invoice-header {
+                background-color: #d47fa6 !important;
+            }
+
+            .invoice-title {
+                color: white !important;
+                text-shadow: none !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="text-center mt-4 mb-4 no-print d-flex flex-column align-items-center gap-2">
+        <div>
+            <button onclick="window.print()" class="btn btn-dark rounded-pill px-4 shadow-sm">🖨️ Print Invoice</button>
+            <button onclick="window.close()"
+                class="btn btn-outline-secondary rounded-pill px-4 ms-2 shadow-sm">Close</button>
+        </div>
+        <small class="text-muted"><i class="bi bi-info-circle"></i> Make sure <strong>"Background graphics"</strong> is
+            checked in your print settings.</small>
+    </div>
+
+    <!-- Rest of content remains structurally similar but utilizing new classes -->
+    <div class="invoice-container">
+        <!-- Pink Header -->
+        <div class="invoice-header">
+            <h1 class="invoice-title">Yarned with Love</h1>
+        </div>
+
+        <div class="invoice-body">
+            <!-- Company Info (Center) -->
+            <div class="text-center mb-5">
+                <h4 class="fw-bold" style="color: #444;">Invoice</h4>
+                <p class="text-muted small">Handmade with precision & care</p>
+            </div>
+
+            <div class="bill-to-section">
+                <div class="info-block">
+                    <h6>Bill To:</h6>
+                    <p><strong>{{ order.full_name|default:order.customer.get_display_name }}</strong></p>
+                    {% if order.shipping_address %}
+                    <p>{{ order.shipping_address }}</p>
+                    <p>{{ order.city }}, {{ order.state }} {{ order.zip_code }}</p>
+                    <p>{{ order.phone_number }}</p>
+                    {% else %}
+                    <p class="text-muted small"><em>Address not captured for this order.</em></p>
+                    <p class="text-muted small"><em>(Order placed before address update)</em></p>
+                    {% endif %}
+                </div>
+                <div class="info-block text-end">
+                    <h6>Invoice Details:</h6>
+                    <p><strong>Invoice #:</strong> INV-{{ order.id|add:1000 }}</p>
+                    <p><strong>Date:</strong> {{ order.created_at|date:"M d, Y" }}</p>
+                    <p><strong>Order ID:</strong> #{{ order.id }}</p>
+                </div>
+            </div>
+
+            <!-- Items Table -->
+            <table class="invoice-table">
+                <thead>
+                    <tr>
+                        <th style="width: 50%;">Description</th>
+                        <th class="text-center">Qty</th>
+                        <th class="amount">Unit Price</th>
+                        <th class="amount">Amount</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in order.items.all %}
+                    <tr>
+                        <td>
+                            <strong>{{ item.product.name }}</strong>
+                        </td>
+                        <td class="text-center">{{ item.quantity }}</td>
+                        <td class="amount">₹{{ item.price_at_purchase }}</td>
+                        <td class="amount">₹{{ item.get_subtotal }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <!-- Totals -->
+            <div class="totals-section">
+                <table class="totals-table">
+                    <tr>
+                        <td class="text-muted">Subtotal:</td>
+                        <td>₹{{ order.get_total_price }}</td>
+                    </tr>
+                    <tr>
+                        <td class="text-muted">Shipping:</td>
+                        <td>₹0.00</td>
+                    </tr>
+                    <tr>
+                        <td class="total-row">Total:</td>
+                        <td class="total-row">₹{{ order.get_total_price }}</td>
+                    </tr>
+                </table>
+            </div>
+
+        </div>
+
+        <div class="invoice-footer">
+            <div class="thank-you">Thanks for ordering! 💖</div>
+            <p class="text-muted small">For questions, contact: thepranit.10@gmail.com</p>
+        </div>
+    </div>
+</body>
+
+</html>
