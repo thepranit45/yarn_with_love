@@ -35,69 +35,8 @@
         </div>
     </div>
 
-    <!-- Meet the Artisan -->
+    <!-- Developer Profile -->
     <div class="row justify-content-center py-5">
-        <div class="col-lg-10">
-            <div class="card border-0 shadow-sm rounded-4 overflow-hidden bg-white">
-                <div class="row g-0">
-                    <div class="col-md-5 bg-light d-flex align-items-center justify-content-center">
-                        {% if artisan and artisan.profile_image %}
-                        <img src="{{ artisan.profile_image.url }}" class="img-fluid object-fit-cover h-100 w-100"
-                            alt="Mansi" style="min-height: 300px;">
-                        {% else %}
-                        <span class="display-1 text-muted">👩‍🎨</span>
-                        {% endif %}
-                    </div>
-                    <div class="col-md-7">
-                        <div class="card-body p-5">
-                            <h6 class="text-uppercase text-muted fw-bold mb-2">Meet the Maker</h6>
-                            <h2 class="fw-bold mb-4">{{ artisan.get_display_name }}</h2>
-                            <p class="text-muted leading-relaxed">
-                                {{ artisan.bio|linebreaks }}
-                            </p>
-                            <div class="mt-4">
-                                <h6 class="fw-bold mb-3">Specialties:</h6>
-                                <div class="d-flex gap-2 flex-wrap">
-                                    <span class="badge bg-light text-dark border">Handmade Woolens</span>
-                                    <span class="badge bg-light text-dark border">Custom Accessories</span>
-                                    <span class="badge bg-light text-dark border">Sustainable Fashion</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Values -->
-    <div class="row g-4 py-5 text-center">
-        <div class="col-md-4">
-            <div class="p-4">
-                <div class="fs-1 mb-3">❤️</div>
-                <h4 class="fw-bold">Handmade with Love</h4>
-                <p class="text-muted">No factories, no mass production. Just genuine craftsmanship.</p>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="p-4">
-                <div class="fs-1 mb-3">🌿</div>
-                <h4 class="fw-bold">Sustainable Quality</h4>
-                <p class="text-muted">We use premium materials that are gentle on you and the planet.</p>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="p-4">
-                <div class="fs-1 mb-3">✨</div>
-                <h4 class="fw-bold">Unique Designs</h4>
-                <p class="text-muted">One-of-a-kind pieces that stand out from the crowd.</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- Developer Profile Section -->
-    <!-- Developer Profile Section -->
-    <div id="developer-profile" class="row justify-content-center py-5 mt-4 border-top">
         <div class="col-lg-10">
             <div class="card border-0 shadow-sm rounded-4 overflow-hidden bg-white">
                 <div class="row g-0">
@@ -151,5 +90,32 @@
             </div>
         </div>
     </div>
+
+    <!-- Values -->
+    <div class="row g-4 py-5 text-center">
+        <div class="col-md-4">
+            <div class="p-4">
+                <div class="fs-1 mb-3">❤️</div>
+                <h4 class="fw-bold">Handmade with Love</h4>
+                <p class="text-muted">No factories, no mass production. Just genuine craftsmanship.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="p-4">
+                <div class="fs-1 mb-3">🌿</div>
+                <h4 class="fw-bold">Sustainable Quality</h4>
+                <p class="text-muted">We use premium materials that are gentle on you and the planet.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="p-4">
+                <div class="fs-1 mb-3">✨</div>
+                <h4 class="fw-bold">Unique Designs</h4>
+                <p class="text-muted">One-of-a-kind pieces that stand out from the crowd.</p>
+            </div>
+        </div>
+    </div>
+
+
 </div>
 {% endblock %}
