@@ -12,6 +12,8 @@ from django.conf import settings
 from django.db import transaction
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+from django.template.loader import get_template
+from django.template import TemplateDoesNotExist
 import json
 from django.utils import timezone
 from .demo_utils import reset_demo_data # Import the helper
@@ -61,12 +63,21 @@ def product_detail(request, pk):
     
     related_products = Product.objects.filter(is_active=True, category=product.category).exclude(pk=pk)[:4]
 
-    return render(request, 'store/product_detail.html', {
+    context = {
         'product': product,
         'reviews': reviews,
         'avg_rating': avg_rating,
         'related_products': related_products
-    })
+    }
+
+    # Prefer product_detail.html; fall back to product_detail_v2.html if missing
+    template_name = 'store/product_detail.html'
+    try:
+        get_template(template_name)
+    except TemplateDoesNotExist:
+        template_name = 'store/product_detail_v2.html'
+
+    return render(request, template_name, context)
 
 @login_required
 @require_http_methods(["GET", "POST"])
