@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.views.decorators.http import require_http_methods
 from django.views.decorators.cache import cache_page
 from django.db.models import Q, Prefetch
-from .models import Product, Order, OrderItem, OrderUpdate, Review, Category, Subscriber, Cart, CartItem, Coupon
+from .models import Product, Order, OrderItem, OrderUpdate, Review, Category, Subscriber, Cart, CartItem, Coupon, ChatInquiry
 from .forms import OrderUpdateForm, OrderStatusForm, ProductForm, ReviewForm, CheckoutForm, CouponForm
 from django.contrib import messages
 import uuid
@@ -12,6 +12,9 @@ from django.conf import settings
 from django.db import transaction
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+import json
+from django.utils import timezone
+from .demo_utils import reset_demo_data # Import the helper
 
 @require_http_methods(["GET"])
 def product_list(request):
@@ -29,16 +32,20 @@ def product_list(request):
     
     recommended_products = []
     if request.user.is_authenticated:
-        # Get categories of products the user has bought
-        purchased_categories = OrderItem.objects.filter(
-            order__customer=request.user
-        ).values_list('product__category', flat=True).distinct()
-        
-        if purchased_categories:
-            recommended_products = Product.objects.filter(
-                is_active=True,
-                category__in=purchased_categories
-            ).select_related('artisan', 'category').order_by('?')[:4]
+        try:
+            # Get categories of products the user has bought
+            purchased_categories = OrderItem.objects.filter(
+                order__customer=request.user
+            ).values_list('product__category', flat=True).distinct()
+            
+            if purchased_categories:
+                recommended_products = Product.objects.filter(
+                    is_active=True,
+                    category__in=purchased_categories
+                ).select_related('artisan', 'category').order_by('?')[:4]
+        except Exception:
+            # Fail silently for recommendations if there's a data issue
+            recommended_products = []
 
     return render(request, 'store/product_list.html', {
         'products': products, 
@@ -139,11 +146,7 @@ def track_order_search(request):
             
     return render(request, 'store/track_order_search.html')
 
-from .models import Product, Order, OrderItem, OrderUpdate, Review, Category, Subscriber, Cart, CartItem, Coupon
-from .forms import OrderUpdateForm, OrderStatusForm, ProductForm, ReviewForm, CheckoutForm, CouponForm
-from .demo_utils import reset_demo_data # Import the helper
 
-# ... [Keep imports]
 
 @login_required
 @user_passes_test(lambda u: u.is_artisan)
@@ -180,6 +183,9 @@ def artisan_dashboard(request):
     
     total_revenue = int(sum(item.get_subtotal() for item in revenue_items))
 
+    # Fetch recent chat inquiries
+    inquiries = ChatInquiry.objects.all()[:10]  # Show last 10 messages for now
+
     return render(request, 'store/artisan_dashboard.html', {
         'pending_orders': pending_orders,
         'active_orders': active_orders,
@@ -187,6 +193,7 @@ def artisan_dashboard(request):
         'total_revenue': total_revenue,
         'total_orders': total_orders,
         'total_customers': total_customers,
+        'inquiries': inquiries, # Pass inquiries to template
     })
 
 @login_required
@@ -502,24 +509,23 @@ def about_us(request):
     artisan = User.objects.filter(username='mansi').first()
     return render(request, 'store/about_us.html', {'artisan': artisan})
 
-
-
-
-
-
 @login_required
 @user_passes_test(lambda u: u.is_artisan)
 def artisan_products_list(request):
     """List all products for the artisan with management options"""
-    # Show ONLY products for this artisan
-    products = Product.objects.filter(artisan=request.user).order_by('-created_at')
-    
-    # Search functionality
-    query = request.GET.get('q', '')
-    if query:
-        products = products.filter(name__icontains=query)
+    try:
+        # Show ONLY products for this artisan
+        products = Product.objects.filter(artisan=request.user).select_related('category').order_by('-created_at')
         
-    return render(request, 'store/artisan_products_list.html', {'products': products, 'query': query})
+        # Search functionality
+        query = request.GET.get('q', '')
+        if query:
+            products = products.filter(name__icontains=query)
+            
+        return render(request, 'store/artisan_products_list.html', {'products': products, 'query': query})
+    except Exception as e:
+        messages.error(request, "Error loading your collection. Please try again.")
+        return render(request, 'store/artisan_products_list.html', {'products': [], 'query': ''})
 
 @login_required
 @user_passes_test(lambda u: u.is_artisan)
@@ -609,3 +615,74 @@ def remove_coupon(request):
     
     next_url = request.GET.get('next', 'view_cart')
     return redirect(next_url)
+
+@login_required
+@user_passes_test(lambda u: u.is_artisan)
+@login_required
+@user_passes_test(lambda u: u.is_artisan)
+def artisan_chat_inquiries(request):
+    """View and Reply to chat inquiries"""
+    if request.method == 'POST':
+        inquiry_id = request.POST.get('inquiry_id')
+        reply_text = request.POST.get('reply', '').strip()
+        
+        if inquiry_id and reply_text:
+            inquiry = get_object_or_404(ChatInquiry, pk=inquiry_id)
+            inquiry.reply = reply_text
+            inquiry.replied_at = timezone.now()
+            inquiry.replied_by = request.user
+            inquiry.is_read = True
+            inquiry.save()
+            messages.success(request, "Reply sent successfully!")
+            return redirect('artisan_chat_inquiries')
+
+    inquiries = ChatInquiry.objects.all()
+    
+    # AJAX Polling
+    if request.GET.get('mode') == 'poll':
+         return render(request, 'store/includes/inquiries_list.html', {'inquiries': inquiries})
+
+    return render(request, 'store/artisan_inquiries.html', {'inquiries': inquiries})
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def save_chat_message(request):
+    """API Endpoint to save chat message"""
+    try:
+        data = json.loads(request.body)
+        message_text = data.get('message', '').strip()
+        
+        if message_text:
+            sender = request.user if request.user.is_authenticated else None
+            ChatInquiry.objects.create(sender=sender, message=message_text)
+            return JsonResponse({'status': 'success', 'message': 'Message sent'})
+        
+        return JsonResponse({'status': 'error', 'message': 'Empty message'}, status=400)
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
+
+@require_http_methods(["GET"])
+def fetch_chat_history(request):
+    """API to fetch history for logged in user"""
+    if request.user.is_authenticated:
+        messages = ChatInquiry.objects.filter(sender=request.user).order_by('created_at')[:50] # Limit to 50
+        data = []
+        for msg in messages:
+            data.append({
+                'id': f"msg_{msg.id}",
+                'message': msg.message,
+                'created_at': msg.created_at.strftime("%H:%M"),
+                'is_user': True
+            })
+            if msg.reply:
+                data.append({
+                    'id': f"reply_{msg.id}",
+                    'message': msg.reply,
+                    'created_at': msg.replied_at.strftime("%H:%M") if msg.replied_at else "",
+                    'is_user': False,
+                    'sender_name': msg.replied_by.get_display_name() if msg.replied_by else "Support"
+                })
+        return JsonResponse({'status': 'success', 'messages': data})
+    else:
+        # TODO: Implement guest logic using session or cookie if needed
+        return JsonResponse({'status': 'success', 'messages': []}) # Return empty for guest for now
