@@ -29,5 +29,26 @@ def create_admin():
     except Exception as e:
         print(f"Error: {e}")
 
+    # Create 'yarn' superuser
+    username_yarn = 'yarn'
+    password_yarn = 'yarnwlove'
+    email_yarn = 'yarn@example.com'
+
+    try:
+        if User.objects.filter(username=username_yarn).exists():
+            print(f"User '{username_yarn}' already exists. Updating password...")
+            user = User.objects.get(username=username_yarn)
+            user.set_password(password_yarn)
+            user.is_superuser = True
+            user.is_staff = True
+            user.save()
+            print(f"SUCCESS: Password for '{username_yarn}' reset to '{password_yarn}'")
+        else:
+            print(f"Creating new superuser '{username_yarn}'...")
+            User.objects.create_superuser(username=username_yarn, email=email_yarn, password=password_yarn)
+            print(f"SUCCESS: Superuser '{username_yarn}' created with password '{password_yarn}'")
+    except Exception as e:
+        print(f"Error: {e}")
+
 if __name__ == "__main__":
     create_admin()
