@@ -22,6 +22,11 @@ class Product(models.Model):
     price = models.DecimalField(max_digits=10, decimal_places=2, validators=[MinValueValidator(0.01)])
     mrp = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, help_text="Maximum Retail Price (for discount display)")
     image = models.ImageField(upload_to='products/', blank=True, null=True)
+    
+    # Variant Fields
+    color_name = models.CharField(max_length=50, blank=True, null=True, help_text="e.g. Red, Blue, Pastel Pink")
+    variant_group = models.UUIDField(default=uuid.uuid4, editable=False, help_text="Products sharing this ID are variants of the same item")
+    
     short_description = models.TextField(blank=True, help_text="Short intro for the product page")
     key_features = models.TextField(blank=True, help_text="Enter each feature on a new line")
     care_instructions = models.TextField(blank=True, help_text="Enter each instruction on a new line")
@@ -38,10 +43,19 @@ class Product(models.Model):
             models.Index(fields=['artisan', '-created_at']),
             models.Index(fields=['category', '-created_at']),
             models.Index(fields=['is_active']),
+            models.Index(fields=['variant_group']),
         ]
 
     def __str__(self):
         return self.name
+
+class ProductImage(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='images')
+    image = models.ImageField(upload_to='product_gallery/')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Image for {self.product.name}"
 
 class Order(models.Model):
     STATUS_CHOICES = [
@@ -148,13 +162,19 @@ class Review(models.Model):
     rating = models.IntegerField(choices=[(i, i) for i in range(1, 6)])
     comment = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    
+    # Manual Review Fields (for Artisans to add external reviews)
+    customer_name = models.CharField(max_length=100, blank=True, null=True, help_text="Name of customer (if added manually)")
+    customer_photo = models.ImageField(upload_to='review_photos/', blank=True, null=True)
 
     class Meta:
-        unique_together = ['product', 'customer']
+        # Remove unique_together because an artisan might add multiple reviews for different manual customers on the same product
+        # unique_together = ['product', 'customer'] 
         ordering = ['-created_at']
 
     def __str__(self):
-        return f"{self.customer.username} - {self.product.name} ({self.rating}★)"
+        name = self.customer_name if self.customer_name else self.customer.username
+        return f"{name} - {self.product.name} ({self.rating}★)"
 
 class Subscriber(models.Model):
     """Newsletter subscriber email list"""
@@ -211,3 +231,18 @@ class CartItem(models.Model):
 
     def __str__(self):
         return f"{self.quantity}x {self.product.name} ({self.cart.user.username})"
+
+
+class ChatInquiry(models.Model):
+    sender = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='chat_inquiries')
+    message = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['sender', '-created_at']),
+        ]
+
+    def __str__(self):
+        return f"Inquiry by {self.sender.username} at {self.created_at}"

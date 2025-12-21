@@ -72,12 +72,12 @@
     </div>
 </section>
 
-<!-- CATEGORIES SECTION (Restored but collapsible if needed) -->
-<!-- CATEGORIES SECTION (HIDDEN FOR NOW)
-<section id="categories" class="py-5" style="background-color: white;">
+<!-- CATEGORIES SECTION (HIDDEN AS REQUESTED)
+<section id="categories" class="py-5 bg-white">
     <div class="container">
         <div class="text-center mb-5">
-            <h2 class="display-6 fw-bold" style="color: var(--text-dark);">Shop by Category</h2>
+            <h2 class="display-6 fw-bold" style="color: var(--text-dark);">Browse by Category 🧸</h2>
+            <p class="text-muted">Find exactly what you're looking for!</p>
             <div class="section-divider"></div>
         </div>
         
@@ -85,10 +85,13 @@
             {% if categories %}
                 {% for category in categories %}
                 <div class="col-6 col-md-4 col-lg-3">
-                    <a href="?category={{ category.slug }}#collection" class="category-card text-decoration-none">
-                        <div class="category-icon-wrapper">
-                            <span class="category-emoji">
+                    <a href="?category={{ category.slug }}#collection" target="_blank" rel="noopener noreferrer" class="category-card text-decoration-none h-100 d-block p-4 rounded-4 text-center border-0 shadow-sm" style="background-color: #fff0f5; transition: transform 0.3s ease;">
+                        <div class="category-icon-wrapper mb-3">
+                            <span style="font-size: 3rem;">
                                 {% if 'toy' in category.name|lower %}🧸
+                                {% elif 'hair' in category.name|lower %}🎀
+                                {% elif 'pot' in category.name|lower %}🌻
+                                {% elif 'key' in category.name|lower %}🔑
                                 {% elif 'cloth' in category.name|lower or 'wear' in category.name|lower %}👗
                                 {% elif 'bag' in category.name|lower %}👜
                                 {% elif 'home' in category.name|lower or 'decor' in category.name|lower %}🏠
@@ -96,7 +99,7 @@
                                 {% else %}🧶{% endif %}
                             </span>
                         </div>
-                        <h5 class="fw-bold fs-6" style="color: var(--text-dark);">{{ category.name }}</h5>
+                        <h5 class="fw-bold fs-5 mb-0" style="color: var(--text-dark); font-family: 'Plus Jakarta Sans', sans-serif;">{{ category.name }}</h5>
                     </a>
                 </div>
                 {% endfor %}
@@ -203,23 +206,36 @@
             <h2 class="fw-bold">Love Letters 💌</h2>
         </div>
         <div class="testimonial-scroller">
+            {% for review in featured_reviews %}
             <div class="testimonial-card">
-                <div class="mb-2">⭐⭐⭐⭐⭐</div>
-                <p class="mb-2 fst-italic">"The most beautiful sweater I own!"</p>
-                <small class="fw-bold">- Priya S.</small>
-            </div>
-            <div class="testimonial-card">
-                <div class="mb-2">⭐⭐⭐⭐⭐</div>
-                <p class="mb-2 fst-italic">"Packaging was so cute! 🎀"</p>
-                <small class="fw-bold">- Anjali M.</small>
-            </div>
-            <div class="testimonial-card">
-                <div class="mb-2">⭐⭐⭐⭐⭐</div>
-                <p class="mb-2 fst-italic">"Arrived faster than expected."</p>
-                <small class="fw-bold">- Rahul K.</small>
+                <div class="mb-2">
+                    {% for i in "12345"|make_list %}
+                    {% if forloop.counter <= review.rating %}⭐{% endif %} {% endfor %} </div>
+                        <p class="mb-2 fst-italic">"{{ review.comment|truncatechars:80 }}"</p>
+                        <small class="fw-bold">-
+                            {% if review.customer_name %}
+                            {{ review.customer_name }}
+                            {% elif review.customer.get_display_name %}
+                            {{ review.customer.get_display_name }}
+                            {% else %}
+                            Valued Customer
+                            {% endif %}
+                        </small>
+                </div>
+                {% empty %}
+                <div class="testimonial-card">
+                    <div class="mb-2">⭐⭐⭐⭐⭐</div>
+                    <p class="mb-2 fst-italic">"The most beautiful sweater I own!"</p>
+                    <small class="fw-bold">- Priya S.</small>
+                </div>
+                <div class="testimonial-card">
+                    <div class="mb-2">⭐⭐⭐⭐⭐</div>
+                    <p class="mb-2 fst-italic">"Packaging was so cute! 🎀"</p>
+                    <small class="fw-bold">- Anjali M.</small>
+                </div>
+                {% endfor %}
             </div>
         </div>
-    </div>
 </section>
 
 <section class="py-4">

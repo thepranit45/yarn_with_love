@@ -3,8 +3,8 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.views.decorators.http import require_http_methods
 from django.views.decorators.cache import cache_page
 from django.db.models import Q, Prefetch
-from .models import Product, Order, OrderItem, OrderUpdate, Review, Category, Subscriber, Cart, CartItem, Coupon, ChatInquiry
-from .forms import OrderUpdateForm, OrderStatusForm, ProductForm, ReviewForm, CheckoutForm, CouponForm
+from .models import Product, Order, OrderItem, OrderUpdate, Review, Category, Subscriber, Cart, CartItem, Coupon, ChatInquiry, ProductImage
+from .forms import OrderUpdateForm, OrderStatusForm, ProductForm, ReviewForm, CheckoutForm, CouponForm, CategoryForm, VariantLinkForm
 from django.contrib import messages
 import uuid
 import razorpay
@@ -16,6 +16,7 @@ from django.template.loader import get_template
 from django.template.exceptions import TemplateDoesNotExist
 import json
 from django.utils import timezone
+from django.utils.text import slugify
 from .demo_utils import reset_demo_data # Import the helper
 
 @require_http_methods(["GET"])
@@ -48,12 +49,45 @@ def product_list(request):
         except Exception:
             # Fail silently for recommendations if there's a data issue
             recommended_products = []
+            
+    # Fetch top rated reviews for "Love Letters" section
+    featured_reviews = Review.objects.filter(rating=5).order_by('-created_at')[:3]
 
     return render(request, 'store/product_list.html', {
         'products': products, 
         'query': query,
         'categories': categories,
-        'recommended_products': recommended_products
+        'recommended_products': recommended_products,
+        'featured_reviews': featured_reviews,
+    })
+
+@login_required
+@user_passes_test(lambda u: u.is_artisan)
+def link_variant(request, pk):
+    product = get_object_or_404(Product, pk=pk, artisan=request.user)
+    
+    if request.method == 'POST':
+        form = VariantLinkForm(request.POST, artisan=request.user, category=product.category, current_product_id=product.id)
+        if form.is_valid():
+            target_product = form.cleaned_data['variant_product']
+            
+            # LINKING LOGIC:
+            # We want 'product' to join 'target_product's group.
+            # So we update 'product's variant_group only.
+            # (If we wanted to merge two groups, we'd update all products in product's group, but for simplicity:
+            # let's assume we are attaching this single product to an existing group).
+            
+            product.variant_group = target_product.variant_group
+            product.save()
+            
+            messages.success(request, f"Successfully linked {product.name} with {target_product.name}!")
+            return redirect('product_detail', pk=product.pk)
+    else:
+        form = VariantLinkForm(artisan=request.user, category=product.category, current_product_id=product.id)
+    
+    return render(request, 'store/link_variant.html', {
+        'form': form,
+        'product': product
     })
 
 def product_detail(request, pk):
@@ -62,22 +96,28 @@ def product_detail(request, pk):
     avg_rating = sum(r.rating for r in reviews) / len(reviews) if reviews else 0
     
     related_products = Product.objects.filter(is_active=True, category=product.category).exclude(pk=pk)[:4]
+    
+    # Determine if product is "New" (added in last 14 days)
+    delta = timezone.now() - product.created_at
+    is_new = delta.days <= 14
+
+    # Color Variants (Siblings)
+    variants = Product.objects.filter(
+        variant_group=product.variant_group, 
+        is_active=True
+    ).exclude(pk=pk)
 
     context = {
         'product': product,
         'reviews': reviews,
         'avg_rating': avg_rating,
-        'related_products': related_products
+        'related_products': related_products,
+        'variants': variants,
+        'is_new': is_new,
     }
 
-    # Prefer product_detail.html; fall back to product_detail_v2.html if missing
-    template_name = 'store/product_detail.html'
-    try:
-        get_template(template_name)
-    except TemplateDoesNotExist:
-        template_name = 'store/product_detail_v2.html'
-
-    return render(request, template_name, context)
+    # Use the cleaned-up product detail template
+    return render(request, 'store/product_detail.html', context)
 
 @login_required
 @require_http_methods(["GET", "POST"])
@@ -197,6 +237,9 @@ def artisan_dashboard(request):
     # Fetch recent chat inquiries
     inquiries = ChatInquiry.objects.all()[:10]  # Show last 10 messages for now
 
+    # Fetch products for "Add Review" dropdown
+    my_products = Product.objects.filter(artisan=request.user)
+
     return render(request, 'store/artisan_dashboard.html', {
         'pending_orders': pending_orders,
         'active_orders': active_orders,
@@ -205,6 +248,7 @@ def artisan_dashboard(request):
         'total_orders': total_orders,
         'total_customers': total_customers,
         'inquiries': inquiries, # Pass inquiries to template
+        'my_products': my_products,
     })
 
 @login_required
@@ -332,6 +376,12 @@ def add_product(request):
                 product = form.save(commit=False)
                 product.artisan = request.user
                 product.save()
+                
+                # Handle extra images
+                images = request.FILES.getlist('extra_images')
+                for image in images:
+                    ProductImage.objects.create(product=product, image=image)
+
                 messages.success(request, "Product added successfully!")
                 return redirect('product_detail', pk=product.pk)
             except Exception as e:
@@ -339,6 +389,33 @@ def add_product(request):
     else:
         form = ProductForm()
     return render(request, 'store/add_product.html', {'form': form})
+
+@login_required
+@user_passes_test(lambda u: u.is_artisan)
+@require_http_methods(["GET", "POST"])
+def add_category(request):
+    """Allow artisans to add a new category"""
+    if request.method == 'POST':
+        form = CategoryForm(request.POST)
+        if form.is_valid():
+            category = form.save(commit=False)
+            # Auto-generate slug
+            base_slug = slugify(category.name)
+            slug = base_slug
+            counter = 1
+            # Ensure uniqueness
+            while Category.objects.filter(slug=slug).exists():
+                slug = f"{base_slug}-{counter}"
+                counter += 1
+            
+            category.slug = slug
+            category.save()
+            messages.success(request, f"Category '{category.name}' created successfully! ✨")
+            return redirect('add_product')
+    else:
+        form = CategoryForm()
+    
+    return render(request, 'store/add_category.html', {'form': form})
 
 
 @login_required
@@ -348,15 +425,15 @@ def add_review(request, pk):
     product = get_object_or_404(Product, pk=pk, is_active=True)
     
     # Check if customer has a previous order for this product
-    has_ordered = Order.objects.filter(
-        customer=request.user,
-        items__product=product,
-        status='COMPLETED'
-    ).exists()
+    # has_ordered = Order.objects.filter(
+    #     customer=request.user,
+    #     items__product=product,
+    #     status='COMPLETED'
+    # ).exists()
     
-    if not has_ordered:
-        messages.error(request, "You can only review products you've ordered.")
-        return redirect('product_detail', pk=pk)
+    # if not has_ordered:
+    #     messages.error(request, "You can only review products you've ordered.")
+    #     return redirect('product_detail', pk=pk)
     
     rating = request.POST.get('rating', '')
     comment = request.POST.get('comment', '').strip()
@@ -375,6 +452,42 @@ def add_review(request, pk):
         messages.error(request, "Error posting review. Please try again.")
     
     return redirect('product_detail', pk=pk)
+
+    return redirect('product_detail', pk=pk)
+
+@login_required
+@user_passes_test(lambda u: u.is_artisan)
+@require_http_methods(["POST"])
+def artisan_add_review(request):
+    """Allow artisan to add a review from dashboard"""
+    product_id = request.POST.get('product_id')
+    rating = request.POST.get('rating')
+    comment = request.POST.get('comment', '').strip()
+    customer_name = request.POST.get('customer_name', '').strip()
+    customer_photo = request.FILES.get('customer_photo')
+    
+    if not all([product_id, rating]):
+        messages.error(request, "Missing product or rating.")
+        return redirect('artisan_dashboard')
+        
+    product = get_object_or_404(Product, pk=product_id, artisan=request.user)
+    
+    try:
+        # Note: We still link to the artisan as 'customer' for ownership tracking
+        # but usage of unique_together has been removed/relaxed in models for this.
+        Review.objects.create(
+            product=product,
+            customer=request.user, 
+            rating=int(rating),
+            comment=comment,
+            customer_name=customer_name,
+            customer_photo=customer_photo
+        )
+        messages.success(request, f"Review added for {product.name}! ✨")
+    except Exception as e:
+        messages.error(request, f"Error adding review: {e}")
+        
+    return redirect('artisan_dashboard')
 
 @require_http_methods(["POST"])
 def subscribe(request):

@@ -1,0 +1,7 @@
+User-agent: *
+Disallow: /admin/
+Disallow: /artisan/
+Disallow: /accounts/
+Allow: /
+
+Sitemap: https://yarnedwithlove.com/sitemap.xml

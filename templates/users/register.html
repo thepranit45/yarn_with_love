@@ -14,19 +14,20 @@
                     </div>
 
                     {% if messages %}
-                        {% for message in messages %}
-                            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-                                {{ message }}
-                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                            </div>
-                        {% endfor %}
+                    {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                    {% endfor %}
                     {% endif %}
 
                     <form method="post">
                         {% csrf_token %}
                         {% for field in form %}
                         <div class="mb-3">
-                            <label class="form-label" style="color: var(--deep-rose); font-weight: 600;">{{ field.label }}</label>
+                            <label class="form-label" style="color: var(--deep-rose); font-weight: 600;">{{ field.label
+                                }}</label>
                             {{ field }}
                             {% if field.help_text %}
                             <div class="form-text text-muted small">{{ field.help_text|safe }}</div>
@@ -41,8 +42,21 @@
                         </div>
                     </form>
 
+                    <div class="text-center my-4">
+                        <span class="text-muted">OR</span>
+                    </div>
+
+                    <div class="d-grid gap-2 mb-4">
+                        {% load socialaccount %}
+                        <a href="{% provider_login_url 'google' %}" class="btn btn-lg"
+                            style="background-color: white; border: 2px solid #dd4b39; color: #dd4b39; border-radius: 15px; font-weight: 600;">
+                            <span style="margin-right: 10px;">🇬</span> Continue with Google
+                        </a>
+                    </div>
+
                     <div class="text-center mt-4">
-                        <p class="text-muted">Already have an account? <a href="{% url 'login_customer' %}" style="color: var(--deep-rose); font-weight: 600;">Login here</a></p>
+                        <p class="text-muted">Already have an account? <a href="{% url 'login_customer' %}"
+                                style="color: var(--deep-rose); font-weight: 600;">Login here</a></p>
                     </div>
                 </div>
             </div>
@@ -51,13 +65,17 @@
 </div>
 
 <style>
-    input, textarea, select {
+    input,
+    textarea,
+    select {
         border: 2px solid var(--soft-pink) !important;
         border-radius: 15px !important;
         padding: 10px 15px !important;
     }
-    
-    input:focus, textarea:focus, select:focus {
+
+    input:focus,
+    textarea:focus,
+    select:focus {
         border-color: var(--primary-color) !important;
         box-shadow: 0 0 0 0.2rem rgba(255, 158, 183, 0.25) !important;
     }

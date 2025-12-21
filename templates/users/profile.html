@@ -1,0 +1,157 @@
+{% extends 'base.html' %}
+{% block title %}My Profile - Yarned with Love{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <!-- Sidebar / Profile Card -->
+        <div class="col-md-4 mb-4">
+            <div class="card border-0 shadow-sm rounded-4 text-center p-4 h-100" style="background: white;">
+                <div class="position-relative d-inline-block mb-3">
+                    {% if user.profile_image %}
+                    <img src="{{ user.profile_image.url }}" class="rounded-circle shadow-sm" width="150" height="150"
+                        style="object-fit: cover; border: 4px solid white;">
+                    {% else %}
+                    <div class="rounded-circle bg-light d-flex align-items-center justify-content-center mx-auto shadow-sm"
+                        style="width: 150px; height: 150px; border: 4px solid white; font-size: 3rem;">
+                        👤
+                    </div>
+                    {% endif %}
+                </div>
+                <h3 class="fw-bold mb-1">{{ user.get_display_name }}</h3>
+                <p class="text-muted mb-3">@{{ user.username }}</p>
+
+                {% if user.is_artisan %}
+                <span class="badge bg-primary rounded-pill px-3 py-2">✨ Artisan</span>
+                {% else %}
+                <span class="badge bg-secondary rounded-pill px-3 py-2">🛍️ Customer</span>
+                {% endif %}
+
+                <hr class="my-4">
+
+                <div class="text-start">
+                    <p class="small text-muted mb-1 fw-bold text-uppercase">Member Since</p>
+                    <p>{{ user.date_joined|date:"F j, Y" }}</p>
+
+                    <p class="small text-muted mb-1 fw-bold text-uppercase">Email</p>
+                    <p class="text-break">{{ user.email }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Edit Form -->
+        <div class="col-md-8">
+            <div class="card border-0 shadow-sm rounded-4" style="background: white;">
+                <div class="card-header bg-transparent border-0 p-4 pb-0">
+                    <h4 class="fw-bold mb-0">Edit Profile ✏️</h4>
+                </div>
+                <div class="card-body p-4">
+                    {% if messages %}
+                    {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} rounded-3 shadow-sm alert-dismissible fade show">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                    {% endfor %}
+                    {% endif %}
+
+                    <form method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold small text-muted">First Name</label>
+                                {{ form.first_name }}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold small text-muted">Last Name</label>
+                                {{ form.last_name }}
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold small text-muted">Email Address</label>
+                                {{ form.email }}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold small text-muted">Phone Number</label>
+                                {{ form.phone_number }}
+                            </div>
+
+                            <div class="col-12">
+                                <label class="form-label fw-bold small text-muted">Bio / About Me</label>
+                                {{ form.bio }}
+                                <div class="form-text">Share a little about yourself or your love for crafts!</div>
+                            </div>
+
+                            <div class="col-12">
+                                <label class="form-label fw-bold small text-muted">Profile Photo</label>
+                                {{ form.profile_image }}
+                            </div>
+                        </div>
+
+                        <div class="mt-4 pt-3 border-top d-flex justify-content-end gap-2">
+                            <button type="reset" class="btn btn-light rounded-pill px-4">Reset</button>
+                            <button type="submit" class="btn btn-primary rounded-pill px-5 shadow-sm">Save Changes
+                                💾</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Recent Orders Section -->
+            <div class="card border-0 shadow-sm rounded-4 mt-4" style="background: white;">
+                <div
+                    class="card-header bg-transparent border-0 p-4 pb-0 d-flex justify-content-between align-items-center">
+                    <h4 class="fw-bold mb-0">Recent Orders 📦</h4>
+                    <a href="{% url 'my_orders' %}" class="btn btn-sm btn-outline-primary rounded-pill">View All</a>
+                </div>
+                <div class="card-body p-4">
+                    {% if recent_orders %}
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Order ID</th>
+                                    <th>Date</th>
+                                    <th>Status</th>
+                                    <th>Total</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for order in recent_orders %}
+                                <tr>
+                                    <td>#{{ order.id }}</td>
+                                    <td>{{ order.created_at|date:"M j, Y" }}</td>
+                                    <td>
+                                        {% if order.status == 'PENDING' %}
+                                        <span class="badge bg-warning text-dark">Pending</span>
+                                        {% elif order.status == 'COMPLETED' %}
+                                        <span class="badge bg-success">Delivered</span>
+                                        {% elif order.status == 'CANCELLED' %}
+                                        <span class="badge bg-danger">Cancelled</span>
+                                        {% else %}
+                                        <span class="badge bg-info text-dark">{{ order.status }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>₹{{ order.total_amount }}</td>
+                                    <td>
+                                        <a href="{% url 'order_tracking' order.tracking_id %}"
+                                            class="btn btn-sm btn-light rounded-pill">Track 🚚</a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="text-center py-4">
+                        <p class="text-muted mb-0">No orders yet.</p>
+                        <a href="{% url 'collection' %}" class="btn btn-link">Start Shopping</a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -30,6 +30,7 @@ urlpatterns = [
     path('order/track/<uuid:tracking_id>/', views.order_tracking, name='order_tracking'),
     path('my-orders/', views.my_orders, name='my_orders'),
     path('artisan/mobile/dashboard/', views.artisan_dashboard, name='artisan_dashboard'),
+    path('artisan/add-review/', views.artisan_add_review, name='artisan_add_review'),
     path('artisan/stats/', views.artisan_stats, name='artisan_stats'),
     path('artisan/settings/', views.artisan_settings, name='artisan_settings'),
     path('artisan/orders/', views.artisan_orders, name='artisan_orders'),

@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Link Color Variant - Yarned with Love{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+                <div class="card-header bg-gradient-primary text-white p-4 text-center"
+                    style="background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);">
+                    <h2 class="h3 fw-bold mb-0 text-dark">🔗 Link Variants</h2>
+                </div>
+
+                <div class="card-body p-4 p-md-5 bg-white">
+                    <div class="text-center mb-4">
+                        <p class="text-muted">You are linking variants for:</p>
+                        <h4 class="fw-bold">{{ product.name }}</h4>
+                        <span class="badge bg-secondary">{{ product.category.name }}</span>
+                    </div>
+
+                    <form method="POST">
+                        {% csrf_token %}
+
+                        <div class="mb-4">
+                            <label class="form-label fw-bold text-muted small text-uppercase spacing-1">Select Sibling
+                                Product</label>
+                            <p class="small text-muted mb-2">Choose another product from the same category that is a
+                                different color version of this one.</p>
+
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0 text-muted">
+                                    🧶
+                                </span>
+                                {{ form.variant_product }}
+                            </div>
+                            {% if form.variant_product.errors %}
+                            <div class="text-danger small mt-1">{{ form.variant_product.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="alert alert-info small">
+                            <i class="bi bi-info-circle-fill me-1"></i>
+                            After linking, these products will appear as color options on each other's pages.
+                        </div>
+
+                        <!-- Actions -->
+                        <div class="d-grid gap-3">
+                            <button type="submit"
+                                class="btn btn-primary btn-lg rounded-pill shadow-sm transition-hover">
+                                Link Products 🔗
+                            </button>
+                            <a href="{% url 'artisan_products_list' %}"
+                                class="btn btn-outline-secondary rounded-pill border-0">
+                                Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

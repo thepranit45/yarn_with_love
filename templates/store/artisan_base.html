@@ -59,6 +59,13 @@
                             <span class="me-2">➕</span> Add Product
                         </a>
                     </li>
+                    <li class="nav-item">
+                        <button type="button"
+                            class="nav-link rounded-pill d-flex align-items-center text-muted border-0 bg-transparent w-100 text-start"
+                            data-bs-toggle="modal" data-bs-target="#globalAddReviewModal">
+                            <span class="me-2">⭐</span> Add Review
+                        </button>
+                    </li>
                 </ul>
             </div>
         </div>
@@ -67,6 +74,66 @@
         <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4 bg-light">
             {% block artisan_content %}{% endblock %}
         </main>
+    </div>
+</div>
+
+<!-- Global Add Review Modal -->
+<div class="modal fade" id="globalAddReviewModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow rounded-4">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title fw-bold">Add Manual Review</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <form action="{% url 'artisan_add_review' %}" method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small text-muted">Select Product</label>
+                        <select name="product_id" class="form-select rounded-3" required>
+                            <option value="" selected disabled>Choose a product...</option>
+                            {% for p in my_products %}
+                            <option value="{{ p.id }}">{{ p.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="row g-2 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold small text-muted">Customer Name (Optional)</label>
+                            <input type="text" name="customer_name" class="form-control rounded-3"
+                                placeholder="e.g. Sarah J.">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold small text-muted">Customer Photo (Optional)</label>
+                            <input type="file" name="customer_photo" class="form-control rounded-3" accept="image/*">
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small text-muted">Rating</label>
+                        <div class="rating-input d-flex gap-2 justify-content-center border rounded-3 py-2">
+                            {% for i in "54321" %}
+                            <input type="radio" class="btn-check" name="rating" id="globalRating{{i}}" value="{{i}}"
+                                required>
+                            <label class="btn btn-outline-warning rounded-circle" for="globalRating{{i}}"
+                                style="width: 40px; height: 40px; line-height: 25px;">{{i}}</label>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small text-muted">Customer Comment</label>
+                        <textarea name="comment" class="form-control rounded-3" rows="3"
+                            placeholder="Paste the customer's feedback here..." required></textarea>
+                    </div>
+
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary rounded-pill">Submit Review 🚀</button>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
 </div>
 

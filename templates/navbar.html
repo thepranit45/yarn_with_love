@@ -22,7 +22,8 @@
                 <path class="anim-thread"
                     d="M 100 115 C 100 115, 60 130, 60 90 C 60 60, 90 50, 100 80 C 110 50, 140 60, 140 90 C 140 130, 100 115, 100 115 L 100 140" />
             </svg>
-            <span style="font-family: 'Cinzel', serif; font-weight: 600; color: #3d405b; letter-spacing: 1px;">Yarned
+            <span
+                style="font-family: 'Pacifico', cursive; font-weight: 400; color: #e07a5f; letter-spacing: 0.5px; font-size: 1.8rem; text-shadow: 2px 2px 0px #ffe4ec;">Yarned
                 with Love</span>
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -31,23 +32,40 @@
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ms-auto nav-links align-items-center">
                 {% if user.is_authenticated %}
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                        data-bs-toggle="dropdown" aria-expanded="false">
+                        My Account
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <li><a class="dropdown-item" href="{% url 'profile' %}">My Profile 👤</a></li>
+                        <li><a class="dropdown-item" href="{% url 'my_orders' %}">My Orders 📦</a></li>
+                        {% if user.is_superuser %}
+                        <li><a class="dropdown-item fw-bold text-primary" href="{% url 'manage_artisans' %}">Manage
+                                Artisans 🛠️</a></li>
+                        {% endif %}
+                        {% if user.is_artisan %}
+                        <li><a class="dropdown-item" href="{% url 'artisan_dashboard' %}">Artisan Dashboard 🎨</a></li>
+                        {% endif %}
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+                        <li>
+                            <form action="{% url 'account_logout' %}" method="post" class="d-inline">
+                                {% csrf_token %}
+                                <button type="submit" class="dropdown-item btn-logout"
+                                    style="background: none; border: none; cursor: pointer;">Logout</button>
+                            </form>
+                        </li>
+                    </ul>
+                </li>
                 {% if user.is_artisan %}
                 <!-- Artisan Menu -->
-                <li class="nav-item">
-                    <a class="nav-link fw-bold text-primary" href="{% url 'artisan_dashboard' %}">🎨 Dashboard</a>
-                </li>
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'artisan_products_list' %}">Collection</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'about_us' %}">About Us</a>
-                </li>
-                <li class="nav-item">
-                    <form action="{% url 'account_logout' %}" method="post" class="d-inline">
-                        {% csrf_token %}
-                        <button type="submit" class="nav-link btn-logout"
-                            style="background: none; border: none; cursor: pointer;">Logout</button>
-                    </form>
                 </li>
                 {% else %}
                 <!-- Customer Menu -->
@@ -59,16 +77,6 @@
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'view_cart' %}">Cart 🛒</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'my_orders' %}">My Orders</a>
-                </li>
-                <li class="nav-item">
-                    <form action="{% url 'account_logout' %}" method="post" class="d-inline">
-                        {% csrf_token %}
-                        <button type="submit" class="nav-link btn-logout"
-                            style="background: none; border: none; cursor: pointer;">Logout</button>
-                    </form>
                 </li>
                 {% endif %}
                 {% else %}

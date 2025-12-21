@@ -6,6 +6,7 @@ class CustomUser(AbstractUser):
     bio = models.TextField(blank=True, help_text="Short bio for the artisan.")
     profile_image = models.ImageField(upload_to='profiles/', blank=True, null=True)
     vacation_mode = models.BooleanField(default=False, help_text="Temporarily disable products from showing in the marketplace.")
+    phone_number = models.CharField(max_length=15, blank=True, null=True, help_text="Contact number for orders.")
 
     class Meta:
         indexes = [

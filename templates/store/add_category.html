@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Add Category | Artisan Dashboard{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+                <div class="card-header bg-gradient-primary text-white p-4 text-center"
+                    style="background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);">
+                    <h2 class="h3 fw-bold mb-0 text-dark">✨ Add New Category</h2>
+                </div>
+
+                <div class="card-body p-4 p-md-5 bg-white">
+                    <form method="POST">
+                        {% csrf_token %}
+
+                        <!-- Name Field -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold text-muted small text-uppercase spacing-1">Category
+                                Name</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0 text-muted">
+                                    🏷️
+                                </span>
+                                {{ form.name }}
+                            </div>
+                            {% if form.name.errors %}
+                            <div class="text-danger small mt-1">{{ form.name.errors.0 }}</div>
+                            {% endif %}
+                            <div class="form-text text-muted small mt-2">
+                                The URL-friendly version (slug) will be automatically generated.
+                            </div>
+                        </div>
+
+                        <!-- Actions -->
+                        <div class="d-grid gap-3">
+                            <button type="submit" class="btn btn-dark btn-lg rounded-pill shadow-sm transition-hover">
+                                Create Category ➕
+                            </button>
+                            <a href="{% url 'artisan_products_list' %}"
+                                class="btn btn-outline-secondary rounded-pill border-0">
+                                Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,18 @@
+category Hair Tie
+1)daisy hair tie -40 rs
+2)bow hair tie -50 rs
+3)sunflower hair tie -50 rs
+4)love hair tie -60 rs
+5)rose hair tie -50 rs
+
+category Flower Pot 
+1) Pink Gerbera Flower Pot - 210   MRP250
+2) sunflower Flower Pot -210    MRP250
+
+category Key Chain 
+1) Evil Eye Keychain -60 rs MRP 75
+2)Ear Pod Case (BIg Size)- 150 rs MRP190
+
+
+
+for all give description and all things according to that product 

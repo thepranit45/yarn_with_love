@@ -3,8 +3,10 @@ from django.contrib.auth import login, authenticate
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib import messages
-from .forms import CustomUserCreationForm, CustomerRegistrationForm
+from django.contrib import messages
+from .forms import CustomUserCreationForm, CustomerRegistrationForm, ProfileForm, AddArtistForm
 from .models import CustomUser, ArtisanAccessCode
+from django.contrib.auth.decorators import user_passes_test
 
 def register(request):
     """Register as a customer"""
@@ -144,3 +146,55 @@ def manage_access_codes(request):
         'access_codes': access_codes,
         'demo_artisan': demo_artisan
     })
+
+from store.models import Order
+
+@login_required
+def profile(request):
+    """User Profile View"""
+    if request.method == 'POST':
+        form = ProfileForm(request.POST, request.FILES, instance=request.user)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Your profile has been updated! ✨')
+            return redirect('profile')
+    else:
+        form = ProfileForm(instance=request.user)
+    
+    # Fetch recent orders (last 5)
+    recent_orders = Order.objects.filter(customer=request.user).order_by('-created_at')[:5]
+    
+    return render(request, 'users/profile.html', {
+        'form': form,
+        'recent_orders': recent_orders
+    })
+
+@login_required
+@user_passes_test(lambda u: u.is_superuser)
+def manage_artisans(request):
+    """Admin Dashboard to Manage Artisans"""
+    if request.method == 'POST':
+        if 'add_artist' in request.POST:
+            form = AddArtistForm(request.POST)
+            if form.is_valid():
+                user = form.save(commit=False)
+                user.is_artisan = True
+                user.save()
+                messages.success(request, f"New Artist '{user.username}' created successfully! 🎨")
+                return redirect('manage_artisans')
+            else:
+                messages.error(request, "Error creating artist. Please check the form.")
+        elif 'toggle_status' in request.POST:
+            user_id = request.POST.get('user_id')
+            user = get_object_or_404(CustomUser, pk=user_id)
+            if user != request.user: # Prevent admin from disabling themselves
+                user.is_artisan = not user.is_artisan
+                user.save()
+                status = "promoted to Artisan" if user.is_artisan else "demoted to Customer"
+                messages.success(request, f"{user.username} has been {status}.")
+            return redirect('manage_artisans')
+    else:
+        form = AddArtistForm()
+
+    users = CustomUser.objects.all().order_by('-date_joined')
+    return render(request, 'users/manage_artisans.html', {'users': users, 'form': form})
