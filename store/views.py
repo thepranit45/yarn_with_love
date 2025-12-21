@@ -13,7 +13,7 @@ from django.db import transaction
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.template.loader import get_template
-from django.template import TemplateDoesNotExist
+from django.template.exceptions import TemplateDoesNotExist
 import json
 from django.utils import timezone
 from .demo_utils import reset_demo_data # Import the helper
