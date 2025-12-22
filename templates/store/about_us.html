@@ -5,32 +5,70 @@
 {% block content %}
 <div class="container py-5">
     <!-- Hero Section -->
-    <div class="row align-items-center mb-5">
-        <div class="col-lg-6 text-center text-lg-start mb-4 mb-lg-0">
+    <!-- Hero Section -->
+    <div class="row align-items-center mb-5 justify-content-center">
+        <div class="col-lg-8 text-center mb-4 mb-lg-0">
             <span class="badge bg-primary bg-opacity-10 text-primary rounded-pill px-3 py-2 mb-3">Our Story</span>
             <h1 class="display-4 fw-bold text-dark mb-4">Crafting Warmth,<br>One Stitch at a Time.</h1>
-            <p class="lead text-muted mb-4">
+            <p class="lead text-muted mb-4 mx-auto" style="max-width: 600px;">
                 Welcome to <span class="fw-bold text-primary">Yarned with Love</span>. We believe that true beauty lies
                 in the imperfect perfection of handmade crafts.
             </p>
-            <div class="d-flex gap-3 justify-content-center justify-content-lg-start">
+            <div class="d-flex gap-3 justify-content-center">
                 <a href="{% url 'product_list' %}" class="btn btn-primary rounded-pill px-5 btn-lg shadow-sm">Explore
                     Collection</a>
             </div>
         </div>
-        <div class="col-lg-6">
-            <div class="position-relative">
-                <div class="bg-primary bg-opacity-10 rounded-circle position-absolute top-50 start-50 translate-middle"
-                    style="width: 400px; height: 400px; z-index: -1;"></div>
-                {% if artisan and artisan.profile_image %}
-                <img src="{{ artisan.profile_image.url }}" alt="{{ artisan.get_display_name }}"
-                    class="img-fluid rounded-4 shadow-lg rotate-hover" style="transform: rotate(2deg);">
-                {% else %}
-                <div class="bg-white rounded-4 shadow-lg p-5 text-center"
-                    style="transform: rotate(2deg); min-height: 400px; display: flex; align-items: center; justify-content: center;">
-                    <span class="display-1">🧶</span>
+    </div>
+
+
+    <!-- Meet the Artisan -->
+    <div class="row justify-content-center py-5">
+        <div class="col-lg-10">
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden bg-white">
+                <div class="row g-0 flex-md-row-reverse">
+                    <div class="col-md-5 bg-light d-flex align-items-center justify-content-center"
+                        style="min-height: 300px;">
+                        {% if artisan and artisan.profile_image %}
+                        <img src="{{ artisan.profile_image.url }}" class="img-fluid object-fit-cover h-100 w-100"
+                            alt="{{ artisan.get_display_name }}" style="min-height: 300px;">
+                        {% else %}
+                        <div class="text-center p-5">
+                            <span class="display-1">🧶</span>
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-7">
+                        <div class="card-body p-5">
+                            <h6 class="text-uppercase text-primary fw-bold mb-2 ls-2">Meet the Crafter</h6>
+                            <h2 class="fw-bold mb-4">
+                                {% if artisan %}
+                                {{ artisan.get_display_name }}
+                                {% else %}
+                                Mansi
+                                {% endif %}
+                            </h2>
+                            <p class="text-muted leading-relaxed">
+                                {% if artisan and artisan.bio %}
+                                {{ artisan.bio }}
+                                {% else %}
+                                Passionate about creating beautiful, handmade pieces that add a touch of warmth to your
+                                life.
+                                Every item is crafted with love and attention to detail.
+                                {% endif %}
+                            </p>
+
+                            <div class="mt-4">
+                                <h6 class="fw-bold mb-3">Specialties:</h6>
+                                <div class="d-flex gap-2 flex-wrap">
+                                    <span class="badge bg-light text-dark border">Handmade Woolen Crafts</span>
+                                    <span class="badge bg-light text-dark border">Custom Accessories</span>
+                                    <span class="badge bg-light text-dark border">Home Decor</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                {% endif %}
             </div>
         </div>
     </div>
@@ -91,6 +129,9 @@
         </div>
     </div>
 
+
+
+
     <!-- Values -->
     <div class="row g-4 py-5 text-center">
         <div class="col-md-4">
@@ -99,6 +140,7 @@
                 <h4 class="fw-bold">Handmade with Love</h4>
                 <p class="text-muted">No factories, no mass production. Just genuine craftsmanship.</p>
             </div>
+
         </div>
         <div class="col-md-4">
             <div class="p-4">
