@@ -2,7 +2,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.views.decorators.http import require_http_methods
 from django.views.decorators.cache import cache_page
-from django.db.models import Q, Prefetch
+from django.db.models import Q, Prefetch, Case, When, Value, IntegerField
 from .models import Product, Order, OrderItem, OrderUpdate, Review, Category, Subscriber, Cart, CartItem, Coupon, ChatInquiry, ProductImage
 from .forms import OrderUpdateForm, OrderStatusForm, ProductForm, ReviewForm, CheckoutForm, CouponForm, CategoryForm, VariantLinkForm
 from django.contrib import messages
@@ -25,6 +25,17 @@ def product_list(request):
     category = request.GET.get('category', '')
     
     products = Product.objects.filter(is_active=True).exclude(artisan__username='artisan_demo').select_related('artisan', 'category')
+
+    # Custom ordering: Flowers -> Hair Ties -> Keychain -> Others
+    products = products.annotate(
+        custom_order=Case(
+            When(category__name__icontains='flower', then=Value(1)),
+            When(category__name__icontains='hair', then=Value(2)),
+            When(category__name__icontains='key', then=Value(3)),
+            default=Value(4),
+            output_field=IntegerField(),
+        )
+    ).order_by('custom_order', '-created_at')
     
     if query:
         products = products.filter(Q(name__icontains=query) | Q(description__icontains=query))
@@ -54,6 +65,56 @@ def product_list(request):
     featured_reviews = Review.objects.filter(rating=5).order_by('-created_at')[:3]
 
     return render(request, 'store/product_list.html', {
+        'products': products, 
+        'query': query,
+        'categories': categories,
+        'recommended_products': recommended_products,
+        'featured_reviews': featured_reviews,
+    })
+
+def test_page(request):
+    query = request.GET.get('q', '')
+    category = request.GET.get('category', '')
+    
+    products = Product.objects.filter(is_active=True).exclude(artisan__username='artisan_demo').select_related('artisan', 'category')
+    
+    # Custom ordering: Flowers -> Hair Ties -> Keychain -> Others
+    products = products.annotate(
+        custom_order=Case(
+            When(category__name__icontains='flower', then=Value(1)),
+            When(category__name__icontains='hair', then=Value(2)),
+            When(category__name__icontains='key', then=Value(3)),
+            default=Value(4),
+            output_field=IntegerField(),
+        )
+    ).order_by('custom_order', '-created_at')
+    
+    if query:
+        products = products.filter(Q(name__icontains=query) | Q(description__icontains=query))
+    if category:
+        products = products.filter(category__slug=category)
+    
+    categories = Category.objects.all()
+    
+    recommended_products = []
+    if request.user.is_authenticated:
+        try:
+            # Get categories of products the user has bought
+            purchased_categories = OrderItem.objects.filter(
+                order__customer=request.user
+            ).values_list('product__category', flat=True).distinct()
+            
+            if purchased_categories:
+                recommended_products = Product.objects.filter(
+                    is_active=True,
+                    category__in=purchased_categories
+                ).select_related('artisan', 'category').order_by('?')[:4]
+        except Exception:
+            recommended_products = []
+            
+    featured_reviews = Review.objects.filter(rating=5).order_by('-created_at')[:3]
+
+    return render(request, 'store/test_page.html', {
         'products': products, 
         'query': query,
         'categories': categories,

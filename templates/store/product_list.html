@@ -72,46 +72,61 @@
     </div>
 </section>
 
-<!-- CATEGORIES SECTION (HIDDEN AS REQUESTED)
+<!-- CATEGORIES SECTION (Premium Polish) -->
 <section id="categories" class="py-5 bg-white">
     <div class="container">
-        <div class="text-center mb-5">
-            <h2 class="display-6 fw-bold" style="color: var(--text-dark);">Browse by Category 🧸</h2>
+        <div class="text-center mb-4">
+            <h2 class="display-6 fw-bold" style="color: var(--text-dark); font-family: 'Playfair Display', serif;">
+                Browse by Category</h2>
             <p class="text-muted">Find exactly what you're looking for!</p>
-            <div class="section-divider"></div>
         </div>
-        
-        <div class="row g-4 justify-content-center">
+
+        <div class="d-flex flex-wrap justify-content-center gap-3">
+            <a href="?#collection"
+                class="btn btn-lg rounded-pill px-4 py-2 shadow-sm {% if not request.GET.category %}active-category{% endif %}"
+                style="background-color: var(--primary-color); color: white; border: none; transition: all 0.3s ease;">
+                All ✨
+            </a>
+
             {% if categories %}
-                {% for category in categories %}
-                <div class="col-6 col-md-4 col-lg-3">
-                    <a href="?category={{ category.slug }}#collection" target="_blank" rel="noopener noreferrer" class="category-card text-decoration-none h-100 d-block p-4 rounded-4 text-center border-0 shadow-sm" style="background-color: #fff0f5; transition: transform 0.3s ease;">
-                        <div class="category-icon-wrapper mb-3">
-                            <span style="font-size: 3rem;">
-                                {% if 'toy' in category.name|lower %}🧸
-                                {% elif 'hair' in category.name|lower %}🎀
-                                {% elif 'pot' in category.name|lower %}🌻
-                                {% elif 'key' in category.name|lower %}🔑
-                                {% elif 'cloth' in category.name|lower or 'wear' in category.name|lower %}👗
-                                {% elif 'bag' in category.name|lower %}👜
-                                {% elif 'home' in category.name|lower or 'decor' in category.name|lower %}🏠
-                                {% elif 'flower' in category.name|lower %}🌹
-                                {% else %}🧶{% endif %}
-                            </span>
-                        </div>
-                        <h5 class="fw-bold fs-5 mb-0" style="color: var(--text-dark); font-family: 'Plus Jakarta Sans', sans-serif;">{{ category.name }}</h5>
-                    </a>
-                </div>
-                {% endfor %}
-            {% else %}
-                <div class="col-12 text-center text-muted">
-                    <p>No categories found yet.</p>
-                </div>
+            {% for category in categories %}
+            <a href="?category={{ category.slug }}#collection"
+                class="btn btn-lg rounded-pill px-4 py-2 shadow-sm d-flex align-items-center gap-2 category-pill"
+                style="background-color: #fff0f5; color: var(--text-dark); border: 1px solid rgba(0,0,0,0.05); transition: all 0.3s ease;">
+                <span style="font-size: 1.2rem;">
+                    {% if 'toy' in category.name|lower %}🧸
+                    {% elif 'hair' in category.name|lower %}🎀
+                    {% elif 'pot' in category.name|lower %}🌻
+                    {% elif 'key' in category.name|lower %}🔑
+                    {% elif 'cloth' in category.name|lower or 'wear' in category.name|lower %}👗
+                    {% elif 'bag' in category.name|lower %}👜
+                    {% elif 'home' in category.name|lower or 'decor' in category.name|lower %}🏠
+                    {% elif 'flower' in category.name|lower %}🌹
+                    {% else %}🧶{% endif %}
+                </span>
+                <span style="font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 600;">{{ category.name }}</span>
+            </a>
+            {% endfor %}
             {% endif %}
         </div>
+
+        <style>
+            .category-pill:hover {
+                transform: translateY(-3px);
+                background-color: white !important;
+                box-shadow: 0 10px 20px rgba(212, 127, 166, 0.2) !important;
+                border-color: var(--primary-color) !important;
+                color: var(--primary-color) !important;
+            }
+
+            .active-category {
+                background: var(--primary-color) !important;
+                color: white !important;
+                box-shadow: 0 10px 20px rgba(212, 127, 166, 0.3) !important;
+            }
+        </style>
     </div>
 </section>
--->
 
 <!-- RECOMMENDED SECTION -->
 {% if recommended_products %}
@@ -162,29 +177,136 @@
             <div class="section-divider"></div>
         </div>
 
-        <div class="row g-4">
+        <!-- Masonry Grid Layout (Premium Polish) -->
+        <style>
+            .masonry-grid {
+                column-count: 2;
+                column-gap: 1.5rem;
+            }
+
+            @media (min-width: 768px) {
+                .masonry-grid {
+                    column-count: 3;
+                }
+            }
+
+            @media (min-width: 1200px) {
+                .masonry-grid {
+                    column-count: 4;
+                }
+            }
+
+            .masonry-item {
+                break-inside: avoid;
+                margin-bottom: 2rem;
+            }
+
+            .product-card {
+                border-radius: 24px;
+                /* More rounded */
+                overflow: hidden;
+                transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+                background: white;
+                box-shadow: 0 10px 20px rgba(0, 0, 0, 0.03);
+                /* Softer base shadow */
+                border: 1px solid rgba(0, 0, 0, 0.02);
+                position: relative;
+            }
+
+            .product-card:hover {
+                transform: translateY(-8px) scale(1.01);
+                box-shadow: 0 20px 40px rgba(212, 127, 166, 0.15);
+                /* Pink tinted shadow */
+                z-index: 10;
+            }
+
+            .glass-badge {
+                background: rgba(255, 255, 255, 0.9);
+                backdrop-filter: blur(8px);
+                -webkit-backdrop-filter: blur(8px);
+                border: 1px solid rgba(255, 255, 255, 0.5);
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            }
+
+            /* Background Pattern */
+            body {
+                background-color: #fff5f8;
+                background-image: radial-gradient(#ffccdb 1.5px, transparent 1.5px);
+                background-size: 30px 30px;
+                background-position: 0 0;
+            }
+        </style>
+
+        <div class="masonry-grid">
             {% for product in products %}
-            <div class="col-6 col-md-4 col-lg-3">
-                <a href="{% url 'product_detail' product.pk %}" class="product-card">
-                    <div class="product-img-wrapper">
+            <!-- DEBUG BLOCK REMOVED -->
+            <div class="masonry-item">
+                <a href="{% url 'product_detail' product.pk %}"
+                    class="product-card d-block text-decoration-none text-dark">
+                    <div class="position-relative">
                         {% if product.image %}
-                        <img src="{{ product.image.url }}" class="product-img" alt="{{ product.name }}">
+                        <!-- Image with natural height & subtle zoom effect on parent hover -->
+                        <div style="overflow: hidden;">
+                            <img src="{{ product.image.url }}" class="w-100 d-block"
+                                style="object-fit: cover; transition: transform 0.8s ease;"
+                                onmouseover="this.style.transform='scale(1.05)'"
+                                onmouseout="this.style.transform='scale(1)'" alt="{{ product.name }}">
+                        </div>
                         {% else %}
-                        <div class="product-img d-flex align-items-center justify-content-center text-muted">No Image
+                        <div class="d-flex align-items-center justify-content-center bg-light text-muted"
+                            style="height: 250px;">
+                            <span class="fs-1">🧶</span>
                         </div>
                         {% endif %}
 
+                        <!-- Badges -->
                         {% if product.estimated_days_to_complete <= 3 %} <span
-                            class="badge bg-success position-absolute top-0 start-0 m-3 shadow-sm">Ready Soon</span>
+                            class="badge position-absolute top-0 start-0 m-3 px-3 py-2 rounded-pill shadow-sm"
+                            style="background: linear-gradient(135deg, #a8e6cf, #dcedc1); color: #1a5e3a; font-weight: 600; font-size: 0.75rem;">
+                            ✨ Ready Soon
+                            </span>
+                            {% endif %}
+
+                            <!-- Watermark -->
+                            <div class="glass-badge position-absolute top-0 end-0 m-3 px-3 py-1 rounded-pill"
+                                style="border: 1px solid #ffe4ec;">
+                                <small class="fw-bold" style="font-size: 0.7rem; color: var(--primary-color);">Handmade
+                                    🧶</small>
+                            </div>
+
+                            <!-- Vacation Overlay -->
+                            {% if product.artisan.vacation_mode %}
+                            <div class="position-absolute bottom-0 start-0 w-100 text-center py-2 glass-badge"
+                                style="border-radius: 0; border-top: 1px solid rgba(0,0,0,0.05);">
+                                <span class="small fw-bold text-danger">🏖️ Artist on Vacation</span>
+                            </div>
                             {% endif %}
                     </div>
-                    <div class="product-info">
-                        <h3 class="product-title mb-1" style="font-size: 1.1rem; font-weight: 600;">{{ product.name }}
+
+                    <div class="p-4">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <p class="text-uppercase tracking-wider small fw-bold mb-0"
+                                style="color: var(--secondary-color); font-size: 0.7rem; letter-spacing: 1px;">
+                                {{ product.category.name|default:"General" }}
+                            </p>
+                            <small class="text-muted" style="font-size: 0.75rem;">
+                                By {{ product.artisan.first_name|default:product.artisan.username }}
+                            </small>
+                        </div>
+
+                        <h3 class="h5 fw-bold mb-3"
+                            style="font-family: 'Playfair Display', serif; letter-spacing: -0.5px;">
+                            {{ product.name }}
                         </h3>
-                        <p class="text-muted small mb-2">{{ product.category.name|default:"General" }}</p>
-                        <div class="d-flex justify-content-between align-items-center">
-                            <span class="product-price">₹{{ product.price }}</span>
-                            <small class="text-muted">👤 Mansi</small>
+
+                        <div class="d-flex justify-content-between align-items-center pt-3 border-top border-light">
+                            <span class="fw-bold" style="color: var(--primary-color); font-size: 1.2rem;">
+                                <span>₹</span>{{ product.price }}
+                            </span>
+                            <span class="btn btn-sm rounded-pill px-3"
+                                style="background-color: var(--bg-light); color: var(--text-dark); border: 1px solid #ffe4ec; transition: 0.2s;">
+                                View ➜
+                            </span>
                         </div>
                     </div>
                 </a>

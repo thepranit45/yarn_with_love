@@ -126,6 +126,12 @@
                                     {% endif %}
                                 </form>
                                 {% endif %}
+
+                                <button type="button" class="btn btn-sm btn-outline-primary rounded-pill w-100 mt-2"
+                                    data-bs-toggle="modal" data-bs-target="#resetPasswordModal{{ u.id }}"
+                                    style="max-width: 140px;">
+                                    Change Password
+                                </button>
                             </td>
                         </tr>
                         {% endfor %}
@@ -134,5 +140,38 @@
             </div>
         </div>
     </div>
+
+    <!-- Password Reset Modals -->
+    {% for u in users %}
+    <div class="modal fade" id="resetPasswordModal{{ u.id }}" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content rounded-4 border-0 shadow">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title fw-bold">Change Password for {{ u.username }} 🔐</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <form method="POST">
+                        {% csrf_token %}
+                        <input type="hidden" name="reset_password" value="true">
+                        <input type="hidden" name="user_id" value="{{ u.id }}">
+
+                        <div class="mb-3">
+                            <label class="form-label text-muted small text-uppercase fw-bold">New Password</label>
+                            <input type="text" name="new_password"
+                                class="form-control form-control-lg bg-light border-0" placeholder="Enter new password"
+                                required minlength="6">
+                            <div class="form-text">Enter a secure password for this user.</div>
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary btn-lg rounded-pill">Update Password</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
 </div>
 {% endblock %}

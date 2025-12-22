@@ -41,6 +41,7 @@
                         <li><a class="dropdown-item" href="{% url 'profile' %}">My Profile 👤</a></li>
                         <li><a class="dropdown-item" href="{% url 'my_orders' %}">My Orders 📦</a></li>
                         {% if user.is_superuser %}
+                        <li><a class="dropdown-item fw-bold text-danger" href="/admin/">Admin Panel 🔐</a></li>
                         <li><a class="dropdown-item fw-bold text-primary" href="{% url 'manage_artisans' %}">Manage
                                 Artisans 🛠️</a></li>
                         {% endif %}

@@ -193,6 +193,18 @@ def manage_artisans(request):
                 status = "promoted to Artisan" if user.is_artisan else "demoted to Customer"
                 messages.success(request, f"{user.username} has been {status}.")
             return redirect('manage_artisans')
+        elif 'reset_password' in request.POST:
+            user_id = request.POST.get('user_id')
+            new_password = request.POST.get('new_password')
+            if user_id and new_password:
+                try:
+                    user = CustomUser.objects.get(pk=user_id)
+                    user.set_password(new_password)
+                    user.save()
+                    messages.success(request, f"Password updated for {user.username} 🔐")
+                except CustomUser.DoesNotExist:
+                    messages.error(request, "User not found.")
+            return redirect('manage_artisans')
     else:
         form = AddArtistForm()
 
