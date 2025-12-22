@@ -42,7 +42,7 @@ def product_list(request):
     if category:
         products = products.filter(category__slug=category)
     
-    categories = Category.objects.all()
+    categories = Category.objects.exclude(name='Demo Category')
     
     recommended_products = []
     if request.user.is_authenticated:
@@ -94,7 +94,7 @@ def test_page(request):
     if category:
         products = products.filter(category__slug=category)
     
-    categories = Category.objects.all()
+    categories = Category.objects.exclude(name='Demo Category')
     
     recommended_products = []
     if request.user.is_authenticated:
