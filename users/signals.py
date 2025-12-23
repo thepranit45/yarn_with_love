@@ -3,12 +3,17 @@ from django.dispatch import receiver
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.mail import send_mail
+import logging
+
+logger = logging.getLogger(__name__)
 
 User = get_user_model()
 
 @receiver(post_save, sender=User)
 def send_welcome_email(sender, instance, created, **kwargs):
     if created:
+        logger.info(f"New user created: {instance.email}. Attempting to send welcome email.")
+        
         subject = 'Welcome to Yarned with Love! 🧶'
         message = f"""
         Hi {instance.get_display_name()},
@@ -23,7 +28,7 @@ def send_welcome_email(sender, instance, created, **kwargs):
         The Yarned with Love Team
         """
         
-        # Only send if API key is set to avoid errors in dev
+        # Only send if API key is set 
         if settings.EMAIL_HOST_PASSWORD:
             try:
                 send_mail(
@@ -31,7 +36,10 @@ def send_welcome_email(sender, instance, created, **kwargs):
                     message,
                     settings.DEFAULT_FROM_EMAIL,
                     [instance.email],
-                    fail_silently=True,
+                    fail_silently=False, # Changed to False to ensure we catch errors
                 )
+                logger.info(f"Welcome email sent successfully to {instance.email}")
             except Exception as e:
-                print(f"Error sending welcome email: {e}")
+                logger.error(f"Error sending welcome email to {instance.email}: {e}")
+        else:
+             logger.warning("EMAIL_HOST_PASSWORD (SendGrid API Key) is missing. Skipping welcome email.")
