@@ -8,3 +8,5 @@ requests-oauthlib
 PyJWT
 cryptography
 razorpay
+sendgrid
+python-dotenv
