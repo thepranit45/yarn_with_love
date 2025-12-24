@@ -672,6 +672,14 @@ def payment_success(request):
                         order.payment_screenshot = request.FILES['payment_screenshot']
                         order.payment_timestamp = timezone.now()
                     
+                    # Calculate Shipping Fee
+                    # Gujarat Pincodes usually start with 36, 37, 38, 39
+                    zip_code = order.zip_code.replace(" ", "").strip()
+                    if zip_code.startswith(('36', '37', '38', '39')):
+                        order.shipping_fee = 20.00
+                    else:
+                        order.shipping_fee = 40.00
+
                     # Apply Coupon if present
                     if cart.coupon and cart.coupon.active:
                         order.coupon = cart.coupon

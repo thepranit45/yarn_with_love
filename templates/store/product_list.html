@@ -144,6 +144,150 @@
             <div class="section-divider"></div>
         </div>
 
+        <!-- SPECIAL SEASONAL OFFER DISPLAY -->
+        <div class="row justify-content-center mb-5">
+            <div class="col-lg-10">
+                <a href="{% url 'product_detail' 31 %}" class="text-decoration-none">
+                    <div class="card border-0 shadow-lg overflow-hidden position-relative"
+                        style="background: #e53935; border-radius: 28px; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);">
+
+                        <!-- Premium Sparkle Overlay -->
+                        <div class="sparkle-overlay"></div>
+
+                        <style>
+                            .card:hover {
+                                transform: translateY(-8px) scale(1.01);
+                                box-shadow: 0 20px 40px rgba(183, 28, 28, 0.4) !important;
+                            }
+
+                            .sparkle-overlay {
+                                position: absolute;
+                                top: 0;
+                                left: 0;
+                                right: 0;
+                                bottom: 0;
+                                background-image:
+                                    radial-gradient(white 1px, transparent 1px),
+                                    radial-gradient(white 1px, transparent 1px);
+                                background-size: 50px 50px;
+                                background-position: 0 0, 25px 25px;
+                                opacity: 0.1;
+                                animation: sparkleMove 20s linear infinite;
+                                pointer-events: none;
+                            }
+
+                            @keyframes sparkleMove {
+                                0% {
+                                    background-position: 0 0, 25px 25px;
+                                }
+
+                                100% {
+                                    background-position: 50px 50px, 75px 75px;
+                                }
+                            }
+
+                            .glass-text-container {
+                                background: rgba(255, 255, 255, 0.1);
+                                backdrop-filter: blur(5px);
+                                border-radius: 20px;
+                                border: 1px solid rgba(255, 255, 255, 0.2);
+                            }
+
+                            .cta-btn-shine {
+                                position: relative;
+                                overflow: hidden;
+                                transition: all 0.3s ease;
+                            }
+
+                            .cta-btn-shine::after {
+                                content: '';
+                                position: absolute;
+                                top: 0;
+                                left: -100%;
+                                width: 100%;
+                                height: 100%;
+                                background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+                                transition: 0.5s;
+                            }
+
+                            .cta-btn-shine:hover::after {
+                                left: 100%;
+                            }
+
+                            .cta-btn-shine:hover {
+                                transform: scale(1.05);
+                                box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2) !important;
+                            }
+                        </style>
+
+                        <div class="row g-0 align-items-center">
+                            <!-- Image Side -->
+                            <div class="col-md-5 position-relative">
+                                <div style="height: 100%; min-height: 320px; overflow: hidden;">
+                                    <img src="/media/products/Seasonal/santa.jpg" class="w-100 h-100"
+                                        style="object-fit: cover; object-position: center; transition: transform 0.5s ease;"
+                                        onmouseover="this.style.transform='scale(1.1)'"
+                                        onmouseout="this.style.transform='scale(1)'" alt="Christmas Special">
+
+                                </div>
+                            </div>
+
+                            <!-- Content Side -->
+                            <div class="col-md-7 text-white p-4 p-md-5 text-center text-md-start position-relative z-1">
+                                <span class="badge mb-3 px-3 py-2 rounded-pill fw-bold shadow-sm"
+                                    style="background: linear-gradient(45deg, #FFD700, #ffecb3); color: #b71c1c; letter-spacing: 1px;">
+                                    🎅 LIMITED EDITION
+                                </span>
+
+                                <h1 class="display-3 mb-3 fw-bold"
+                                    style="font-family: 'Berkshire Swash', cursive; text-shadow: 0 4px 10px rgba(0,0,0,0.3);">
+                                    Christmas Special
+                                </h1>
+
+                                <p class="lead mb-4" style="font-size: 1.1rem; opacity: 0.95; line-height: 1.6;">
+                                    Make this season magical with our exclusive <br>
+                                    <strong>Hand-Knit Santa Keychain!</strong> 🧶✨
+                                </p>
+
+                                <div
+                                    class="glass-text-container p-3 mb-4 d-inline-flex flex-column flex-md-row align-items-center gap-3">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <span class="fs-5 text-uppercase tracking-wide"
+                                            style="font-size: 0.8rem; opacity: 0.8;">Deal Price</span>
+                                        <span class="display-6 fw-bold"
+                                            style="color: #FFD700; text-shadow: 0 2px 4px rgba(0,0,0,0.2);">₹70</span>
+                                    </div>
+                                    <div class="vr d-none d-md-block bg-white opacity-50"></div>
+                                    <div class="d-flex align-items-center gap-2 text-white-50">
+                                        <span class="text-decoration-line-through">₹120</span>
+                                        <span class="badge bg-white text-danger fw-bold rounded-1">42% OFF</span>
+                                    </div>
+                                </div>
+
+                                <div class="d-flex gap-3 justify-content-center justify-content-md-start">
+                                    <span class="btn btn-light btn-lg rounded-pill px-5 fw-bold shadow-lg cta-btn-shine"
+                                        style="color: #b71c1c; font-family: 'Plus Jakarta Sans', sans-serif;">
+                                        Grab Yours 🎁
+                                    </span>
+                                </div>
+
+                                <!-- Floating Decor -->
+                                <div
+                                    style="position: absolute; top: 10px; right: 20px; font-size: 4rem; opacity: 0.15; transform: rotate(15deg);">
+                                    ❄️</div>
+                                <div
+                                    style="position: absolute; bottom: 10px; right: 80px; font-size: 2.5rem; opacity: 0.15; transform: rotate(-10deg);">
+                                    🦌</div>
+                                <div
+                                    style="position: absolute; bottom: 40px; right: 20px; font-size: 2rem; opacity: 0.2;">
+                                    🎄</div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+
         <!-- Masonry Grid Layout (Premium Polish) -->
         <style>
             /* Bootstrap Grid Customization if needed */
@@ -297,12 +441,12 @@
                 {% empty %}
                 <div class="testimonial-card">
                     <div class="mb-2">⭐⭐⭐⭐⭐</div>
-                    <p class="mb-2 fst-italic">"The most beautiful sweater I own!"</p>
+                    <p class="mb-2 fst-italic">"The crochet bouquet is absolutely beautiful! 🌸"</p>
                     <small class="fw-bold">- Priya S.</small>
                 </div>
                 <div class="testimonial-card">
                     <div class="mb-2">⭐⭐⭐⭐⭐</div>
-                    <p class="mb-2 fst-italic">"Packaging was so cute! 🎀"</p>
+                    <p class="mb-2 fst-italic">"Got the Santa keychain, it's so adorable! 🎅"</p>
                     <small class="fw-bold">- Anjali M.</small>
                 </div>
                 {% endfor %}
@@ -353,4 +497,75 @@
 </section>
 
 <a href="#" class="floating-chat-btn">💬</a>
+
+<script>
+    // BEAUTIFUL SNOWFLAKE EFFECT ❄️✨
+    function createSnowflake() {
+        const snowflake = document.createElement('div');
+        const isSparkle = Math.random() < 0.2; // 20% chance to be a sparkle
+        snowflake.innerHTML = isSparkle ? '✨' : '❄️';
+
+        snowflake.style.position = 'fixed';
+        snowflake.style.top = '-50px';
+        snowflake.style.left = Math.random() * 100 + 'vw';
+
+        // Random size
+        const size = Math.random() * 15 + 10;
+        snowflake.style.fontSize = size + 'px';
+
+        // Random opacity for depth
+        snowflake.style.opacity = Math.random() * 0.7 + 0.3;
+
+        // Random blur for depth of field effect
+        if (Math.random() < 0.5) {
+            snowflake.style.filter = `blur(${Math.random() * 2}px)`;
+        }
+
+        snowflake.style.zIndex = '9999';
+        snowflake.style.pointerEvents = 'none';
+
+        // Randomize fall duration
+        const duration = Math.random() * 5 + 5;
+
+        // Sway delay
+        const swayDelay = Math.random() * 5;
+
+        snowflake.style.animation = `fall ${duration}s linear infinite, sway ${Math.random() * 3 + 2}s ease-in-out infinite alternate`;
+        snowflake.style.animationDelay = `0s, ${swayDelay}s`;
+
+        // Add a soft glow
+        snowflake.style.textShadow = '0 0 5px rgba(255, 255, 255, 0.8)';
+
+        document.body.appendChild(snowflake);
+
+        // Remove snowflake after animation
+        setTimeout(() => {
+            snowflake.remove();
+        }, duration * 1000);
+    }
+
+    // Create snowflakes at intervals
+    setInterval(createSnowflake, 200);
+
+    // CSS for falling and swaying
+    const style = document.createElement('style');
+    style.innerHTML = `
+        @keyframes fall {
+            to {
+                transform: translateY(110vh);
+            }
+        }
+        @keyframes sway {
+            from {
+                margin-left: -20px;
+                transform: rotate(0deg);
+            }
+            to {
+                margin-left: 20px;
+                transform: rotate(45deg);
+            }
+        }
+    `;
+    document.head.appendChild(style);
+</script>
 {% endblock %}

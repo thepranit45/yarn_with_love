@@ -23,13 +23,62 @@
                                     <td>Total Items</td>
                                     <td class="text-end">{{ cart.items.count }}</td>
                                 </tr>
+                                <tr>
+                                    <td>Shipping Fee <small class="text-muted"
+                                            id="shipping-location">(Calculating...)</small></td>
+                                    <td class="text-end" id="shipping-cost">₹0</td>
+                                </tr>
                                 <tr class="fw-bold fs-5">
                                     <td>Total Amount</td>
-                                    <td class="text-end" style="color: var(--primary-color);">₹{{ total_amount }}</td>
+                                    <td class="text-end" style="color: var(--primary-color);">₹<span
+                                            id="total-amount">{{ total_amount }}</span></td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
+
+                    <script>
+                        document.addEventListener('DOMContentLoaded', function () {
+                            const zipInput = document.getElementById('id_zip_code'); // Try ID from form rendering
+                            // Fallback if ID is not standard (Django usually uses id_field_name)
+                            const zipInputs = document.querySelectorAll('input[name="zip_code"]');
+                            const zipField = zipInput || zipInputs[0];
+
+                            const shippingCostEl = document.getElementById('shipping-cost');
+                            const shippingLocEl = document.getElementById('shipping-location');
+                            const totalAmountEl = document.getElementById('total-amount');
+
+                            // Base total from context (before shipping)
+                            const baseTotal = parseFloat("{{ total_amount }}");
+
+                            function updateShipping() {
+                                const zip = zipField.value.replace(/\s+/g, '').trim();
+                                let shipping = 40; // Default (Outside Gujarat)
+                                let location = "(India)";
+
+                                if (zip.length >= 2) {
+                                    if (zip.startsWith('36') || zip.startsWith('37') || zip.startsWith('38') || zip.startsWith('39')) {
+                                        shipping = 20;
+                                        location = "(Gujarat)";
+                                    }
+                                }
+
+                                // Update visible text
+                                shippingCostEl.textContent = '₹' + shipping;
+                                shippingLocEl.textContent = location;
+
+                                // Update Total
+                                const newTotal = baseTotal + shipping;
+                                totalAmountEl.textContent = newTotal.toFixed(1); // Ensure decimal format if needed
+                            }
+
+                            if (zipField) {
+                                zipField.addEventListener('input', updateShipping);
+                                // Run once on load in case field is pre-filled
+                                updateShipping();
+                            }
+                        });
+                    </script>
 
                     <!-- Coupon Section -->
                     <div class="mb-4">
@@ -58,53 +107,61 @@
                         {% csrf_token %}
                         <!-- Manual Payment Section -->
                         <div class="mb-5 text-center p-3 rounded-3" style="background-color: #f8f9fa;">
-                            {% if payment_qr_code %}
-                            <h5 class="fw-bold mb-3">Pay via QR Code 📱</h5>
-                            <div class="mb-3">
-                                <img src="{{ payment_qr_code.url }}" alt="Payment QR"
-                                    class="img-fluid rounded shadow-sm" style="max-width: 200px;">
-                            </div>
-                            <!-- Download Button -->
-                            <a href="{{ payment_qr_code.url }}" download="YarnedWithLove_PaymentQR.png"
-                                class="btn btn-outline-dark btn-sm mb-3">
-                                <i class="bi bi-download"></i> Download QR
-                            </a>
-                            <p class="small text-muted mb-3">Scan this QR to pay. Then upload the screenshot below.</p>
+                            <h5 class="fw-bold mb-4">Select Payment Gateway 💳</h5>
 
-                            <div class="mb-4">
-                                <label class="form-label small fw-bold text-muted">Or Pay via UPI ID</label>
-                                <div class="input-group">
-                                    <input type="text" class="form-control" value="mansidube2002@okhdfcbank"
-                                        id="upiIdInput" readonly>
-                                    <button class="btn btn-outline-secondary" type="button" onclick="copyUPI()">
-                                        <i class="bi bi-clipboard"></i> Copy
-                                    </button>
+                            <div class="row g-4 mb-4">
+                                <!-- Gateway 1 -->
+                                <div class="col-md-6">
+                                    <div class="card h-100 border-0 shadow-sm" style="background-color: #f8f9fa;">
+                                        <div
+                                            class="card-body text-center d-flex flex-column justify-content-center align-items-center">
+                                            <button type="button" class="btn btn-primary mb-3 px-4 rounded-pill fw-bold"
+                                                disabled>Gateway 1</button>
+                                            <h6 class="fw-bold mb-3">Mansi's UPI</h6>
+                                            <div class="bg-white p-2 rounded border mb-3">
+                                                <img src="/media/Payment qr photo/mansiqr.png" alt="Gateway 1 QR"
+                                                    class="img-fluid"
+                                                    style="height: 200px; width: 200px; object-fit: contain;">
+                                            </div>
+                                            <div class="input-group input-group-sm mb-2 w-100">
+                                                <input type="text" class="form-control text-center bg-white"
+                                                    value="mansidube2002@okhdfcbank" id="upi1" readonly>
+                                                <button class="btn btn-outline-secondary" type="button"
+                                                    onclick="copyUPI('upi1')">Copy</button>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div id="copySuccess" class="form-text text-success d-none">
-                                    <i class="bi bi-check-circle-fill"></i> Copied to clipboard!
+
+                                <!-- Gateway 2 -->
+                                <div class="col-md-6">
+                                    <div class="card h-100 border-0 shadow-sm" style="background-color: #f8f9fa;">
+                                        <div
+                                            class="card-body text-center d-flex flex-column justify-content-center align-items-center">
+                                            <button type="button" class="btn btn-dark mb-3 px-4 rounded-pill fw-bold"
+                                                disabled>Gateway 2</button>
+                                            <h6 class="fw-bold mb-3">Secondary UPI</h6>
+                                            <div class="bg-white p-2 rounded border mb-3">
+                                                <img src="/media/Payment qr photo/gateway2qr.jpeg" alt="Gateway 2 QR"
+                                                    class="img-fluid"
+                                                    style="height: 200px; width: 200px; object-fit: contain;">
+                                            </div>
+                                            <div class="small text-muted fst-italic mt-2">Scan to pay</div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
 
                             <script>
-                                function copyUPI() {
-                                    var copyText = document.getElementById("upiIdInput");
+                                function copyUPI(id) {
+                                    var copyText = document.getElementById(id);
                                     copyText.select();
-                                    copyText.setSelectionRange(0, 99999); // For mobile devices
+                                    copyText.setSelectionRange(0, 99999);
                                     navigator.clipboard.writeText(copyText.value);
-
-                                    var successMsg = document.getElementById("copySuccess");
-                                    successMsg.classList.remove('d-none');
-                                    setTimeout(function () {
-                                        successMsg.classList.add('d-none');
-                                    }, 2000);
+                                    // Optional: Show a toast/alert or change button text temporarily
+                                    alert("UPI ID Copied!");
                                 }
                             </script>
-                            {% else %}
-                            <div class="alert alert-warning">
-                                <i class="bi bi-exclamation-triangle"></i> Payment QR not available. Please contact
-                                support.
-                            </div>
-                            {% endif %}
 
                             <div class="mb-3 text-start">
                                 <label class="form-label fw-bold small">Upload Payment Screenshot <span

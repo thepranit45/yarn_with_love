@@ -93,6 +93,7 @@ class Order(models.Model):
     tracking_id = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     coupon = models.ForeignKey('Coupon', on_delete=models.SET_NULL, null=True, blank=True)
     discount_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    shipping_fee = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     
     class Meta:
         ordering = ['-created_at']
@@ -108,7 +109,7 @@ class Order(models.Model):
     def get_total_price(self):
         """Calculate total order price"""
         total = sum(item.price_at_purchase * item.quantity for item in self.items.all())
-        return total - self.discount_amount
+        return total - self.discount_amount + self.shipping_fee
 
     def get_progress_percentage(self):
         """Get progress as percentage"""
