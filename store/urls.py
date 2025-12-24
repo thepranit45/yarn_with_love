@@ -49,4 +49,5 @@ urlpatterns = [
     path('artisan/coupons/add/', views.add_coupon, name='add_coupon'),
     path('artisan/coupons/delete/<int:pk>/', views.delete_coupon, name='delete_coupon'),
     path('test/', views.test_page, name='test_page'),
+    path('api/search-suggestions/', views.search_suggestions, name='search_suggestions'),
 ]

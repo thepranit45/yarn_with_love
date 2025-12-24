@@ -20,13 +20,16 @@
 <!-- HIDDEN MOBILE SEARCH BAR -->
 <div id="mobileSearch" class="bg-white border-bottom shadow-sm px-3 py-2"
     style="display: none; position: absolute; top: 60px; left: 0; width: 100%; z-index: 1000;">
-    <form action="{% url 'product_list' %}" method="GET" class="d-flex gap-2">
-        <input type="text" name="q" class="form-control rounded-pill border-0 bg-light"
-            placeholder="Search for cozy things... 🧶" value="{{ query }}">
+    <form action="{% url 'product_list' %}" method="GET" class="d-flex gap-2 mb-0 position-relative">
+        <input type="text" name="q" id="searchInput" class="form-control rounded-pill border-0 bg-light"
+            placeholder="Search for cozy things... 🧶" value="{{ query }}" autocomplete="off">
         <button type="submit" class="btn btn-primary rounded-circle shadow-sm"
             style="width: 40px; height: 40px; padding: 0; display: flex; align-items: center; justify-content: center;">
             ➝
         </button>
+        <div id="suggestionsBox" class="position-absolute bg-white shadow-lg rounded-3 w-100"
+            style="top: 100%; left: 0; z-index: 1050; display: none; overflow: hidden; margin-top: 5px;">
+        </div>
     </form>
 </div>
 
@@ -35,11 +38,58 @@
         const searchBar = document.getElementById('mobileSearch');
         if (searchBar.style.display === 'none') {
             searchBar.style.display = 'block';
-            searchBar.querySelector('input').focus();
+            const input = document.getElementById('searchInput');
+            if (input) input.focus();
         } else {
             searchBar.style.display = 'none';
+            document.getElementById('suggestionsBox').style.display = 'none';
         }
     }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const searchInput = document.getElementById('searchInput');
+        const suggestionsBox = document.getElementById('suggestionsBox');
+
+        if (searchInput) {
+            searchInput.addEventListener('input', function (e) {
+                const query = e.target.value.trim();
+
+                if (query.length < 2) {
+                    suggestionsBox.style.display = 'none';
+                    return;
+                }
+
+                fetch(`/store/api/search-suggestions/?term=${encodeURIComponent(query)}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        suggestionsBox.innerHTML = '';
+                        if (data.length > 0) {
+                            data.forEach(item => {
+                                const div = document.createElement('div');
+                                div.className = 'p-3 border-bottom d-flex align-items-center gap-2 suggestion-item bg-white';
+                                div.style.cursor = 'pointer';
+                                div.onmouseover = function () { this.style.backgroundColor = '#f8f9fa'; };
+                                div.onmouseout = function () { this.style.backgroundColor = 'white'; };
+                                div.innerHTML = `<span>🧶</span> <span class="fw-bold text-dark">${item.label}</span>`;
+                                div.onclick = () => window.location.href = item.url;
+                                suggestionsBox.appendChild(div);
+                            });
+                            suggestionsBox.style.display = 'block';
+                        } else {
+                            suggestionsBox.style.display = 'none';
+                        }
+                    })
+                    .catch(err => console.error('Error fetching suggestions:', err));
+            });
+
+            // Hide suggestions on click outside
+            document.addEventListener('click', function (e) {
+                if (!searchInput.contains(e.target) && !suggestionsBox.contains(e.target)) {
+                    suggestionsBox.style.display = 'none';
+                }
+            });
+        }
+    });
 </script>
 
 <!-- INFINITE MARQUEE (Fixed & Seamless) -->
@@ -668,13 +718,7 @@
     </div>
 </section>
 
-<a href="#" class="floating-chat-btn" onclick="Swal.fire({
-    title: 'Chatbot Coming Soon! 🤖',
-    text: 'Our AI knitting assistant is currently untangling some yarn. Stay tuned! 🧶',
-    icon: 'info',
-    confirmButtonColor: '#d47fa6',
-    confirmButtonText: 'Can\'t Wait!'
-}); return false;">💬</a>
+
 
 <style>
     .bottom-nav {
@@ -696,14 +740,34 @@
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
         z-index: 1000;
     }
+
+    .nav-icon-3d {
+        width: 32px;
+        height: 32px;
+        object-fit: contain;
+        transition: transform 0.2s;
+        filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));
+    }
+
+    .nav-item:hover .nav-icon-3d {
+        transform: scale(1.15) translateY(-2px);
+    }
+
+    .nav-item.active .nav-icon-3d {
+        filter: drop-shadow(0 0 8px rgba(255, 105, 180, 0.4));
+    }
 </style>
 
 <!-- BOTTOM NAV (Mobile Only) -->
 <div class="bottom-nav">
-    <a href="{% url 'product_list' %}" class="nav-item active">🏠</a>
-    <a href="#collection" class="nav-item">💗</a>
+    <a href="{% url 'product_list' %}" class="nav-item active">
+        <img src="{% static 'icons/home.png' %}" alt="Home" class="nav-icon-3d">
+    </a>
+    <a href="#collection" class="nav-item">
+        <img src="{% static 'icons/love.png' %}" alt="Love" class="nav-icon-3d">
+    </a>
     <a href="{% url 'view_cart' %}" class="nav-item position-relative">
-        🛒
+        <img src="{% static 'icons/cart.png' %}" alt="Cart" class="nav-icon-3d">
         {% if cart_count > 0 %}
         <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
             style="font-size: 0.5rem;">
