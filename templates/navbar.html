@@ -5,98 +5,100 @@
 <nav class="navbar navbar-expand-lg">
     <div class="container-fluid p-0">
         <a class="navbar-brand logo d-flex align-items-center" href="{% url 'product_list' %}">
-            <a class="navbar-brand logo d-flex align-items-center" href="{% url 'product_list' %}">
-                <!-- Logo Removed as per request -->
-                <span
-                    style="font-family: 'Pacifico', cursive; font-weight: 400; color: #D81B60; letter-spacing: 0.5px; font-size: 1.8rem; text-shadow: 2px 2px 0px #ffe4ec;">Yarned
-                    with Love</span>
-                <!-- Santa Face Animation -->
-                <div class="santa-icon-container ms-2"
-                    style="width: 45px; height: 45px; animation: bounce 2s infinite;">
-                    <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
-                        <circle cx="32" cy="34" r="14" fill="#fdd0b1" /> <!-- Face -->
-                        <path d="M32 30c6 0 9 4 9 8 0 5-4 9-9 9s-9-4-9-9c0-4 3-8 9-8" fill="#fff" opacity="0.3" />
-                        <!-- Beard Base -->
-                        <circle cx="28" cy="32" r="2" fill="#2c3e50" /> <!-- Eye Left -->
-                        <circle cx="36" cy="32" r="2" fill="#2c3e50" /> <!-- Eye Right -->
-                        <circle cx="32" cy="36" r="3" fill="#e74c3c" opacity="0.4" /> <!-- Nose Blush -->
-                        <path d="M12 34c0 10 9 18 20 18s20-8 20-18" fill="none" stroke="#fff" stroke-width="6"
-                            stroke-linecap="round" /> <!-- Big Beard -->
-                        <path d="M14 26c0-6 6-12 18-12s18 6 18 12H14z" fill="#e74c3c" /> <!-- Hat Base -->
-                        <circle cx="50" cy="26" r="6" fill="#fff" /> <!-- Pompom -->
-                        <rect x="12" y="24" width="40" height="6" rx="3" fill="#fff" /> <!-- Hat Trim -->
-                    </svg>
-                </div>
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto nav-links align-items-center">
-                    {% if user.is_authenticated %}
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
-                            data-bs-toggle="dropdown" aria-expanded="false">
-                            My Account
-                        </a>
-                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <li><a class="dropdown-item" href="{% url 'profile' %}">My Profile 👤</a></li>
-                            <li><a class="dropdown-item" href="{% url 'my_orders' %}">My Orders 📦</a></li>
-                            {% if user.is_superuser %}
-                            <li><a class="dropdown-item fw-bold text-danger" href="/admin/">Admin Panel 🔐</a></li>
-                            <li><a class="dropdown-item fw-bold text-primary" href="{% url 'manage_artisans' %}">Manage
-                                    Artisans 🛠️</a></li>
-                            {% endif %}
-                            {% if user.is_artisan %}
-                            <li><a class="dropdown-item" href="{% url 'artisan_dashboard' %}">Artisan Dashboard 🎨</a>
-                            </li>
-                            {% endif %}
-                            <li>
-                                <hr class="dropdown-divider">
-                            </li>
-                            <li>
-                                <form action="{% url 'account_logout' %}" method="post" class="d-inline">
-                                    {% csrf_token %}
-                                    <button type="submit" class="dropdown-item btn-logout"
-                                        style="background: none; border: none; cursor: pointer;">Logout</button>
-                                </form>
-                            </li>
-                        </ul>
-                    </li>
-                    {% if user.is_artisan %}
-                    <!-- Artisan Menu -->
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'artisan_products_list' %}">Collection</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'about_us' %}">About Us</a>
-                    </li>
-                    {% else %}
-                    <!-- Customer Menu -->
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'collection' %}">Collection</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'about_us' %}">About Us</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'view_cart' %}">Cart 🛒</a>
-                    </li>
-                    {% endif %}
-                    {% else %}
-                    <!-- Guest Menu -->
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'collection' %}">Collection</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'about_us' %}">About Us</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'login' %}">Login</a>
-                    </li>
-                    {% endif %}
+            <!-- Logo Text -->
+            <span
+                style="font-family: 'Pacifico', cursive; font-weight: 400; color: #D81B60; letter-spacing: 0.5px; font-size: 1.5rem; text-shadow: 2px 2px 0px #ffe4ec;"
+                class="me-2">
+                Yarned with Love
+            </span>
 
-                </ul>
+            <!-- Santa Face Animation (Scaled for mobile) -->
+            <div class="santa-icon-container" style="width: 35px; height: 35px; animation: bounce 2s infinite;">
+                <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"
+                    style="width: 100%; height: 100%; display: block;">
+                    <circle cx="32" cy="34" r="14" fill="#fdd0b1" /> <!-- Face -->
+                    <path d="M32 30c6 0 9 4 9 8 0 5-4 9-9 9s-9-4-9-9c0-4 3-8 9-8" fill="#fff" opacity="0.3" />
+                    <!-- Beard Base -->
+                    <circle cx="28" cy="32" r="2" fill="#2c3e50" /> <!-- Eye Left -->
+                    <circle cx="36" cy="32" r="2" fill="#2c3e50" /> <!-- Eye Right -->
+                    <circle cx="32" cy="36" r="3" fill="#e74c3c" opacity="0.4" /> <!-- Nose Blush -->
+                    <path d="M12 34c0 10 9 18 20 18s20-8 20-18" fill="none" stroke="#fff" stroke-width="6"
+                        stroke-linecap="round" /> <!-- Big Beard -->
+                    <path d="M14 26c0-6 6-12 18-12s18 6 18 12H14z" fill="#e74c3c" /> <!-- Hat Base -->
+                    <circle cx="50" cy="26" r="6" fill="#fff" /> <!-- Pompom -->
+                    <rect x="12" y="24" width="40" height="6" rx="3" fill="#fff" /> <!-- Hat Trim -->
+                </svg>
             </div>
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto nav-links align-items-center">
+                {% if user.is_authenticated %}
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                        data-bs-toggle="dropdown" aria-expanded="false">
+                        My Account
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <li><a class="dropdown-item" href="{% url 'profile' %}">My Profile 👤</a></li>
+                        <li><a class="dropdown-item" href="{% url 'my_orders' %}">My Orders 📦</a></li>
+                        {% if user.is_superuser %}
+                        <li><a class="dropdown-item fw-bold text-danger" href="/admin/">Admin Panel 🔐</a></li>
+                        <li><a class="dropdown-item fw-bold text-primary" href="{% url 'manage_artisans' %}">Manage
+                                Artisans 🛠️</a></li>
+                        {% endif %}
+                        {% if user.is_artisan %}
+                        <li><a class="dropdown-item" href="{% url 'artisan_dashboard' %}">Artisan Dashboard 🎨</a>
+                        </li>
+                        {% endif %}
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+                        <li>
+                            <form action="{% url 'account_logout' %}" method="post" class="d-inline">
+                                {% csrf_token %}
+                                <button type="submit" class="dropdown-item btn-logout"
+                                    style="background: none; border: none; cursor: pointer;">Logout</button>
+                            </form>
+                        </li>
+                    </ul>
+                </li>
+                {% if user.is_artisan %}
+                <!-- Artisan Menu -->
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'artisan_products_list' %}">Collection</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'about_us' %}">About Us</a>
+                </li>
+                {% else %}
+                <!-- Customer Menu -->
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'collection' %}">Collection</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'about_us' %}">About Us</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'view_cart' %}">Cart 🛒</a>
+                </li>
+                {% endif %}
+                {% else %}
+                <!-- Guest Menu -->
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'collection' %}">Collection</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'about_us' %}">About Us</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'login' %}">Login</a>
+                </li>
+                {% endif %}
+
+            </ul>
+        </div>
     </div>
 </nav>

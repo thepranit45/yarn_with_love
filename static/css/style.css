@@ -384,16 +384,80 @@ a {
 /* --- RESPONSIVE --- */
 @media (max-width: 768px) {
     .insta-grid {
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: repeat(3, 1fr) !important;
     }
 
     .hero-title-new {
-        font-size: 2.5rem;
+        font-size: 2.2rem !important;
+        margin-bottom: 15px;
+    }
+
+    .display-1,
+    .display-2,
+    .display-3,
+    .display-4 {
+        font-size: calc(1.5rem + 1.5vw) !important;
+        /* Scale down large Bootstrap displays */
+    }
+
+    .h1,
+    h1 {
+        font-size: 2rem !important;
+    }
+
+    .h2,
+    h2 {
+        font-size: 1.75rem !important;
+    }
+
+    .h3,
+    h3 {
+        font-size: 1.5rem !important;
     }
 
     .marquee-content {
         animation-duration: 15s;
     }
+
+    .marquee-content span {
+        font-size: 0.85rem;
+        padding-right: 25px;
+    }
+
+    /* Reduce padding on mobile */
+    .hero-section-new {
+        padding: 60px 0 40px;
+    }
+
+    .py-5 {
+        padding-top: 2rem !important;
+        padding-bottom: 2rem !important;
+    }
+
+    /* Ensure cards don't overflow */
+    .testimonial-card {
+        min-width: 85vw !important;
+    }
+
+    /* Hide floating decorators that clutter small screens */
+    .hero-decoration-left,
+    .hero-decoration-right,
+    .hero-flower-top {
+        display: none !important;
+    }
+
+    /* Footer Mobile Optimization */
+    footer .mb-3 {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    footer .mb-3 span {
+        display: none;
+    }
+
+    /* Hide pipes */
 }
 
 /* --- NAVBAR LOGO ANIMATION --- */
