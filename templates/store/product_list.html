@@ -9,7 +9,9 @@
 <!-- APP HEADER (Visible only on Mobile) -->
 <!-- APP HEADER (Visible only on Mobile) -->
 <div class="app-header position-relative z-3">
-    <div class="app-logo">Yarned with Love 🧶</div>
+    <div class="app-logo"
+        style="font-family: 'Playfair Display', serif; font-weight: 700; font-size: 1.5rem; color: var(--primary-color); letter-spacing: -0.5px;">
+        Yarned with Love 🧶</div>
     <div class="d-flex gap-3 text-secondary fs-4">
         <span onclick="toggleSearch()" role="button">🔍</span>
         <a href="{% url 'about_us' %}" class="text-decoration-none text-secondary">📖</a>
@@ -164,10 +166,12 @@
 <!-- STORY CIRCLES (Mobile Categories) -->
 <div class="stories-container">
     <a href="?#collection" class="story-item">
-        <div class="story-ring">
+        <div class="story-ring" {% if not request.GET.category
+            %}style="border-color: var(--primary-color); transform: scale(1.1);" {% endif %}>
             <div class="story-circle">✨</div>
         </div>
-        <span class="story-label">All</span>
+        <span class="story-label" {% if not request.GET.category
+            %}style="color: var(--primary-color); font-weight: bold;" {% endif %}>All</span>
     </a>
     {% if categories %}
     {% for category in categories %}
