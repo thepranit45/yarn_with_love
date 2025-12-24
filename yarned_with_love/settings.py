@@ -35,6 +35,7 @@ ALLOWED_HOSTS = [
     "yarnwithlove.store",
     "www.yarnwithlove.store",
     "yarnwithlove.onrender.com",
+    "ywl-ifsp.onrender.com",
     "127.0.0.1",
     "localhost",
 ]
@@ -43,6 +44,7 @@ CSRF_TRUSTED_ORIGINS = [
     "http://yarnwithlove.store",
     "https://yarnwithlove.store",
     "https://yarnwithlove.onrender.com",
+    "https://ywl-ifsp.onrender.com",
     "http://127.0.0.1:8000",
     "http://localhost:8000",
 ]
@@ -251,7 +253,8 @@ ACCOUNT_LOGOUT_REDIRECT_URL = '/'
 SOCIALACCOUNT_FORMS = {'signup': 'users.forms.CustomSocialSignupForm'}
 
 # SSL/Proxy Header (For Render/Production)
-# SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+# SSL/Proxy Header (For Render/Production)
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 
 # File Upload Settings
