@@ -34,6 +34,11 @@ class Product(models.Model):
     is_returnable = models.BooleanField(default=False, help_text="Is this item eligible for return?")
     estimated_days_to_complete = models.PositiveIntegerField(default=7, validators=[MinValueValidator(1)], help_text="Estimated days to make this item")
     is_active = models.BooleanField(default=True, help_text="Uncheck to hide this product")
+    
+    # Featured Deal Fields
+    is_featured_deal = models.BooleanField(default=False, help_text="Show as the main featured deal on homepage")
+    featured_banner_image = models.ImageField(upload_to='deal_banners/', blank=True, null=True, help_text="Wide banner image for the deal section")
+    
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -48,6 +53,12 @@ class Product(models.Model):
 
     def __str__(self):
         return self.name
+
+    @property
+    def discount_percentage(self):
+        if self.mrp and self.mrp > self.price:
+            return int(((self.mrp - self.price) / self.mrp) * 100)
+        return 0
 
 class ProductImage(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='images')

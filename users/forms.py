@@ -17,14 +17,23 @@ class CustomerRegistrationForm(UserCreationForm):
 class ArtisanProfileForm(forms.ModelForm):
     class Meta:
         model = User
-        fields = ['first_name', 'last_name', 'email', 'bio', 'profile_image', 'vacation_mode']
+        fields = ['first_name', 'last_name', 'email', 'bio', 'profile_image', 'vacation_mode', 'payment_qr_code']
         widgets = {
             'bio': forms.Textarea(attrs={'rows': 4, 'class': 'form-control', 'placeholder': 'Tell us about your craft...'}),
             'first_name': forms.TextInput(attrs={'class': 'form-control'}),
             'last_name': forms.TextInput(attrs={'class': 'form-control'}),
             'email': forms.EmailInput(attrs={'class': 'form-control'}),
             'profile_image': forms.FileInput(attrs={'class': 'form-control'}),
+            'payment_qr_code': forms.FileInput(attrs={'class': 'form-control'}),
             'vacation_mode': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+        }
+
+class PaymentQRForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ['payment_qr_code']
+        widgets = {
+            'payment_qr_code': forms.FileInput(attrs={'class': 'form-control', 'accept': 'image/*'}),
         }
 
 from allauth.socialaccount.forms import SignupForm

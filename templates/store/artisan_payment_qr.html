@@ -1,0 +1,65 @@
+{% extends 'store/artisan_base.html' %}
+{% load static %}
+{% block title %}Payment QR - Yarned with Love{% endblock %}
+
+{% block artisan_content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <!-- Header -->
+        <div class="d-flex justify-content-between align-items-center mb-5">
+            <div>
+                <h2 class="fw-bold mb-0">Payment QR 💳</h2>
+                <p class="text-muted">Manage your payment QR code for receiving payments.</p>
+            </div>
+        </div>
+
+        <div class="card border-0 shadow-sm rounded-4 p-5 mb-4">
+            <div class="text-center mb-4">
+                {% if user.payment_qr_code %}
+                <div class="position-relative d-inline-block">
+                    <img src="{{ user.payment_qr_code.url }}" class="img-fluid rounded-3 shadow-sm border mb-3"
+                        style="max-height: 300px;">
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-success">
+                        Active
+                        <span class="visually-hidden">active</span>
+                    </span>
+                </div>
+                <p class="text-success fw-bold">✅ Your Payment QR is currently active.</p>
+                <p class="text-muted small">Customers will see this QR code during checkout.</p>
+                {% else %}
+                <div class="bg-light rounded-3 d-flex flex-column align-items-center justify-content-center border border-dashed mb-3"
+                    style="height: 250px; width: 100%; max-width: 300px; margin: 0 auto;">
+                    <span class="display-1 text-muted opacity-25">📷</span>
+                    <span class="text-muted mt-2">No QR Code Uploaded</span>
+                </div>
+                <p class="text-warning fw-bold">⚠️ You haven't uploaded a QR code yet.</p>
+                {% endif %}
+            </div>
+
+            <hr class="my-4 opacity-10">
+
+            <h5 class="fw-bold mb-3">Update QR Code</h5>
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="mb-4">
+                    <label class="form-label fw-bold small text-muted">Upload New Image</label>
+                    {{ form.payment_qr_code }}
+                    <div class="form-text">Supported formats: JPG, PNG. Make sure the QR is clear and scannable.</div>
+                </div>
+
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-primary btn-lg rounded-pill shadow-sm">
+                        Save QR Code 💾
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <div class="text-center">
+            <a href="{% url 'artisan_settings' %}" class="text-decoration-none text-muted small">
+                &larr; Back to Settings
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

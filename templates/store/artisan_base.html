@@ -47,9 +47,21 @@
                         </a>
                     </li>
                     <li class="nav-item">
+                        <a class="nav-link rounded-pill d-flex align-items-center {% if request.resolver_match.url_name == 'artisan_featured_items' %}active bg-primary text-white{% else %}text-muted{% endif %}"
+                            href="{% url 'artisan_featured_items' %}">
+                            <span class="me-2">🌟</span> Featured Items
+                        </a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link rounded-pill d-flex align-items-center {% if request.resolver_match.url_name == 'artisan_settings' %}active bg-primary text-white{% else %}text-muted{% endif %}"
                             href="{% url 'artisan_settings' %}">
                             <span class="me-2">⚙️</span> Settings
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link rounded-pill d-flex align-items-center {% if request.resolver_match.url_name == 'artisan_payment_qr' %}active bg-primary text-white{% else %}text-muted{% endif %}"
+                            href="{% url 'artisan_payment_qr' %}">
+                            <span class="me-2">💳</span> Payment QR
                         </a>
                     </li>
                 </ul>

@@ -63,6 +63,9 @@ def product_list(request):
             
     # Fetch top rated reviews for "Love Letters" section
     featured_reviews = Review.objects.filter(rating=5).order_by('-created_at')[:3]
+    
+    # Fetch Featured Deal (Christmas/Season Special)
+    featured_deal = Product.objects.filter(is_featured_deal=True, is_active=True).first()
 
     return render(request, 'store/product_list.html', {
         'products': products, 
@@ -70,6 +73,7 @@ def product_list(request):
         'categories': categories,
         'recommended_products': recommended_products,
         'featured_reviews': featured_reviews,
+        'featured_deal': featured_deal,
     })
 
 def test_page(request):
@@ -385,6 +389,22 @@ def artisan_settings(request):
         form = ArtisanProfileForm(instance=request.user)
     
     return render(request, 'store/artisan_settings.html', {'form': form})
+
+@login_required
+@user_passes_test(lambda u: u.is_artisan)
+def artisan_payment_qr(request):
+    from users.forms import PaymentQRForm
+    
+    if request.method == 'POST':
+        form = PaymentQRForm(request.POST, request.FILES, instance=request.user)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Payment QR updated successfully! 💳')
+            return redirect('artisan_payment_qr')
+    else:
+        form = PaymentQRForm(instance=request.user)
+    
+    return render(request, 'store/artisan_payment_qr.html', {'form': form})
 
 @login_required
 @user_passes_test(lambda u: u.is_artisan)
@@ -791,6 +811,56 @@ def artisan_coupons(request):
     """List and manage coupons"""
     coupons = Coupon.objects.all().order_by('-id')
     return render(request, 'store/artisan_coupons.html', {'coupons': coupons, 'form': CouponForm()})
+
+@login_required
+@user_passes_test(lambda u: u.is_artisan)
+def artisan_featured_items(request):
+    from .forms import FeaturedProductForm
+    
+    # Get current featured product
+    current_featured = Product.objects.filter(artisan=request.user, is_featured_deal=True).first()
+    
+    if request.method == 'POST':
+        form = FeaturedProductForm(request.POST, request.FILES, artisan=request.user)
+        if form.is_valid():
+            new_featured = form.cleaned_data['product']
+            banner_image = form.cleaned_data.get('featured_banner_image')
+            price = form.cleaned_data.get('price')
+            mrp = form.cleaned_data.get('mrp')
+            
+            # Reset existing featured products for this artisan
+            Product.objects.filter(artisan=request.user, is_featured_deal=True).update(is_featured_deal=False)
+            
+            # Set new featured product
+            new_featured.is_featured_deal = True
+            
+            # Update banner image if provided
+            if banner_image:
+                new_featured.featured_banner_image = banner_image
+            
+            # Update Price and MRP if provided
+            if price:
+                new_featured.price = price
+            if mrp:
+                new_featured.mrp = mrp
+                
+            new_featured.save()
+            messages.success(request, f"{new_featured.name} is now the Featured Deal! 🌟")
+            return redirect('artisan_featured_items')
+    else:
+        initial_data = {}
+        if current_featured:
+            initial_data = {
+                'product': current_featured,
+                'price': current_featured.price,
+                'mrp': current_featured.mrp
+            }
+        form = FeaturedProductForm(artisan=request.user, initial=initial_data)
+    
+    return render(request, 'store/artisan_featured.html', {
+        'form': form,
+        'current_featured': current_featured
+    })
 
 @login_required
 @user_passes_test(lambda u: u.is_artisan)

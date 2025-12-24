@@ -1,0 +1,110 @@
+{% extends 'store/artisan_base.html' %}
+{% load static %}
+{% block title %}Featured Items - Yarned with Love{% endblock %}
+
+{% block artisan_content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <!-- Header -->
+        <div class="d-flex justify-content-between align-items-center mb-5">
+            <div>
+                <h2 class="fw-bold mb-0">Featured Items 🌟</h2>
+                <p class="text-muted">Highlight a special product on the homepage.</p>
+            </div>
+        </div>
+
+        <!-- Current Featured Preview -->
+        <div class="card border-0 shadow-sm rounded-4 p-4 mb-4">
+            <h5 class="fw-bold mb-4">Current Active Deal</h5>
+            {% if current_featured %}
+            <div class="card border mb-3 overflow-hidden rounded-4">
+                <div class="row g-0">
+                    <div class="col-md-4">
+                        {% if current_featured.featured_banner_image %}
+                        <img src="{{ current_featured.featured_banner_image.url }}"
+                            class="img-fluid h-100 object-fit-cover" alt="Banner">
+                        {% else %}
+                        <div class="bg-light h-100 d-flex align-items-center justify-content-center text-muted">
+                            No Banner
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-8">
+                        <div class="card-body">
+                            <h5 class="card-title fw-bold text-primary">{{ current_featured.name }}</h5>
+                            <p class="card-text text-muted mb-2">{{ current_featured.description|truncatewords:8 }}</p>
+                            <p class="card-text">
+                                <span class="badge bg-success rounded-pill">Featured Active</span>
+                                <small class="text-muted ms-2">Price: ₹{{ current_featured.price }}</small>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <div class="text-center py-4 bg-light rounded-3 border border-dashed">
+                <span class="display-6 text-muted opacity-25">❄️</span>
+                <p class="text-muted mt-2 mb-0">No featured item set. The default Christmas Special is shown.</p>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Form -->
+        <div class="card border-0 shadow-sm rounded-4 p-5 mb-4">
+            <h5 class="fw-bold mb-3">Update Featured Deal</h5>
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+
+                <div class="mb-4">
+                    <label class="form-label fw-bold small text-muted">{{ form.product.label }}</label>
+                    {{ form.product }}
+                    {% if form.product.errors %}
+                    <div class="text-danger small mt-1">{{ form.product.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label fw-bold small text-muted">{{ form.featured_banner_image.label }}</label>
+                    {{ form.featured_banner_image }}
+                    <div class="form-text">This landscape image will replace the Santa picture on the homepage banner.
+                    </div>
+                    {% if form.featured_banner_image.errors %}
+                    <div class="text-danger small mt-1">{{ form.featured_banner_image.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="row g-3 mb-4">
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold small text-muted">{{ form.price.label }}</label>
+                        {{ form.price }}
+                        <div class="form-text">Update the actual product price here.</div>
+                        {% if form.price.errors %}
+                        <div class="text-danger small mt-1">{{ form.price.errors }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold small text-muted">{{ form.mrp.label }}</label>
+                        {{ form.mrp }}
+                        <div class="form-text">Set MRP higher than price to show discount.</div>
+                        {% if form.mrp.errors %}
+                        <div class="text-danger small mt-1">{{ form.mrp.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-warning text-dark fw-bold btn-lg rounded-pill shadow-sm">
+                        Set as Featured Deal 🌟
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <div class="text-center">
+            <a href="{% url 'artisan_dashboard' %}" class="text-decoration-none text-muted small">
+                &larr; Back to Dashboard
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

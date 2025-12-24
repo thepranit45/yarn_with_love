@@ -86,23 +86,38 @@
                         <span class="h5 fw-bold" style="color: var(--primary-color);">₹{{ cart.get_total_price }}</span>
                     </div>
                     <div class="d-grid">
-                        <a href="{% url 'checkout' %}" class="btn btn-main btn-lg">Proceed to Checkout ➡️</a>
-                    </div>
-                    <div class="text-center mt-3">
-                        <a href="{% url 'product_list' %}" class="text-muted small text-decoration-none">Continue
-                            Shopping</a>
+                        <a href="{% url 'checkout' %}" class="btn btn-main btn-lg d-none d-md-block">Proceed to Checkout
+                            ➡️</a>
                     </div>
                 </div>
             </div>
+
+            <!-- Mobile Sticky Checkout Bar -->
+            <div class="d-md-none fixed-bottom bg-white p-3 shadow-lg border-top d-flex justify-content-between align-items-center"
+                style="z-index: 1000;">
+                <div>
+                    <span class="text-muted small d-block">Total</span>
+                    <span class="h5 fw-bold text-dark mb-0">₹{{ cart.get_total_price }}</span>
+                </div>
+                <a href="{% url 'checkout' %}" class="btn btn-main rounded-pill px-4">Checkout ➡️</a>
+            </div>
+            <!-- Spacer for mobile -->
+            <div class="d-md-none" style="height: 80px;"></div>
+            <div class="text-center mt-3">
+                <a href="{% url 'product_list' %}" class="text-muted small text-decoration-none">Continue
+                    Shopping</a>
+            </div>
         </div>
     </div>
-    {% else %}
-    <div class="text-center py-5">
-        <div class="display-1 mb-3">🛍️</div>
-        <h3>Your cart is empty</h3>
-        <p class="text-muted mb-4">Looks like you haven't added any lovely items yet.</p>
-        <a href="{% url 'product_list' %}" class="btn btn-main px-5">Start Shopping</a>
-    </div>
-    {% endif %}
+</div>
+</div>
+{% else %}
+<div class="text-center py-5">
+    <div class="display-1 mb-3">🛍️</div>
+    <h3>Your cart is empty</h3>
+    <p class="text-muted mb-4">Looks like you haven't added any lovely items yet.</p>
+    <a href="{% url 'product_list' %}" class="btn btn-main px-5">Start Shopping</a>
+</div>
+{% endif %}
 </div>
 {% endblock %}

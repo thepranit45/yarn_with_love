@@ -150,3 +150,31 @@ class VariantLinkForm(forms.Form):
             artisan=artisan, 
             category=category
         ).exclude(id=current_product_id)
+
+class FeaturedProductForm(forms.Form):
+    product = forms.ModelChoiceField(
+        queryset=Product.objects.none(),
+        label="Select Product to Feature",
+        widget=forms.Select(attrs={'class': 'form-select form-select-lg'}),
+        empty_label="Choose a product..."
+    )
+    featured_banner_image = forms.ImageField(
+        required=False, 
+        label="Banner Image (Optional)",
+        widget=forms.FileInput(attrs={'class': 'form-control'})
+    )
+    price = forms.DecimalField(
+        required=False,
+        label="Deal Price (₹)",
+        widget=forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'})
+    )
+    mrp = forms.DecimalField(
+        required=False,
+        label="MRP (₹)",
+        widget=forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'})
+    )
+
+    def __init__(self, *args, **kwargs):
+        artisan = kwargs.pop('artisan')
+        super().__init__(*args, **kwargs)
+        self.fields['product'].queryset = Product.objects.filter(artisan=artisan, is_active=True)

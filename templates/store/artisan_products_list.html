@@ -107,35 +107,36 @@
     {% endif %}
 </div>
 
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const searchInput = document.getElementById('productSearchInput');
-        const tableRows = document.querySelectorAll('.product-row');
-        const noResultsMsg = document.getElementById('noResultsMsg');
 
-        searchInput.addEventListener('input', function (e) {
-            const query = e.target.value.toLowerCase().trim();
-            let visibleCount = 0;
 
-            tableRows.forEach(row => {
-                // Search the entire row text content (name, category, price, status)
-                const rowText = row.textContent.toLowerCase();
+document.addEventListener('DOMContentLoaded', function () {
+const searchInput = document.getElementById('productSearchInput');
+const tableRows = document.querySelectorAll('.product-row');
+const noResultsMsg = document.getElementById('noResultsMsg');
 
-                if (rowText.includes(query)) {
-                    row.style.display = '';
-                    visibleCount++;
-                } else {
-                    row.style.display = 'none';
-                }
-            });
+searchInput.addEventListener('input', function (e) {
+const query = e.target.value.toLowerCase().trim();
+let visibleCount = 0;
 
-            // Show/Hide "No Results" message
-            if (visibleCount === 0 && tableRows.length > 0) {
-                noResultsMsg.classList.remove('d-none');
-            } else {
-                noResultsMsg.classList.add('d-none');
-            }
-        });
-    });
+tableRows.forEach(row => {
+// Search the entire row text content (name, category, price, status)
+const rowText = row.textContent.toLowerCase();
+
+if (rowText.includes(query)) {
+row.style.display = '';
+visibleCount++;
+} else {
+row.style.display = 'none';
+}
+});
+
+// Show/Hide "No Results" message
+if (visibleCount === 0 && tableRows.length > 0) {
+noResultsMsg.classList.remove('d-none');
+} else {
+noResultsMsg.classList.add('d-none');
+}
+});
+});
 </script>
 {% endblock %}
