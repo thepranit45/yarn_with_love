@@ -29,8 +29,10 @@
                         <div class="fw-bold text-dark">INV-{{ order.id|add:1000 }}</div>
                         <small class="text-muted">Order #{{ order.id }}</small>
                     </td>
-                    <td>{{ order.created_at|date:"M d, Y" }}<br><small class="text-muted">{{ order.created_at|date:"H:i"
-                            }}</small></td>
+                    <td>
+                        {{ order.created_at|date:"M d, Y" }}<br>
+                        <small class="text-muted">{{ order.created_at|date:"H:i" }}</small>
+                    </td>
                     <td>
                         <div class="fw-bold">{{ order.full_name|default:order.customer.get_display_name }}</div>
                         {% if order.city %}<small class="text-muted">{{ order.city }}</small>{% endif %}

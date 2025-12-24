@@ -268,6 +268,11 @@ def artisan_dashboard(request):
         reset_demo_data(request.user)
 
     # Filter orders that contain products made by this artisan
+    payment_review_orders = Order.objects.filter(
+        status='PAYMENT_REVIEW',
+        items__product__artisan=request.user
+    ).distinct().prefetch_related('items__product').order_by('-payment_timestamp')
+
     pending_orders = Order.objects.filter(
         status='PENDING',
         items__product__artisan=request.user
@@ -276,7 +281,7 @@ def artisan_dashboard(request):
     active_orders = Order.objects.filter(
         items__product__artisan=request.user
     ).exclude(
-        status__in=['PENDING', 'COMPLETED', 'CANCELLED']
+        status__in=['PENDING', 'PAYMENT_REVIEW', 'COMPLETED', 'CANCELLED']
     ).distinct().prefetch_related('items__product')
 
     completed_orders = Order.objects.filter(
@@ -302,6 +307,7 @@ def artisan_dashboard(request):
     my_products = Product.objects.filter(artisan=request.user)
 
     return render(request, 'store/artisan_dashboard.html', {
+        'payment_review_orders': payment_review_orders,
         'pending_orders': pending_orders,
         'active_orders': active_orders,
         'completed_orders': completed_orders,
@@ -450,6 +456,22 @@ def add_product(request):
     else:
         form = ProductForm()
     return render(request, 'store/add_product.html', {'form': form})
+
+@login_required
+@user_passes_test(lambda u: u.is_artisan)
+def artisan_add_category(request):
+    if request.method == 'POST':
+        form = CategoryForm(request.POST)
+        if form.is_valid():
+            category = form.save(commit=False)
+            category.slug = slugify(category.name)
+            category.save()
+            messages.success(request, f"Category '{category.name}' created successfully!")
+            return redirect('add_product')
+    else:
+        form = CategoryForm()
+    
+    return render(request, 'store/artisan_add_category.html', {'form': form})
 
 @login_required
 @user_passes_test(lambda u: u.is_artisan)
@@ -618,12 +640,18 @@ def checkout(request):
     
     # Razorpay bypassed - Direct Checkout
     
+    first_item = cart.items.first()
+    payment_qr_code = None
+    if first_item and first_item.product.artisan.payment_qr_code:
+        payment_qr_code = first_item.product.artisan.payment_qr_code
+
     return render(request, 'store/checkout.html', {
         'cart': cart,
-        'razorpay_order': None, # explicitly None
+        'razorpay_order': None, 
         'razorpay_key_id': None,
         'total_amount': total_amount,
-        'form': CheckoutForm() # Add empty form
+        'form': CheckoutForm(),
+        'payment_qr_code': payment_qr_code
     })
 
 @csrf_exempt
@@ -638,7 +666,11 @@ def payment_success(request):
                     # Create Order with form data
                     order = form.save(commit=False)
                     order.customer = request.user
-                    order.status = 'PENDING'
+                    order.status = 'PAYMENT_REVIEW' # Manual Verification
+                    
+                    if 'payment_screenshot' in request.FILES:
+                        order.payment_screenshot = request.FILES['payment_screenshot']
+                        order.payment_timestamp = timezone.now()
                     
                     # Apply Coupon if present
                     if cart.coupon and cart.coupon.active:

@@ -17,6 +17,12 @@
                         </a>
                     </li>
                     <li class="nav-item">
+                        <a class="nav-link rounded-pill d-flex align-items-center {% if request.resolver_match.url_name == 'artisan_orders' %}active bg-primary text-white{% else %}text-muted{% endif %}"
+                            href="{% url 'artisan_orders' %}">
+                            <span class="me-2">📋</span> Transactions
+                        </a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link rounded-pill d-flex align-items-center {% if request.resolver_match.url_name == 'artisan_invoices' %}active bg-primary text-white{% else %}text-muted{% endif %}"
                             href="{% url 'artisan_invoices' %}">
                             <span class="me-2">📄</span> Invoices
@@ -57,6 +63,12 @@
                         <a class="nav-link rounded-pill d-flex align-items-center text-muted"
                             href="{% url 'add_product' %}">
                             <span class="me-2">➕</span> Add Product
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link rounded-pill d-flex align-items-center text-muted"
+                            href="{% url 'artisan_add_category' %}">
+                            <span class="me-2">🗂️</span> Add Category
                         </a>
                     </li>
                     <li class="nav-item">

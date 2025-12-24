@@ -20,6 +20,14 @@ class ProductAdmin(admin.ModelAdmin):
     list_display = ['name', 'artisan', 'price', 'category', 'created_at']
     list_filter = ['category', 'artisan']
 
-admin.site.register(Category)
+@admin.register(Category)
+class CategoryAdmin(admin.ModelAdmin):
+    list_display = ['name', 'slug', 'product_count']
+    search_fields = ['name']
+    prepopulated_fields = {'slug': ('name',)}
+
+    def product_count(self, obj):
+        return obj.product_set.count()
+    product_count.short_description = 'Products'
 admin.site.register(OrderUpdate) # Optional, can be managed via Order inline
 admin.site.register(Coupon)

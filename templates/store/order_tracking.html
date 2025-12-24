@@ -3,35 +3,173 @@
 {% block content %}
 <div class="container py-5">
     <div class="row mt-5">
+        <div class="col-12 mb-3">
+            <a href="{% url 'my_orders' %}" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left"></i> Back to My Orders
+            </a>
+        </div>
         <div class="col-md-4 mb-4">
             <div class="card shadow-sm">
                 <div class="card-header">
-                    Order Details
+                    Order Information
                 </div>
                 <ul class="list-group list-group-flush">
                     <li class="list-group-item"><strong>Order #:</strong> {{ order.id }}</li>
-                    <li class="list-group-item"><strong>Status:</strong> <span class="badge bg-info text-dark">{{
-                            order.get_status_display }}</span></li>
+                    <li class="list-group-item"><strong>Status:</strong> <span class="badge bg-info text-dark">
+                            {% if order.status == 'PENDING' %}Pending
+                            {% elif order.status == 'PAYMENT_REVIEW' %}Payment Verification Pending
+                            {% elif order.status == 'PAYMENT_VERIFIED' %}Payment Received
+                            {% elif order.status == 'IN_PROGRESS' %}In Progress
+                            {% elif order.status == 'FINISHING' %}Finishing Touches
+                            {% elif order.status == 'READY' %}Ready for Shipping
+                            {% elif order.status == 'SHIPPED' %}Shipped
+                            {% elif order.status == 'COMPLETED' %}Completed
+                            {% elif order.status == 'CANCELLED' %}Cancelled
+                            {% else %}{{ order.status }}{% endif %}
+                        </span></li>
                     <li class="list-group-item"><strong>Date:</strong> {{ order.created_at|date:"M d, Y" }}</li>
-                    <li class="list-group-item"><strong>Tracking ID:</strong> <small class="text-muted">{{
-                            order.tracking_id }}</small></li>
+                    <li class="list-group-item"><strong>Total Price:</strong> ₹{{ order.get_total_price }}</li>
+                    <li class="list-group-item">
+                        <strong>Items:</strong>
+                        <div class="mt-2">
+                            {% for item in order.items.all %}
+                            <div class="d-flex align-items-center mb-2">
+                                {% if item.product.image %}
+                                <img src="{{ item.product.image.url }}" class="rounded me-2"
+                                    style="width: 40px; height: 40px; object-fit: cover;">
+                                {% endif %}
+                                <div>
+                                    <div class="small fw-bold">{{ item.product.name }}</div>
+                                    <small class="text-muted">Qty: {{ item.quantity }}</small>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </li>
+                    <li class="list-group-item">
+                        <strong>Shipping Address:</strong>
+                        <div class="mt-2 small text-muted">
+                            <div class="fw-bold text-dark">{{ order.full_name }}</div>
+                            <div>{{ order.shipping_address }}</div>
+                            {% if order.landmark %}<div>{{ order.landmark }}</div>{% endif %}
+                            <div>{{ order.city }}, {{ order.state }} - {{ order.zip_code }}</div>
+                            <div class="mt-1"><i class="bi bi-telephone"></i> {{ order.phone_number }}</div>
+                        </div>
+                    </li>
                 </ul>
+                <div class="card-footer bg-white border-top-0">
+                    <small class="text-muted"><i class="bi bi-info-circle"></i> Note: Order delivery based on total
+                        availability.</small>
+                </div>
             </div>
         </div>
 
         <div class="col-md-8">
             <h2 class="mb-4">Order Progress</h2>
 
-            <!-- Progress Bar (Simple Visual) -->
-            <div class="progress mb-5" style="height: 30px;">
-                {% with status=order.status %}
-                <div class="progress-bar {% if status == 'COMPLETED' %}bg-success{% elif status == 'CANCELLED' %}bg-danger{% else %}bg-primary{% endif %}"
-                    role="progressbar" style="width: {{ progress_width }}%" aria-valuenow="{{ progress_width }}"
-                    aria-valuemin="0" aria-valuemax="100">
-                    {{ order.get_status_display }}
+            <!-- Premium Stepper UI -->
+            <div class="stepper-wrapper mb-5">
+                <div class="stepper-item {% if order.get_progress_percentage >= 10 %}completed{% endif %}">
+                    <div class="step-counter"><i class="bi bi-cart-check"></i></div>
+                    <div class="step-name">Order Placed</div>
                 </div>
-                {% endwith %}
+                <div class="stepper-item {% if order.get_progress_percentage >= 40 %}completed{% endif %}">
+                    <div class="step-counter"><i class="bi bi-tools"></i></div>
+                    <div class="step-name">In Progress</div>
+                </div>
+                <div class="stepper-item {% if order.get_progress_percentage >= 70 %}completed{% endif %}">
+                    <div class="step-counter"><i class="bi bi-stars"></i></div>
+                    <div class="step-name">Finishing Touches</div>
+                </div>
+                <div class="stepper-item {% if order.get_progress_percentage >= 95 %}completed{% endif %}">
+                    <div class="step-counter"><i class="bi bi-box-seam"></i></div>
+                    <div class="step-name">Shipped</div>
+                </div>
+                <div class="stepper-item {% if order.get_progress_percentage == 100 %}completed{% endif %}">
+                    <div class="step-counter"><i class="bi bi-house-heart"></i></div>
+                    <div class="step-name">Delivered</div>
+                </div>
             </div>
+
+            <style>
+                .stepper-wrapper {
+                    display: flex;
+                    justify-content: space-between;
+                    margin-bottom: 20px;
+                    position: relative;
+                }
+
+                .stepper-wrapper::before {
+                    /* Background Line */
+                    content: '';
+                    position: absolute;
+                    top: 25px;
+                    left: 0;
+                    width: 100%;
+                    height: 4px;
+                    background: #e9ecef;
+                    z-index: -1;
+                }
+
+                .stepper-item {
+                    position: relative;
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    flex: 1;
+                    z-index: 1;
+                }
+
+                .step-counter {
+                    width: 50px;
+                    height: 50px;
+                    border-radius: 50%;
+                    background: white;
+                    border: 3px solid #e9ecef;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    font-size: 1.2rem;
+                    color: #adb5bd;
+                    margin-bottom: 10px;
+                    transition: all 0.3s ease;
+                }
+
+                .step-name {
+                    color: #adb5bd;
+                    font-size: 0.85rem;
+                    font-weight: 600;
+                    text-align: center;
+                }
+
+                /* Completed State */
+                .stepper-item.completed .step-counter {
+                    background-color: var(--primary-color);
+                    border-color: var(--primary-color);
+                    color: white;
+                    box-shadow: 0 5px 15px rgba(212, 127, 166, 0.3);
+                }
+
+                .stepper-item.completed .step-name {
+                    color: var(--primary-color);
+                }
+
+                /* Connectors */
+                .stepper-item.completed::after {
+                    content: '';
+                    position: absolute;
+                    top: 25px;
+                    left: -50%;
+                    width: 100%;
+                    height: 4px;
+                    background: var(--primary-color);
+                    z-index: -1;
+                }
+
+                .stepper-item:first-child::after {
+                    content: none;
+                }
+            </style>
 
             <h3 class="mb-4" style="font-family: var(--header-font);">The Story of Your Item</h3>
             {% if order.updates.exists %}

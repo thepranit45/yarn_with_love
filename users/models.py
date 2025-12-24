@@ -7,6 +7,7 @@ class CustomUser(AbstractUser):
     profile_image = models.ImageField(upload_to='profiles/', blank=True, null=True)
     vacation_mode = models.BooleanField(default=False, help_text="Temporarily disable products from showing in the marketplace.")
     phone_number = models.CharField(max_length=15, blank=True, null=True, help_text="Contact number for orders.")
+    payment_qr_code = models.ImageField(upload_to='payment_qrs/', blank=True, null=True, help_text="QR Code for receiving payments.")
 
     class Meta:
         indexes = [

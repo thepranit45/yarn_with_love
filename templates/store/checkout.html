@@ -53,14 +53,75 @@
                         {% endif %}
                     </div>
 
-                    <!-- Direct Payment Button -->
-                    <div class="d-grid">
-                        <button type="submit" form="payment-form" class="btn btn-main btn-lg py-3">Place Order (Test
-                            Mode) 🛍️</button>
-                    </div>
-
-                    <form action="{% url 'payment_success' %}" method="POST" id="payment-form">
+                    <form action="{% url 'payment_success' %}" method="POST" id="payment-form"
+                        enctype="multipart/form-data">
                         {% csrf_token %}
+                        <!-- Manual Payment Section -->
+                        <div class="mb-5 text-center p-3 rounded-3" style="background-color: #f8f9fa;">
+                            {% if payment_qr_code %}
+                            <h5 class="fw-bold mb-3">Pay via QR Code 📱</h5>
+                            <div class="mb-3">
+                                <img src="{{ payment_qr_code.url }}" alt="Payment QR"
+                                    class="img-fluid rounded shadow-sm" style="max-width: 200px;">
+                            </div>
+                            <!-- Download Button -->
+                            <a href="{{ payment_qr_code.url }}" download="YarnedWithLove_PaymentQR.png"
+                                class="btn btn-outline-dark btn-sm mb-3">
+                                <i class="bi bi-download"></i> Download QR
+                            </a>
+                            <p class="small text-muted mb-3">Scan this QR to pay. Then upload the screenshot below.</p>
+
+                            <div class="mb-4">
+                                <label class="form-label small fw-bold text-muted">Or Pay via UPI ID</label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" value="mansidube2002@okhdfcbank"
+                                        id="upiIdInput" readonly>
+                                    <button class="btn btn-outline-secondary" type="button" onclick="copyUPI()">
+                                        <i class="bi bi-clipboard"></i> Copy
+                                    </button>
+                                </div>
+                                <div id="copySuccess" class="form-text text-success d-none">
+                                    <i class="bi bi-check-circle-fill"></i> Copied to clipboard!
+                                </div>
+                            </div>
+
+                            <script>
+                                function copyUPI() {
+                                    var copyText = document.getElementById("upiIdInput");
+                                    copyText.select();
+                                    copyText.setSelectionRange(0, 99999); // For mobile devices
+                                    navigator.clipboard.writeText(copyText.value);
+
+                                    var successMsg = document.getElementById("copySuccess");
+                                    successMsg.classList.remove('d-none');
+                                    setTimeout(function () {
+                                        successMsg.classList.add('d-none');
+                                    }, 2000);
+                                }
+                            </script>
+                            {% else %}
+                            <div class="alert alert-warning">
+                                <i class="bi bi-exclamation-triangle"></i> Payment QR not available. Please contact
+                                support.
+                            </div>
+                            {% endif %}
+
+                            <div class="mb-3 text-start">
+                                <label class="form-label fw-bold small">Upload Payment Screenshot <span
+                                        class="text-danger">*</span></label>
+                                <input type="file" name="payment_screenshot" class="form-control" accept="image/*"
+                                    required>
+                                <div class="form-text">We need this to verify your order.</div>
+                            </div>
+                        </div>
+
+                        <!-- Direct Payment Button -->
+                        <div class="d-grid">
+                            <button type="submit" form="payment-form" class="btn btn-main btn-lg py-3">
+                                Upload & Place Order 📤
+                            </button>
+                        </div>
+
                         <div class="mb-4">
                             <h5 class="fw-bold mb-3">Shipping Details 🚚</h5>
                             <div class="row g-3">
@@ -105,7 +166,7 @@
 
                         <!-- Bottom Place Order Button -->
                         <div class="d-grid mt-4">
-                            <button type="submit" class="btn btn-main btn-lg py-3">Place Order (Test Mode) 🛍️</button>
+                            <button type="submit" class="btn btn-main btn-lg py-3">Upload & Place Order 📤</button>
                         </div>
                 </div>
                 </form>

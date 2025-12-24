@@ -6,6 +6,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Yarned with Love{% endblock %}</title>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-SC3X4KBFP6"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-SC3X4KBFP6');
+    </script>
     <link rel="icon"
         href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧶</text></svg>">
     <!-- Bootstrap CSS -->
@@ -17,6 +26,8 @@
         rel="stylesheet">
 
     <link rel="stylesheet" href="{% static 'css/style.css' %}?v={% now 'U' %}">
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     {% block extra_css %}{% endblock %}
 </head>
 
@@ -27,15 +38,21 @@
         {% include 'navbar.html' %}
 
         <div class="container-fluid p-0">
+            <!-- Django Messages handled by SweetAlert2 -->
             {% if messages %}
-            <div class="container mt-3">
-                {% for message in messages %}
-                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-                    {{ message }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-                {% endfor %}
-            </div>
+            <script>
+                document.addEventListener('DOMContentLoaded', function () {
+                    {% for message in messages %}
+                    Swal.fire({
+                        title: "{% if 'success' in message.tags %}Success! 🎉{% elif 'error' in message.tags or 'danger' in message.tags %}Error 😕{% elif 'warning' in message.tags %}Warning ⚠️{% else %}Info ℹ️{% endif %}",
+                        text: "{{ message|escapejs }}",
+                        icon: "{% if 'error' in message.tags or 'danger' in message.tags %}error{% elif 'success' in message.tags %}success{% elif 'warning' in message.tags %}warning{% else %}info{% endif %}",
+                        confirmButtonColor: '#d47fa6',
+                        confirmButtonText: 'OK'
+                    });
+                    {% endfor %}
+                });
+            </script>
             {% endif %}
 
             {% block content %}{% endblock %}

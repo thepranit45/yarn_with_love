@@ -1,0 +1,35 @@
+{% extends 'store/artisan_base.html' %}
+{% block title %}Add New Category - Yarned with Love{% endblock %}
+
+{% block artisan_content %}
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        <div class="card border-0 shadow-sm rounded-4">
+            <div class="card-header bg-white border-bottom-0 pt-4 pb-0 px-4">
+                <h4 class="fw-bold mb-0">Create New Category 🗂️</h4>
+                <p class="text-muted">Add a new category for your products.</p>
+            </div>
+            <div class="card-body p-4">
+                <form method="post">
+                    {% csrf_token %}
+
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">Category Name</label>
+                        {{ form.name }}
+                        <div class="form-text">This will be visible in the store menu.</div>
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary rounded-pill py-2 fw-bold">
+                            Create Category ✨
+                        </button>
+                        <a href="{% url 'add_product' %}" class="btn btn-light rounded-pill py-2">
+                            Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

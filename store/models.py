@@ -60,6 +60,8 @@ class ProductImage(models.Model):
 class Order(models.Model):
     STATUS_CHOICES = [
         ('PENDING', 'Pending'),
+        ('PAYMENT_REVIEW', 'Payment Verification Pending'),
+        ('PAYMENT_VERIFIED', 'Payment Verified/Received'),
         ('IN_PROGRESS', 'In Progress'),
         ('FINISHING', 'Finishing Touches'),
         ('READY', 'Ready for Shipping'),
@@ -79,6 +81,10 @@ class Order(models.Model):
     city = models.CharField(max_length=100, blank=True)
     state = models.CharField(max_length=100, blank=True)
     zip_code = models.CharField(max_length=20, blank=True)
+    
+    # Payment Details
+    payment_screenshot = models.ImageField(upload_to='payment_screenshots/', blank=True, null=True)
+    payment_timestamp = models.DateTimeField(blank=True, null=True)
     
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='PENDING')
     customization_notes = models.TextField(blank=True, help_text="Special requests from the customer")

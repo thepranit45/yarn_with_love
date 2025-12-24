@@ -128,40 +128,7 @@
     </div>
 </section>
 
-<!-- RECOMMENDED SECTION -->
-{% if recommended_products %}
-<section class="py-5 bg-light">
-    <div class="container">
-        <div class="text-center mb-5">
-            <h2 class="display-6 fw-bold" style="color: var(--primary-color);">Recommended For You 💖</h2>
-            <p class="text-muted">Because you have great taste!</p>
-            <div class="section-divider"></div>
-        </div>
-        <div class="row g-4">
-            {% for product in recommended_products %}
-            <div class="col-6 col-md-3">
-                <a href="{% url 'product_detail' product.pk %}" class="product-card">
-                    <div class="product-img-wrapper">
-                        {% if product.image %}
-                        <img src="{{ product.image.url }}" class="product-img" alt="{{ product.name }}">
-                        {% else %}
-                        <div class="product-img d-flex align-items-center justify-content-center text-muted">No Image
-                        </div>
-                        {% endif %}
-                    </div>
-                    <div class="product-info">
-                        <h3 class="product-title mb-1" style="font-size: 1rem; font-weight: 600;">{{ product.name }}
-                        </h3>
-                        <p class="text-muted small mb-0">{{ product.category.name|default:"General" }}</p>
-                        <span class="product-price small">₹{{ product.price }}</span>
-                    </div>
-                </a>
-            </div>
-            {% endfor %}
-        </div>
-    </div>
-</section>
-{% endif %}
+
 
 <!-- COLLECTION SECTION -->
 <section id="collection" class="py-5">

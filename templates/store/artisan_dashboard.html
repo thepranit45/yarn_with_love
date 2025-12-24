@@ -182,6 +182,50 @@
         </div>
     </div>
 
+    <!-- Payment Verification Section (Critical Priority) -->
+    {% if payment_review_orders %}
+    <h5 class="fw-bold mb-3 text-danger">Payment Verification Needed ⚠️</h5>
+    <div class="card border-warning shadow-lg rounded-4 overflow-hidden mb-5">
+        <div class="card-header bg-warning text-dark fw-bold border-0 py-3 px-4">
+            Verify that you have received payment for these orders.
+        </div>
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th class="ps-4 py-3">Order ID</th>
+                        <th class="py-3">Customer</th>
+                        <th class="py-3">Screenshot</th>
+                        <th class="py-3 text-end pe-4">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for order in payment_review_orders %}
+                    <tr onclick="window.location='{% url 'manage_order' order.pk %}'"
+                        style="cursor: pointer; background-color: #fff3cd;">
+                        <td class="ps-4 fw-bold">#{{ order.id }}</td>
+                        <td>{{ order.customer.get_display_name }}</td>
+                        <td>
+                            {% if order.payment_screenshot %}
+                            <span class="badge bg-success"><i class="bi bi-image"></i> Uploaded</span>
+                            {% else %}
+                            <span class="badge bg-danger">Missing</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-end pe-4">
+                            <a href="{% url 'manage_order' order.pk %}"
+                                class="btn btn-sm btn-dark rounded-pill px-4 fw-bold shadow-sm">
+                                Review & Verify 🔍
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endif %}
+
     <!-- Currently Preparing Section (Highest Priority) -->
     {% if active_orders %}
     <h5 class="fw-bold mb-3 text-primary-custom" style="color: var(--primary-color);">Currently Preparing 🧵</h5>
@@ -201,8 +245,30 @@
                     <tr onclick="window.location='{% url 'manage_order' order.pk %}'" style="cursor: pointer;">
                         <td class="ps-4 fw-bold">#{{ order.id }}</td>
                         <td>{{ order.customer.get_display_name }}</td>
-                        <td><span class="badge bg-info-subtle text-info rounded-pill px-3">{{ order.get_status_display
-                                }}</span></td>
+                        <td>
+                            {% if order.status == 'PENDING' %}
+                            <span class="badge bg-warning-subtle text-warning rounded-pill px-3">Pending</span>
+                            {% elif order.status == 'PAYMENT_REVIEW' %}
+                            <span class="badge bg-warning-subtle text-dark rounded-pill px-3">Payment Review</span>
+                            {% elif order.status == 'PAYMENT_VERIFIED' %}
+                            <span class="badge bg-success-subtle text-success rounded-pill px-3">Payment Verified</span>
+                            {% elif order.status == 'IN_PROGRESS' %}
+                            <span class="badge bg-info-subtle text-info rounded-pill px-3">In Progress</span>
+                            {% elif order.status == 'FINISHING' %}
+                            <span class="badge bg-primary-subtle text-primary rounded-pill px-3">Finishing
+                                Touches</span>
+                            {% elif order.status == 'READY' %}
+                            <span class="badge bg-info text-white rounded-pill px-3">Ready to Ship</span>
+                            {% elif order.status == 'SHIPPED' %}
+                            <span class="badge bg-secondary-subtle text-secondary rounded-pill px-3">Shipped</span>
+                            {% elif order.status == 'COMPLETED' %}
+                            <span class="badge bg-success-subtle text-success rounded-pill px-3">Completed</span>
+                            {% elif order.status == 'CANCELLED' %}
+                            <span class="badge bg-danger-subtle text-danger rounded-pill px-3">Cancelled</span>
+                            {% else %}
+                            <span class="badge bg-light text-dark rounded-pill px-3">{{ order.status }}</span>
+                            {% endif %}
+                        </td>
                         <td class="text-end pe-4">
                             <a href="{% url 'download_invoice' order.pk %}" target="_blank"
                                 onclick="event.stopPropagation();"

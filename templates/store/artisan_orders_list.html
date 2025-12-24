@@ -55,13 +55,35 @@
                     <td>
                         {% if order.status == 'PENDING' %}
                         <span class="badge bg-warning-subtle text-warning rounded-pill px-3">Pending</span>
+
+                        {% elif order.status == 'PAYMENT_REVIEW' %}
+                        <span class="badge bg-warning-subtle text-dark rounded-pill px-3">Payment Review</span>
+
+                        {% elif order.status == 'PAYMENT_VERIFIED' %}
+                        <span
+                            class="badge bg-success-subtle text-success border border-success rounded-pill px-3">Payment
+                            Verified</span>
+
+                        {% elif order.status == 'IN_PROGRESS' %}
+                        <span class="badge bg-info-subtle text-info rounded-pill px-3">In Progress</span>
+
+                        {% elif order.status == 'FINISHING' %}
+                        <span class="badge bg-primary-subtle text-primary rounded-pill px-3">Finishing Touches</span>
+
+                        {% elif order.status == 'READY' %}
+                        <span class="badge bg-info text-white rounded-pill px-3">Ready to Ship</span>
+
+                        {% elif order.status == 'SHIPPED' %}
+                        <span class="badge bg-secondary-subtle text-secondary rounded-pill px-3">Shipped</span>
+
                         {% elif order.status == 'COMPLETED' %}
                         <span class="badge bg-success-subtle text-success rounded-pill px-3">Completed</span>
+
                         {% elif order.status == 'CANCELLED' %}
                         <span class="badge bg-danger-subtle text-danger rounded-pill px-3">Cancelled</span>
+
                         {% else %}
-                        <span class="badge bg-info-subtle text-info rounded-pill px-3">{{ order.get_status_display
-                            }}</span>
+                        <span class="badge bg-light text-dark rounded-pill px-3">{{ order.status }}</span>
                         {% endif %}
                     </td>
                     <td class="text-end pe-4">
@@ -74,6 +96,13 @@
                             {% endif %}
                             <a href="{% url 'manage_order' order.pk %}"
                                 class="btn btn-sm btn-outline-primary rounded-pill px-3">Manage ↗</a>
+
+                            {% if order.payment_screenshot %}
+                            <a href="{{ order.payment_screenshot.url }}" target="_blank"
+                                class="btn btn-sm btn-outline-dark rounded-pill px-3" title="View Payment Screenshot">
+                                <i class="bi bi-image"></i> View SS
+                            </a>
+                            {% endif %}
                         </div>
                     </td>
                 </tr>

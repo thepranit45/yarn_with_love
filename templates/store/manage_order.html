@@ -7,6 +7,74 @@
             <a href="{% url 'artisan_dashboard' %}" class="btn btn-outline-secondary">&larr; Back to Dashboard</a>
         </div>
 
+        {% if order.status == 'PAYMENT_REVIEW' %}
+        <div class="col-12 mb-4">
+            <div class="card border-warning shadow-sm">
+                <div class="card-header bg-warning text-white fw-bold">
+                    ⚠️ Payment Verification Needed
+                </div>
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-md-6 text-center">
+                            {% if order.payment_screenshot %}
+                            <h6 class="fw-bold mb-3">Customer Uploaded Screenshot</h6>
+                            <a href="{{ order.payment_screenshot.url }}" target="_blank"
+                                title="Click to view full size">
+                                <img src="{{ order.payment_screenshot.url }}" class="img-fluid rounded border shadow-sm"
+                                    style="max-height: 400px; cursor: zoom-in;">
+                            </a>
+                            <p class="text-muted small mt-2">Uploaded: {{ order.payment_timestamp|default:"Just now" }}
+                            </p>
+                            {% else %}
+                            <div class="alert alert-danger">
+                                <i class="bi bi-exclamation-triangle"></i> No screenshot uploaded yet.
+                            </div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6">
+                            <h5 class="fw-bold">Action Required</h5>
+                            <p>Please check your bank account/UPI to confirm receipt of the payment.</p>
+                            <p>If received, click <strong>Verify Payment</strong> below to approve the order.</p>
+
+                            <form method="post">
+                                {% csrf_token %}
+                                <!-- Fix: Move to PAYMENT_VERIFIED instead of IN_PROGRESS -->
+                                <input type="hidden" name="status" value="PAYMENT_VERIFIED">
+                                <button type="submit" name="update_status" class="btn btn-success btn-lg w-100">
+                                    <i class="bi bi-check-circle-fill"></i> Verify & Approve Payment
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if order.status == 'PAYMENT_VERIFIED' %}
+        <div class="col-12 mb-4">
+            <div class="card border-success shadow-sm">
+                <div class="card-header bg-success text-white fw-bold">
+                    ✅ Payment Received
+                </div>
+                <div class="card-body text-center p-5">
+                    <h2 class="fw-bold text-success mb-3">Payment Verified!</h2>
+                    <p class="lead text-muted mb-4">You have confirmed receipt of payment. The order is now ready for
+                        preparation.</p>
+
+                    <form method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="status" value="IN_PROGRESS">
+                        <button type="submit" name="update_status"
+                            class="btn btn-primary btn-lg px-5 rounded-pill shadow">
+                            <i class="bi bi-tools"></i> Start Preparing Order ▶
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
         <div class="col-md-4 mb-4">
             <div class="card shadow-sm mb-4">
                 <div class="card-header bg-light">
