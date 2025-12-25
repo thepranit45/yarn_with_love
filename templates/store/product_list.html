@@ -166,10 +166,12 @@
 <!-- STORY CIRCLES (Mobile Categories) -->
 <div class="stories-container">
     <a href="?#collection" class="story-item">
-        <div class="story-ring" style="{% if not request.GET.category %}border-color: var(--primary-color); transform: scale(1.1);{% endif %}">
+        <div class="story-ring"
+            style="{% if not request.GET.category %}border-color: var(--primary-color); transform: scale(1.1);{% endif %}">
             <div class="story-circle">✨</div>
         </div>
-        <span class="story-label" style="{% if not request.GET.category %}color: var(--primary-color); font-weight: bold;{% endif %}">All</span>
+        <span class="story-label"
+            style="{% if not request.GET.category %}color: var(--primary-color); font-weight: bold;{% endif %}">All</span>
     </a>
     {% if categories %}
     {% for category in categories %}
@@ -387,17 +389,10 @@
                             <!-- Image Side -->
                             <div class="col-md-5 position-relative">
                                 <div class="santa-img-container" style="overflow: hidden;">
-                                    {% if featured_deal and featured_deal.featured_banner_image %}
-                                    <img src="{{ featured_deal.featured_banner_image.url }}" class="w-100 h-100"
-                                        style="object-fit: cover; object-position: center; transition: transform 0.5s ease;"
-                                        onmouseover="this.style.transform='scale(1.1)'"
-                                        onmouseout="this.style.transform='scale(1)'" alt="{{ featured_deal.name }}">
-                                    {% else %}
-                                    <img src="/media/products/keychain/santa_keychain.jpg" class="w-100 h-100"
+                                    <img src="{% static 'images/santa_keychain.jpg' %}" class="w-100 h-100"
                                         style="object-fit: cover; object-position: center; transition: transform 0.5s ease;"
                                         onmouseover="this.style.transform='scale(1.1)'"
                                         onmouseout="this.style.transform='scale(1)'" alt="Christmas Special">
-                                    {% endif %}
                                 </div>
                             </div>
 
