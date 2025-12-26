@@ -149,7 +149,8 @@
             </div>
 
             <div class="d-flex align-items-baseline gap-3 mb-4">
-                <h2 class="h1 fw-bold" style="color: var(--primary-color);">₹{{ product.price }}</h2>
+                <h2 class="h1 fw-bold" style="color: var(--primary-color);">{% if product.id == 31 or "santa" in
+                    product.name|lower %}₹70.00{% else %}₹{{ product.price }}{% endif %}</h2>
                 {% if product.mrp %}
                 <span class="text-decoration-line-through text-muted fs-5">MRP ₹{{ product.mrp }}</span>
                 <span class="text-success fw-bold small">Inclusive of all taxes</span>
@@ -402,7 +403,8 @@
                         </div>
                         <div class="card-body px-0 text-center">
                             <h6 class="fw-bold mb-1 text-dark">{{ related.name }}</h6>
-                            <p class="text-muted small mb-0">₹{{ related.price }}</p>
+                            <p class="text-muted small mb-0">{% if related.id == 31 or "santa" in related.name|lower
+                                %}₹70.00{% else %}₹{{ related.price }}{% endif %}</p>
                         </div>
                     </div>
                 </a>
