@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 from pathlib import Path
 from django.contrib.messages import constants as messages
 import os
+import dj_database_url
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -119,6 +120,10 @@ DATABASES = {
         'NAME': '/data/db.sqlite3' if os.environ.get('FLY_APP_NAME') else BASE_DIR / 'db.sqlite3',
     }
 }
+
+database_url = os.environ.get("DATABASE_URL")
+if database_url:
+    DATABASES["default"] = dj_database_url.parse(database_url)
 
 
 # Password validation
