@@ -409,7 +409,9 @@ def artisan_payment_qr(request):
 @login_required
 @user_passes_test(lambda u: u.is_artisan)
 def download_invoice(request, pk):
-    order = get_object_or_404(Order, pk=pk, items__product__artisan=request.user)
+    # Using DISTINCT to avoid MultipleObjectsReturned when joins create duplicate rows
+    order_qs = Order.objects.filter(items__product__artisan=request.user).distinct()
+    order = get_object_or_404(order_qs, pk=pk)
     return render(request, 'store/invoice.html', {'order': order})
 
 @login_required

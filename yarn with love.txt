@@ -4,3 +4,9 @@ yarn with love
 artist logins :
 Mansi: Username: mansi, Password: yarnbymansi
 Pranit: Username: pranit, Password: thepranit
+
+
+// razor primary
+email:razorpay@gmail.com
+Username:razorpay
+Password:Razorpay@45

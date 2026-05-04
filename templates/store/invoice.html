@@ -7,6 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Invoice - #{{ order.id }}</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Outfit:wght@300;400;600&display=swap"
         rel="stylesheet">
     <style>
@@ -29,31 +30,22 @@
             position: relative;
         }
 
-        /* Pink Header */
+        /* Print-safe SVG Header */
         .invoice-header {
-            background-color: #d47fa6;
             height: 150px;
             display: flex;
             align-items: center;
             justify-content: center;
             position: relative;
             margin-bottom: 50px;
-            -webkit-print-color-adjust: exact;
-            print-color-adjust: exact;
         }
 
-        /* White wave at bottom of header */
-        .invoice-header::after {
-            content: "";
+        .invoice-header svg.print-safe-bg {
             position: absolute;
-            bottom: -1px;
-            /* overlapping slightly to avoid potential gap line */
-            left: 0;
+            inset: 0;
             width: 100%;
-            height: 40px;
-            background: white;
-            border-radius: 50% 50% 0 0 / 100% 100% 0 0;
-            transform: scaleX(1.5);
+            height: 150px;
+            display: block;
         }
 
         .invoice-title {
@@ -149,10 +141,17 @@
         }
 
         @media print {
+            @page {
+                size: A4;
+                margin: 12mm;
+            }
             body {
                 margin: 0;
                 padding: 0;
                 background: white;
+            }
+            html, body {
+                height: auto;
             }
 
             .no-print {
@@ -162,11 +161,19 @@
             .invoice-container {
                 box-shadow: none;
                 margin: 0;
-                width: 100%;
-                max-width: 100%;
-                min-height: 100vh;
+                width: auto;
+                max-width: none;
+                min-height: auto;
                 border: none;
+                page-break-inside: avoid;
             }
+
+            table, tr, td, th {
+                page-break-inside: avoid;
+            }
+
+            thead { display: table-header-group; }
+            tfoot { display: table-footer-group; }
 
             /* FORCE COLORS */
             * {
@@ -205,6 +212,11 @@
         {% endif %}
         <!-- Pink Header -->
         <div class="invoice-header">
+            <svg class="print-safe-bg" viewBox="0 0 800 150" preserveAspectRatio="none" aria-hidden="true">
+                <rect x="0" y="0" width="800" height="150" fill="#d47fa6" />
+                <!-- Curved white wave at the bottom -->
+                <path d="M0,110 Q400,200 800,110 L800,150 L0,150 Z" fill="#ffffff" />
+            </svg>
             <h1 class="invoice-title">Yarned with Love</h1>
         </div>
 
