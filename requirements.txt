@@ -10,3 +10,6 @@ cryptography
 razorpay
 sendgrid
 python-dotenv
+
+dj-database-url==2.1.0
+psycopg2-binary==2.9.9
