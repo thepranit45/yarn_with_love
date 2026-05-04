@@ -39,7 +39,6 @@ ALLOWED_HOSTS = [
     "ywl-ifsp.onrender.com",
     "127.0.0.1",
     "localhost",
-    ".fly.dev",
 ]
 
 CSRF_TRUSTED_ORIGINS = [
@@ -49,7 +48,6 @@ CSRF_TRUSTED_ORIGINS = [
     "https://ywl-ifsp.onrender.com",
     "http://127.0.0.1:8000",
     "http://localhost:8000",
-    "https://*.fly.dev",
 ]
 
 
@@ -117,7 +115,7 @@ LOGIN_REDIRECT_URL = 'product_list'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': '/data/db.sqlite3' if os.environ.get('FLY_APP_NAME') else BASE_DIR / 'db.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 
@@ -174,7 +172,7 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 MEDIA_URL = '/media/'
-MEDIA_ROOT = '/data/media' if os.environ.get('FLY_APP_NAME') else BASE_DIR / 'media'
+MEDIA_ROOT = BASE_DIR / 'media'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
