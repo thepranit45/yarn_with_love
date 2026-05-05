@@ -11,37 +11,42 @@ logger = logging.getLogger(__name__)
 
 User = get_user_model()
 
+import threading
+
 @receiver(post_save, sender=User)
 def send_welcome_email(sender, instance, created, **kwargs):
     if created:
-        logger.info(f"New user created: {instance.email}. Attempting to send welcome email.")
-        
-        subject = 'Welcome to Yarned with Love! 🧶'
-        message = f"""
-        Hi {instance.get_display_name()},
+        def start_email():
+            logger.info(f"New user created: {instance.email}. Attempting to send welcome email in background.")
+            
+            subject = 'Welcome to Yarned with Love! 🧶'
+            message = f"""
+            Hi {instance.get_display_name()},
 
-        Welcome to the Yarned with Love family! We are so happy to have you here.
+            Welcome to the Yarned with Love family! We are so happy to have you here.
 
-        Discover our handcrafted crochet collection made just for you.
-        
-        Happy Shopping!
-        
-        Warm regards,
-        The Yarned with Love Team
-        """
-        
-        # Only send if API key is set 
-        if settings.EMAIL_HOST_PASSWORD:
-            try:
-                send_mail(
-                    subject,
-                    message,
-                    settings.DEFAULT_FROM_EMAIL,
-                    [instance.email],
-                    fail_silently=True, # Changed to True so email failures don't crash registration
-                )
-                logger.info(f"Welcome email sent successfully to {instance.email}")
-            except Exception as e:
-                logger.error(f"Error sending welcome email to {instance.email}: {e}")
-        else:
-             logger.warning("EMAIL_HOST_PASSWORD (SendGrid API Key) is missing. Skipping welcome email.")
+            Discover our handcrafted crochet collection made just for you.
+            
+            Happy Shopping!
+            
+            Warm regards,
+            The Yarned with Love Team
+            """
+            
+            if settings.EMAIL_HOST_PASSWORD:
+                try:
+                    send_mail(
+                        subject,
+                        message,
+                        settings.DEFAULT_FROM_EMAIL,
+                        [instance.email],
+                        fail_silently=True,
+                    )
+                    logger.info(f"Welcome email sent successfully to {instance.email}")
+                except Exception as e:
+                    logger.error(f"Error sending welcome email to {instance.email}: {e}")
+            else:
+                 logger.warning("EMAIL_HOST_PASSWORD is missing. Skipping welcome email.")
+
+        # Start email sending in a separate thread to prevent 502 timeouts
+        threading.Thread(target=start_email).start()
