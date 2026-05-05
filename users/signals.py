@@ -38,7 +38,7 @@ def send_welcome_email(sender, instance, created, **kwargs):
                     message,
                     settings.DEFAULT_FROM_EMAIL,
                     [instance.email],
-                    fail_silently=False, # Changed to False to ensure we catch errors
+                    fail_silently=True, # Changed to True so email failures don't crash registration
                 )
                 logger.info(f"Welcome email sent successfully to {instance.email}")
             except Exception as e:
