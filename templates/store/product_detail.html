@@ -123,27 +123,18 @@
 
         <!-- Right Column: Details -->
         <div class="col-lg-6">
-            <span class="badge mb-2" style="background-color: #ffe4ec; color: var(--primary-color);"
+            <span class="badge mb-3 px-3 py-2 rounded-pill" style="background-color: var(--accent-color); color: var(--primary-color); font-weight: 600; letter-spacing: 0.5px;"
                 data-fill="product-category">{{ product.category.name|default:"General" }}</span>
-            <h1 class="display-4 fw-bold mb-2">{{ product.name }}</h1>
+            <h1 class="display-4 fw-bold mb-2" style="font-family: 'Playfair Display', serif; color: var(--text-dark); letter-spacing: -1px;">{{ product.name }}</h1>
 
             <!-- Color Variants Section -->
 
 
             <!-- Quality Promise -->
-            <div class="quality-promise-card my-4">
-                <div class="quality-icon">🧶</div>
+            <div class="quality-promise-card my-4" style="background: var(--accent-color); border: 1px solid rgba(232, 90, 127, 0.1); border-radius: 16px; padding: 20px; display: flex; gap: 15px; align-items: center;">
+                <div class="quality-icon" style="font-size: 2rem;">✨</div>
                 <div>
-                    <h6 class="fw-bold mb-1" style="color: var(--text-dark);">Premium Quality Yarn</h6>
-
-                    <script>
-                        (function () {
-                            const name = "{{ product.name|escapejs }}";
-                            const category = "{{ product.category.name|default:'General'|escapejs }}";
-                            document.querySelectorAll('[data-fill="product-name"]').forEach(el => el.textContent = name);
-                            document.querySelectorAll('[data-fill="product-category"]').forEach(el => el.textContent = category);
-                        })();
-                    </script>
+                    <h6 class="fw-bold mb-1" style="color: var(--text-dark); font-family: 'Playfair Display', serif;">Premium Quality Yarn</h6>
                     <p class="small text-muted mb-0">Handcrafted with high-grade, skin-friendly threads only.</p>
                 </div>
             </div>
@@ -215,31 +206,37 @@
                     returns.</p>
             </div>
             <form action="{% url 'add_to_cart' product.pk %}" method="POST"
-                class="d-grid gap-2 d-md-flex align-items-end opacity-75 mobile-sticky-actions">
+                class="d-flex flex-wrap align-items-center gap-3 opacity-75 mobile-sticky-actions mt-4">
                 {% csrf_token %}
-                <div style="max-width: 100px;">
-                    <label class="form-label small fw-bold">Quantity</label>
+                <div class="quantity-wrapper d-flex align-items-center rounded-pill" style="border: 1px solid #E2E8F0; padding: 5px 15px; background: white; height: 54px;">
+                    <span class="text-muted small me-2 fw-bold">Qty:</span>
                     <input type="number" name="quantity" value="1" min="1"
-                        class="form-control rounded-3 border-secondary">
+                        class="form-control border-0 p-0 text-center fw-bold" style="width: 40px; box-shadow: none; background: transparent;">
                 </div>
-                <button type="submit" name="action" value="add_to_cart" class="btn btn-main btn-lg px-4 flex-grow-1">🛒
-                    Add to Cart</button>
-                <button type="submit" name="action" value="buy_now" class="btn btn-dark btn-lg px-4 flex-grow-1">⚡ Buy
-                    Now</button>
+                <button type="submit" name="action" value="add_to_cart" class="btn btn-main flex-grow-1" style="height: 54px; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
+                    Add to Cart
+                </button>
+                <button type="submit" name="action" value="buy_now" class="btn btn-dark flex-grow-1 rounded-pill shadow-sm" style="height: 54px; font-weight: 700; transition: all 0.3s ease;">
+                    Buy Now
+                </button>
             </form>
             {% else %}
             <form action="{% url 'add_to_cart' product.pk %}" method="POST"
-                class="d-grid gap-2 d-md-flex align-items-end mobile-sticky-actions">
+                class="d-flex flex-wrap align-items-center gap-3 mobile-sticky-actions mt-4">
                 {% csrf_token %}
-                <div style="max-width: 100px;">
-                    <label class="form-label small fw-bold">Quantity</label>
+                <div class="quantity-wrapper d-flex align-items-center rounded-pill" style="border: 1px solid #E2E8F0; padding: 5px 15px; background: white; height: 54px;">
+                    <span class="text-muted small me-2 fw-bold">Qty:</span>
                     <input type="number" name="quantity" value="1" min="1"
-                        class="form-control rounded-3 border-secondary">
+                        class="form-control border-0 p-0 text-center fw-bold" style="width: 40px; box-shadow: none; background: transparent;">
                 </div>
-                <button type="submit" name="action" value="add_to_cart" class="btn btn-main btn-lg px-4 flex-grow-1">🛒
-                    Add to Cart</button>
-                <button type="submit" name="action" value="buy_now" class="btn btn-dark btn-lg px-4 flex-grow-1">⚡ Buy
-                    Now</button>
+                <button type="submit" name="action" value="add_to_cart" class="btn btn-main flex-grow-1" style="height: 54px; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
+                    Add to Cart
+                </button>
+                <button type="submit" name="action" value="buy_now" class="btn btn-dark flex-grow-1 rounded-pill shadow-sm" style="height: 54px; font-weight: 700; transition: all 0.3s ease;">
+                    Buy Now
+                </button>
             </form>
             <!-- Mobile Spacer to prevent content from being hidden behind sticky bar -->
             <div class="d-block d-md-none" style="height: 100px;"></div>

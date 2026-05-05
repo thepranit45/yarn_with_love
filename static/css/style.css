@@ -1,18 +1,18 @@
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Playfair+Display:ital,wght@0,700;1,700&family=Great+Vibes&display=swap');
 
 :root {
-    --primary-color: #d47fa6;
-    /* Deep Rose */
-    --secondary-color: #ff9eb7;
-    /* Soft Pink */
-    --accent-color: #eebbce;
-    /* Blush */
-    --bg-light: #fff5f9;
-    /* Soft Pink White */
-    --text-dark: #2c1810;
-    /* Dark Brown */
+    --primary-color: #E85A7F;
+    /* Soft Rose */
+    --secondary-color: #F8B1C3;
+    /* Pale Pink */
+    --accent-color: #FFEAEF;
+    /* Blush Background */
+    --bg-light: #FFFFFF;
+    /* Clean White */
+    --text-dark: #2B2B2B;
+    /* Soft Charcoal */
     --white: #ffffff;
-    --shadow: 0 10px 30px rgba(212, 127, 166, 0.15);
+    --shadow: 0 15px 35px rgba(232, 90, 127, 0.08);
 }
 
 body {
@@ -112,11 +112,19 @@ a {
 
 /* --- HERO SECTION (Playful) --- */
 .hero-section-new {
-    padding: 100px 0 80px;
+    padding: 140px 0 120px;
     text-align: center;
     position: relative;
     overflow: hidden;
-    background: radial-gradient(circle at center, #ffffff 0%, #fff5f9 100%);
+    background: linear-gradient(135deg, #FFFFFF, #FFF5F7, #FFEAEF, #FFFFFF);
+    background-size: 300% 300%;
+    animation: optimisticGradient 15s ease infinite;
+}
+
+@keyframes optimisticGradient {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
 }
 
 .hero-title-new {
@@ -172,19 +180,50 @@ a {
 }
 
 .btn-main {
-    background: var(--primary-color);
+    background: linear-gradient(135deg, #E85A7F, #F37B9A);
     color: white;
-    padding: 12px 35px;
+    padding: 14px 40px;
     border-radius: 50px;
-    font-weight: 600;
-    box-shadow: 0 5px 15px rgba(212, 127, 166, 0.4);
+    font-weight: 700;
+    font-size: 1.05rem;
     border: none;
+    box-shadow: 0 8px 20px rgba(232, 90, 127, 0.25);
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
 .btn-main:hover {
     transform: translateY(-3px);
-    background: #c06590;
+    box-shadow: 0 12px 25px rgba(232, 90, 127, 0.35);
     color: white;
+}
+
+.btn-main:active {
+    transform: translateY(1px);
+    box-shadow: 0 5px 10px rgba(232, 90, 127, 0.25);
+}
+
+.btn-bouncy-light {
+    background: white;
+    color: var(--primary-color);
+    padding: 14px 40px;
+    border-radius: 50px;
+    font-weight: 700;
+    font-size: 1.05rem;
+    border: 1px solid rgba(232, 90, 127, 0.2);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.04);
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.btn-bouncy-light:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 25px rgba(0, 0, 0, 0.08);
+    color: var(--primary-color);
+    border-color: rgba(232, 90, 127, 0.4);
+}
+
+.btn-bouncy-light:active {
+    transform: translateY(1px);
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.04);
 }
 
 /* --- CARDS & GRID --- */
@@ -233,20 +272,28 @@ a {
 }
 
 .product-card {
-    display: block;
+    display: flex;
+    flex-direction: column;
     background: white;
-    border-radius: 20px;
+    border: 1px solid rgba(0,0,0,0.03);
+    border-radius: 24px;
     overflow: hidden;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-    transition: 0.3s;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.03);
+    transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
     height: 100%;
     text-decoration: none;
     color: inherit;
 }
 
 .product-card:hover {
-    transform: translateY(-5px);
-    box-shadow: var(--shadow);
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px rgba(232, 90, 127, 0.1);
+    border-color: rgba(232, 90, 127, 0.1);
+}
+
+.product-card:active {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(232, 90, 127, 0.1);
 }
 
 .product-img-wrapper {
@@ -587,14 +634,23 @@ a {
 }
 
 .story-ring {
-    width: 65px;
-    height: 65px;
+    width: 70px;
+    height: 70px;
     border-radius: 50%;
     padding: 3px;
-    background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+    background: linear-gradient(45deg, #ff758c, #ff7eb3, #d47fa6, #f2cc8f);
+    background-size: 300% 300%;
+    animation: gradientSpin 4s ease infinite;
     display: flex;
     align-items: center;
     justify-content: center;
+    box-shadow: 0 5px 15px rgba(212, 127, 166, 0.3);
+}
+
+@keyframes gradientSpin {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
 }
 
 .story-circle {
