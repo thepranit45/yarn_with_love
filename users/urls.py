@@ -2,9 +2,11 @@ from django.urls import path
 from django.contrib.auth import views as auth_views
 from . import views
 
+from allauth.account.views import SignupView
+
 urlpatterns = [
     # Registration
-    path('register/', views.register, name='register'),
+    path('register/', SignupView.as_view(), name='register'),
     
     # Login
     path('login/', views.login_choice, name='login'),
