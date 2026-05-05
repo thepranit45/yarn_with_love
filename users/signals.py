@@ -11,8 +11,8 @@ logger = logging.getLogger(__name__)
 
 User = get_user_model()
 
-# import threading
-# @receiver(post_save, sender=User)
+import threading
+@receiver(post_save, sender=User)
 def send_welcome_email(sender, instance, created, **kwargs):
     if created:
         def start_email():
@@ -47,5 +47,5 @@ def send_welcome_email(sender, instance, created, **kwargs):
             else:
                  logger.warning("EMAIL_HOST_PASSWORD is missing. Skipping welcome email.")
 
-        # threading.Thread(target=start_email).start()
-        pass
+        # Start email sending in a separate thread to prevent 502 timeouts
+        threading.Thread(target=start_email).start()

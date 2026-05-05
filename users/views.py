@@ -16,7 +16,7 @@ def register(request):
             user = form.save(commit=False)
             user.is_artisan = False
             user.save()
-            login(request, user, backend='django.contrib.auth.backends.ModelBackend')
+            login(request, user)
             messages.success(request, f'Welcome {user.username}! Your account has been created.')
             return redirect('product_list')
     else:
