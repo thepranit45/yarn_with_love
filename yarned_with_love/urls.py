@@ -27,7 +27,6 @@ urlpatterns = [
         TemplateView.as_view(
             template_name="ads.txt",
             content_type="text/plain",
-            extra_context={"adsense_client_id": settings.ADSENSE_CLIENT_ID},
         ),
     ),
 
