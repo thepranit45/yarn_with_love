@@ -95,6 +95,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'users.context_processors.artisan_global_data',
+                'users.context_processors.site_marketing_data',
             ],
         },
     },
@@ -119,7 +120,7 @@ DATABASES = {
     }
 }
 
-database_url = os.environ.get("DATABASE_URL")
+database_url = os.environ.get("RENDER_DATABASE_URL") or os.environ.get("DATABASE_URL")
 if database_url:
     DATABASES["default"] = dj_database_url.parse(database_url, conn_max_age=600)
 
@@ -233,6 +234,8 @@ AUTHENTICATION_BACKENDS = [
 SITE_ID = 1
 
 # Google OAuth Settings
+GOOGLE_SITE_VERIFICATION = os.environ.get('GOOGLE_SITE_VERIFICATION', '')
+ADSENSE_CLIENT_ID = os.environ.get('ADSENSE_CLIENT_ID', 'ca-pub-7206771909611915')
 SOCIALACCOUNT_PROVIDERS = {
     'google': {
         'APP': {

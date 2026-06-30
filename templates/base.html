@@ -6,6 +6,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Yarned with Love{% endblock %}</title>
+    {% if adsense_client_id %}
+    <meta name="google-adsense-account" content="{{ adsense_client_id }}">
+    {% endif %}
+    {% if google_site_verification %}
+    <meta name="google-site-verification" content="{{ google_site_verification }}">
+    {% endif %}
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-SC3X4KBFP6"></script>
     <script>
@@ -15,6 +21,10 @@
 
         gtag('config', 'G-SC3X4KBFP6');
     </script>
+    {% if enable_adsense %}
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client={{ adsense_client_id }}"
+        crossorigin="anonymous"></script>
+    {% endif %}
     <link rel="icon"
         href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧶</text></svg>">
     <!-- Bootstrap CSS -->

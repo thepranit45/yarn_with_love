@@ -1,3 +1,8 @@
+databases:
+  - name: yarned-with-love-db
+    databaseName: yarned_with_love
+    user: yarned_with_love_user
+
 services:
   - type: web
     name: yarned-with-love
@@ -11,3 +16,7 @@ services:
         generateValue: true
       - key: DEBUG
         value: False
+      - key: RENDER_DATABASE_URL
+        fromDatabase:
+          name: yarned-with-love-db
+          property: connectionString

@@ -22,7 +22,14 @@ urlpatterns = [
     # SEO
     path('sitemap.xml', sitemap, {'sitemaps': sitemaps}, name='django.contrib.sitemaps.views.sitemap'),
     path('robots.txt', TemplateView.as_view(template_name="robots.txt", content_type="text/plain")),
-    path('ads.txt', TemplateView.as_view(template_name="ads.txt", content_type="text/plain")),
+    path(
+        'ads.txt',
+        TemplateView.as_view(
+            template_name="ads.txt",
+            content_type="text/plain",
+            extra_context={"adsense_client_id": settings.ADSENSE_CLIENT_ID},
+        ),
+    ),
 
     # Direct login shortcuts (Keep these!)
     path('mansi/', user_views.quick_artist_login, {'username': 'mansi'}, name='mansi_login'),
